@@ -48,6 +48,8 @@ module.exports = {
   output: {
     path: path.join(__dirname, 'lib'),
     filename: 'index.js',
+    libraryTarget: 'umd',
+    library: 'redux-restify',
   },
   node: env.test ? {
     fs: 'empty',
