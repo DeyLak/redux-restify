@@ -58,7 +58,7 @@
     "build": "cross-env BABEL_DISABLE_CACHE=1 NODE_ENV=production webpack",
     "start": "node server.js"
   },
-  "main": "lib/redux-restify.js",
+  "main": "lib/index.js",
   "directories": {
     "lib": "lib"
   },
