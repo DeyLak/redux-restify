@@ -1,0 +1,2 @@
+export ApiXhrAdapter from './ApiXhrAdapter'
+
