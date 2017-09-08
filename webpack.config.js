@@ -47,7 +47,7 @@ module.exports = {
   entry: './src/',
   output: {
     path: path.join(__dirname, 'lib'),
-    filename: 'redux-restify.js',
+    filename: 'index.js',
   },
   node: env.test ? {
     fs: 'empty',
