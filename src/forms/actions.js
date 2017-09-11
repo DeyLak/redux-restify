@@ -208,8 +208,12 @@ const globalActions = {
 
   removeFromArray: (formType) => (arrayName, index = 0, count = 1) => (dispatch, getState) => {
     const state = getState()
-    const newArray = selectors.getField(formType)(arrayName)(state).slice()
-    newArray.splice(index, count)
+    let newArray = selectors.getField(formType)(arrayName)(state).slice()
+    if (Array.isArray(index)) {
+      newArray = newArray.filter((_, i) => !index.includes(i))
+    } else {
+      newArray.splice(index, count)
+    }
     // TODO reset all arrays for count
     dispatch(globalActions.changeField(formType)(arrayName, newArray))
     dispatch(globalActions.resetArrayErrors(formType)(arrayName, newArray.length))
