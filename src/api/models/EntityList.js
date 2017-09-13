@@ -362,6 +362,17 @@ class EntityList {
     return currentPages.length < currentCount / pageSize ? lastPage + 1 : undefined
   }
 
+  getCount({
+    filter = {},
+    sort,
+    parentEntities = {},
+    specialConfig = false,
+    pageSize = this.pageSize,
+  } = {}) {
+    const currentConfig = getPagesConfigHash(filter, sort, parentEntities, specialConfig, pageSize)
+    return this.count[currentConfig] || 0
+  }
+
   getArray({
     filter = {},
     sort,
