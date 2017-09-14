@@ -257,7 +257,11 @@ class EntityList {
       return this.getRestifyModel(getOptimisticEntity(currentEntity), config)
     }
 
-    if (!preventLoad && !this.idLoaded[specialId]) {
+    let shouldLoad = !preventLoad && !this.idLoaded[specialId]
+    if (!modelConfig.pagination) {
+      shouldLoad = shouldLoad && !this.arrayLoaded.some(load => !!load)
+    }
+    if (shouldLoad) {
       this.idLoaded[specialId] = this.asyncDispatch(entityManager[this.modelType]
         .loadById(id, {
           query,
