@@ -253,7 +253,7 @@ class EntityList {
 
     let shouldLoad = !preventLoad && !this.idLoaded[specialId]
     if (!this.modelConfig.pagination) {
-      shouldLoad = shouldLoad && !this.arrayLoaded.some(load => !!load)
+      shouldLoad = shouldLoad && !Object.keys(this.arrayLoaded).some(key => !!this.arrayLoaded[key])
     }
     if (shouldLoad) {
       this.idLoaded[specialId] = this.asyncDispatch(entityManager[this.modelType]
