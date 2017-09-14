@@ -184,19 +184,15 @@ class EntityList {
     const result = Object.keys(this.modelConfig.defaults).reduce(mapDefaultKeysToModel(), {})
     Object.keys(normalized).forEach(key => {
       if (!Object.prototype.hasOwnProperty.call(result, key)) {
-        if (process.env.DEV) {
-          Object.defineProperty(result, key, {
-            get: () => {
-              console.warn(`
-                Call to ${key} property of ${this.modelType},
-                which is presented at back-end, but unregistered in model config!
-              `.trim())
-              return normalized[key]
-            },
-          })
-        } else {
-          result[key] = normalized[key]
-        }
+        Object.defineProperty(result, key, {
+          get: () => {
+            console.warn(`
+              Call to ${key} property of ${this.modelType},
+              which is presented at back-end, but unregistered in model config!
+            `.trim())
+            return normalized[key]
+          },
+        })
       }
     })
     Object.keys(this.modelConfig.defaults).forEach(key => {
@@ -209,13 +205,11 @@ class EntityList {
               this.idLoaded[result.id] = this.asyncDispatch(entityManager[this.modelType]
                 .loadById(result.id)).then((res) => {
                   this.idLoaded[result.id] = false
-                  if (process.env.DEV) {
-                    if (!Object.keys(res).includes(key)) {
-                      console.warn(`
-                        Call to ${key} property of ${this.modelType},
-                        which is presented at model config, but can not be recieved via id request!
-                      `.trim())
-                    }
+                  if (!Object.keys(res).includes(key)) {
+                    console.warn(`
+                      Call to ${key} property of ${this.modelType},
+                      which is presented at model config, but can not be recieved via id request!
+                    `.trim())
                   }
                 })
             }
@@ -258,7 +252,7 @@ class EntityList {
     }
 
     let shouldLoad = !preventLoad && !this.idLoaded[specialId]
-    if (!modelConfig.pagination) {
+    if (!this.modelConfig.pagination) {
       shouldLoad = shouldLoad && !this.arrayLoaded.some(load => !!load)
     }
     if (shouldLoad) {

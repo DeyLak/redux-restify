@@ -1,9 +1,8 @@
 import actions, { getFormActions } from './actions'
 import * as constants from './constants'
 import getRestifyFormReducer from './reducers'
-import selectors from './selectors'
+import selectors, { checkErrors } from './selectors'
 import createFormConfig from './formConfig'
-import { checkErrors } from './selectors'
 
 export * from './validation'
 
