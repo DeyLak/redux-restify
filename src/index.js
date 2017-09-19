@@ -22,6 +22,6 @@ export {
   registerModel,
   registerForm,
   initRestify,
-  RESTIFY_CONFIG,
 } from './init'
 
+export { RESTIFY_CONFIG } from './config'
