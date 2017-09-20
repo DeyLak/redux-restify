@@ -6,7 +6,7 @@ import {
   getFormDefaultValue,
 } from './constants'
 import { getDefaultFormObject } from './formConfig'
-import { ROUTER_LOCATION_CHANGE_ACTION, INIT_ACTION } from 'constants'
+import { ROUTER_LOCATION_CHANGE_ACTION, INIT_ACTION } from '../constants'
 import { getRecursiveObjectReplacement, removeUndefinedKeys } from 'helpers/nestedObjects'
 
 import { RESTIFY_CONFIG } from '../config'

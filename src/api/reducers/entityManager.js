@@ -2,7 +2,7 @@ import { combineReducers } from 'redux'
 
 import { ACTIONS_TYPES } from '../actionsTypes'
 import { getPagesConfigHash, getSpecialIdWithQuery } from '../constants'
-import { ROUTER_LOCATION_CHANGE_ACTION } from 'constants'
+import { ROUTER_LOCATION_CHANGE_ACTION } from '../../constants'
 import { mergeAndReplaceArrays } from 'helpers/nestedObjects'
 
 

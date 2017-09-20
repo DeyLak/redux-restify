@@ -16,6 +16,9 @@ import createFormConfig from '../forms/formConfig'
 import { createModelConfig } from '../api/constants'
 
 import { createRestifyStore } from 'helpers/tests'
+import { removePrivateFields } from 'helpers/nestedObjects'
+
+import { ROUTER_LOCATION_CHANGE_ACTION } from '../constants'
 
 
 const apiDefinitions = {
@@ -33,6 +36,7 @@ const modelsDefinitions = {
     endpoint: 'test-model/',
     name: 'Test model',
     defaults: {
+      id: undefined,
       test: true,
     },
   },
@@ -99,5 +103,30 @@ describe('initRestify', () => {
     const state = store.getState()
     const testEntities = api.selectors.entityManager.testModel.getEntities(state)
     expect(testEntities).toEqual(jasmine.any(EntityList))
+  })
+
+  it('clears pages after router location changes', () => {
+    const testData = [{ id: 1, test: true }, { id: 2, test: false }]
+    store.dispatch(api.actions.entityManager.testModel.updateData(
+      testData,
+      1,
+      10,
+      2,
+      {},
+      undefined,
+      {},
+      false,
+    ))
+    let state = store.getState()
+    const testArray = api.selectors.entityManager.testModel.getEntities(state).getArray()
+    expect(removePrivateFields(testArray)).toEqual(testData)
+    store.dispatch({
+      type: ROUTER_LOCATION_CHANGE_ACTION,
+      payload: {
+        action: 'PUSH',
+      },
+    })
+    state = store.getState()
+    expect(state.api.entityManager.testModel.pages).toEqual({})
   })
 })
