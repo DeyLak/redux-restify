@@ -1,5 +1,6 @@
 import uuidV4 from 'uuid/v4'
 import deepEqual from 'deep-equal'
+import mergeWith from 'lodash/mergeWith'
 
 import { isDefAndNotNull, isPureObject } from 'helpers/def'
 
@@ -34,6 +35,16 @@ export const getRecursiveObjectReplacement = (obj, name, value) => {
   const newArray = obj.slice()
   newArray.splice(currentName, 1, getRecursiveObjectReplacement(nextObject, name.slice(1), value))
   return newArray
+}
+
+const arraysCustomizer = (objValue, srcValue) => {
+  if (Array.isArray(objValue)) {
+    return srcValue
+  }
+  return undefined
+}
+export const mergeAndReplaceArrays = (...args) => {
+  return mergeWith(...args, arraysCustomizer)
 }
 
 export const getNestedObjectField = (obj, name) => {

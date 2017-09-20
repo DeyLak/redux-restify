@@ -1,10 +1,9 @@
-import merge from 'lodash/merge'
-
 import { combineReducers } from 'redux'
 
 import { ACTIONS_TYPES } from '../actionsTypes'
 import { getPagesConfigHash, getSpecialIdWithQuery } from '../constants'
 import { ROUTER_LOCATION_CHANGE_ACTION } from 'constants'
+import { mergeAndReplaceArrays } from 'helpers/nestedObjects'
 
 
 const makeEntityObject = obj => ({
@@ -89,7 +88,7 @@ const getEntityManagerReducer = (modelTypes) => {
             ...state,
             singleEntities: {
               ...state.singleEntities,
-              [specialId]: merge({}, currentEntity, makeEntityObject(action.data)),
+              [specialId]: mergeAndReplaceArrays({}, currentEntity, makeEntityObject(action.data)),
             },
             // We are not clearing pages everytime here for smooth lists behavior for user
             pages: action.allowClearPages && state.singleEntities[specialId] === undefined ? {} : state.pages,

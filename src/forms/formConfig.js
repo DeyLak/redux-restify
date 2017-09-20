@@ -1,7 +1,7 @@
-import merge from 'lodash/merge'
 import uuidV4 from 'uuid/v4'
 
 import { RESTIFY_CONFIG } from '../config'
+import { mergeAndReplaceArrays } from 'helpers/nestedObjects'
 
 
 const UUID_FUNC = '$uuid'
@@ -62,7 +62,7 @@ export const getComposedConfig = (config) => {
     return RESTIFY_CONFIG.registeredForms[config]
   }
   if (config.baseConfig) {
-    return merge({}, RESTIFY_CONFIG.registeredForms[config.baseConfig], config)
+    return mergeAndReplaceArrays({}, RESTIFY_CONFIG.registeredForms[config.baseConfig], config)
   }
   return config
 }

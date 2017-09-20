@@ -1,5 +1,3 @@
-import merge from 'lodash/merge'
-
 import entityManager from '../actions/entityManager'
 import {
   getPagesConfigHash,
@@ -12,11 +10,11 @@ import RestifyForeignKey from './RestifyForeignKey'
 import RestifyForeignKeysArray from './RestifyForeignKeysArray'
 
 import { isPureObject, isDefAndNotNull } from 'helpers/def'
-import { getNestedObjectField } from 'helpers/nestedObjects'
+import { getNestedObjectField, mergeAndReplaceArrays } from 'helpers/nestedObjects'
 
 
 const getOptimisticEntity = (entity) => {
-  return merge({}, entity.actual, entity.optimistic)
+  return mergeAndReplaceArrays({}, entity.actual, entity.optimistic)
 }
 
 // TODO by @deylak remove or rework it after backend supports restoring
