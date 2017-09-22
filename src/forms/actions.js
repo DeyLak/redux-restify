@@ -88,11 +88,22 @@ const globalActions = {
   },
 
   changeSomeFields: (formType) => (fieldsObject = {}, forceUndefines = false) => (dispatch) => {
-    Object.keys(fieldsObject).forEach(key => {
-      const currentValue = fieldsObject[key]
-      if (!forceUndefines || currentValue !== undefined) {
-        dispatch(globalActions.changeField(formType)(key, currentValue))
-      }
+    let valuesObj = {}
+    if (forceUndefines) {
+      valuesObj = fieldsObject
+    } else {
+      Object.keys(fieldsObject).forEach(key => {
+        const currentValue = fieldsObject[key]
+        if (currentValue !== undefined) {
+          valuesObj[key] = currentValue
+        }
+      })
+    }
+
+    return dispatch({
+      type: getActionType(formType).changeSomeFields,
+      valuesObj,
+      formType,
     })
   },
 

@@ -79,6 +79,7 @@ export const updateDefaultValue = (defaultValue, value) => {
 
 const actionsTypesForms = [
   'CHANGE_FIELD',
+  'CHANGE_SOME_FIELDS',
   'RESET_FIELD',
   'SET_ERRORS',
   'SET_IS_VALID',

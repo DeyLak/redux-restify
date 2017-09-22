@@ -31,6 +31,11 @@ const getRestifyFormReducer = () => {
       switch (action.type) {
         case ACTIONS_TYPES[formType].changeField:
           return getRecursiveObjectReplacement(state, action.name, action.value)
+        case ACTIONS_TYPES[formType].changeSomeFields:
+          return {
+            ...state,
+            ...action.valuesObj,
+          }
         case ACTIONS_TYPES[formType].resetField:
           return getRecursiveObjectReplacement(state, action.name, getFormDefaultValue(formType, action.name))
         case ACTIONS_TYPES[formType].setErrors:
@@ -144,6 +149,14 @@ const getRestifyFormReducer = () => {
         return {
           ...nextState,
           [action.formType]: getRecursiveObjectReplacement(nextState[action.formType], action.name, action.value),
+        }
+      case ACTIONS_TYPES[GENERAL_FORMS_ACTIONS].changeSomeFields:
+        return {
+          ...nextState,
+          [action.formType]: {
+            ...nextState[action.formType],
+            ...action.valuesObj,
+          },
         }
       case ACTIONS_TYPES[GENERAL_FORMS_ACTIONS].resetField:
         if (!nextState[action.formType]) return nextState
