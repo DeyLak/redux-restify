@@ -1,7 +1,10 @@
+import defaults from 'lodash/defaults'
+
 import createFormConfig from './forms/formConfig'
 import { createModelConfig } from './api/constants'
 import ApiXhrAdapter from './api/adapters/ApiXhrAdapter'
 import {
+  RESTIFY_DEFAULT_OPTIONS,
   RESTIFY_CONFIG,
   registerApiCallbacks,
   registerModelCallbacks,
@@ -66,10 +69,12 @@ export const initRestify = ({
   apiDefinitions = {},
   modelsDefinitions = {},
   formsDefinitions = {},
+  options = {},
 } = {}) => {
   RESTIFY_CONFIG.registeredApies = {}
   RESTIFY_CONFIG.registeredModels = {}
   RESTIFY_CONFIG.registeredForms = {}
+  RESTIFY_CONFIG.options = defaults(options, RESTIFY_DEFAULT_OPTIONS)
   Object.keys(apiDefinitions).forEach(key => registerApi(key, apiDefinitions[key]))
   Object.keys(modelsDefinitions).forEach(key => registerModel(key, modelsDefinitions[key]))
   Object.keys(formsDefinitions).forEach(key => registerForm(key, formsDefinitions[key]))

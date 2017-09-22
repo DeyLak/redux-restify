@@ -199,7 +199,7 @@ class EntityList {
         Object.defineProperty(result, key, {
           enumerable: false,
           get: () => {
-            if (!this.idLoaded[result.id]) {
+            if (RESTIFY_CONFIG.options.autoPropertiesIdRequestd && !this.idLoaded[result.id]) {
               this.idLoaded[result.id] = this.asyncDispatch(entityManager[this.modelType]
                 .loadById(result.id)).then((res) => {
                   this.idLoaded[result.id] = false

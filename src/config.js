@@ -1,8 +1,13 @@
+export const RESTIFY_DEFAULT_OPTIONS = {
+  autoPropertiesIdRequestd: true,
+}
+
 export const RESTIFY_CONFIG = {
   store: undefined,
   registeredApies: {},
   registeredModels: {},
   registeredForms: {},
+  options: RESTIFY_DEFAULT_OPTIONS,
 }
 
 let $apiesTypes

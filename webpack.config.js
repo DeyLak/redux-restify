@@ -84,7 +84,7 @@ module.exports = {
   ] : [
     new webpack.optimize.UglifyJsPlugin({
       minimize: true,
-      compress: { drop_console: true },
+      compress: { drop_console: false },
     }),
     new webpack.ExtendedAPIPlugin(),
   ]),
