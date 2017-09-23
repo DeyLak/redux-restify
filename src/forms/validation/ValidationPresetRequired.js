@@ -5,7 +5,7 @@ class ValidationPresetRequired extends ValidationPresetNotOneOf {
   constructor(config = {}) {
     super({
       ...config,
-      value: undefined,
+      value: [undefined, ''],
     })
     this.$isValidationPresetRequired = true
   }
