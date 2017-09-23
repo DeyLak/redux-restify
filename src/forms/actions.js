@@ -87,7 +87,10 @@ const globalActions = {
     }
   },
 
-  changeSomeFields: (formType) => (fieldsObject = {}, forceUndefines = false) => (dispatch) => {
+  changeSomeFields: (formType) => (fieldsObject = {}, forceUndefines = false) => (dispatch, getState) => {
+    const state = getState()
+    const currentFormConfig = selectors.getFormConfig(formType)(state)
+
     let valuesObj = {}
     if (forceUndefines) {
       valuesObj = fieldsObject
@@ -99,12 +102,17 @@ const globalActions = {
         }
       })
     }
+    // TODO by @deylak add orderable arrays management and move changeField and changeSomeFields to one action
 
-    return dispatch({
+    dispatch({
       type: getActionType(formType).changeSomeFields,
       valuesObj,
       formType,
     })
+
+    if (currentFormConfig.validate && currentFormConfig.validateOnFieldChange) {
+      dispatch(globalActions.validate(formType)())
+    }
   },
 
   applyServerData: (formType) => (data) => (dispatch, getState) => {
