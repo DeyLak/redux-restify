@@ -8,6 +8,12 @@ import { isDefAndNotNull, isPureObject } from 'helpers/def'
 // Replacing given value in given path in object, path can be just single key, or array of keys
 export const getRecursiveObjectReplacement = (obj, name, value) => {
   if (!isDefAndNotNull(obj)) return obj
+  if (Array.isArray(name) && name.length === 0 && isPureObject(value)) {
+    return {
+      ...obj,
+      ...value,
+    }
+  }
   if (typeof name === 'string' || typeof name === 'number' || name.length === 1) {
     const currentName = Array.isArray(name) ? name[0] : name
     if (!Array.isArray(obj)) {
