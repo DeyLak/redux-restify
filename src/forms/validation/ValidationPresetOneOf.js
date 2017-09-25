@@ -1,3 +1,5 @@
+import deepEqual from 'deep-equal'
+
 import ValidationPreset from './ValidationPreset'
 
 
@@ -9,7 +11,9 @@ class ValidationPresetOneOf extends ValidationPreset {
     const arrayValue = Array.isArray(value) ? value : [value]
     super({
       ...config,
-      validate: (currentLevelValues) => !arrayValue.includes(currentLevelValues),
+      validate: (currentLevelValues) => {
+        return !arrayValue.some(value => deepEqual(currentLevelValues, value))
+      },
     })
     this.$isValidationPresetOneOf = true
   }
