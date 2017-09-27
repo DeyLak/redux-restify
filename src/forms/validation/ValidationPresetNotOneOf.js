@@ -12,7 +12,7 @@ class ValidationPresetNotOneOf extends ValidationPreset {
     super({
       ...config,
       validate: (currentLevelValues) => {
-        return arrayValue.some(value => deepEqual(currentLevelValues, value))
+        return arrayValue.some(v => deepEqual(currentLevelValues, v))
       },
     })
     this.$isValidationPresetNotOneOf = true

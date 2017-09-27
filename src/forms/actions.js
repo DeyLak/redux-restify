@@ -91,18 +91,20 @@ const globalActions = {
     const state = getState()
     const currentFormConfig = selectors.getFormConfig(formType)(state)
 
-    let valuesObj = {}
-    if (forceUndefines) {
-      valuesObj = fieldsObject
-    } else {
-      Object.keys(fieldsObject).forEach(key => {
-        const currentValue = fieldsObject[key]
-        if (currentValue !== undefined) {
-          valuesObj[key] = currentValue
+    const valuesObj = {}
+    Object.keys(fieldsObject).forEach(key => {
+      let currentValue = fieldsObject[key]
+
+      if (Array.isArray(currentValue)) {
+        const arrayConfig = getFormArrayConfig(formType, key, currentFormConfig)
+        if (arrayConfig.orderable) {
+          currentValue = currentValue.map((item, order) => ({ ...item, order }))
         }
-      })
-    }
-    // TODO by @deylak add orderable arrays management and move changeField and changeSomeFields to one action
+      }
+      if (forceUndefines || currentValue !== undefined) {
+        valuesObj[key] = currentValue
+      }
+    })
 
     dispatch({
       type: getActionType(formType).changeSomeFields,
@@ -418,9 +420,7 @@ const globalActions = {
       }
     }
     if (!currentForm.endpoint && !currentForm.model) {
-      if (process.env.DEV) {
-        console.warn(`Submitting a form ${formType} has no effect, cause it doesn't have endpoint or model`)
-      }
+      console.warn(`Submitting a form ${formType} has no effect, cause it doesn't have endpoint or model`)
       return Promise.resolve()
     }
     const currentValues = selectors.getFormWithNulls(formType)(state)
