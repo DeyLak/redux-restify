@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect'
 
-import { EntityList, RestifyForeignKey, RestifyForeignKeysArray } from '../models'
+import { EntityList, RestifyLinkedModel, RestifyArray } from '../models'
 import { RESTIFY_CONFIG } from '../../config'
 import { onInitRestify } from '../../init'
 import { isPureObject } from 'helpers/def'
@@ -15,13 +15,16 @@ const getModelSelectorsFromDict = (selectorsDict) => (modelType) => {
   const modelConfig = RESTIFY_CONFIG.registeredModels[modelType].defaults
 
   const getLinkedModels = (configPath = []) => (memo, key) => {
-    const currentConfigPath = configPath.concat(key)
+    let currentConfigPath = configPath.concat(key)
     const currentField = getNestedObjectField(modelConfig, currentConfigPath)
-    if (currentField instanceof RestifyForeignKey || currentField instanceof RestifyForeignKeysArray) {
+    if (currentField instanceof RestifyLinkedModel) {
       if (currentField.modelType === modelType) return memo
       return memo.concat(currentField.modelType)
     } else if (isPureObject(currentField) && !Array.isArray(currentField)) {
       return memo.concat(Object.keys(currentField).reduce(getLinkedModels(currentConfigPath), []))
+    } else if (currentField instanceof RestifyArray) {
+      currentConfigPath = currentConfigPath.concat('defaults')
+      return memo.concat(Object.keys(currentField.defaults).reduce(getLinkedModels(currentConfigPath), []))
     }
     return memo
   }

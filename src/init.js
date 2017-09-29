@@ -1,7 +1,10 @@
 import defaults from 'lodash/defaults'
 
 import createFormConfig from './forms/formConfig'
-import { createModelConfig } from './api/constants'
+import {
+  createModelConfig,
+  DEFAULT_API_NAME,
+} from './api/constants'
 import ApiXhrAdapter from './api/adapters/ApiXhrAdapter'
 import {
   RESTIFY_DEFAULT_OPTIONS,
@@ -42,6 +45,13 @@ export const onRegisterModel = (func) => {
 export const registerModel = (modelName, config) => {
   if (RESTIFY_CONFIG.registeredModels[modelName] !== undefined) {
     throw new Error(`You tried to register already existing model with name ${modelName}! Try other name.`)
+  }
+  if (!RESTIFY_CONFIG.registeredApies[DEFAULT_API_NAME] &&
+    (!config.apiName || config.apiName === DEFAULT_API_NAME)
+  ) {
+    throw new Error(
+      `You tried to register a model with ${modelName}! with default api. But no default api is registered!`,
+    )
   }
   RESTIFY_CONFIG.registeredModels[modelName] = createModelConfig(config)
   invokeCallbacks(registerModelCallbacks, RESTIFY_CONFIG.registeredModels[modelName])

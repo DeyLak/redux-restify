@@ -32,9 +32,6 @@ export const mapDataToRestifyModel = (data, modelType) => {
     const currentConfigPath = configPath.concat(key)
     const currentFieldDefault = defaults[key]
     const currentField = getNestedObjectField(resultModel, currentConfigPath)
-    if (typeof key === 'number') {
-      console.log(resultModel, currentConfigPath, currentFieldDefault, currentField)
-    }
 
     if (currentFieldDefault instanceof RestifyForeignKey || currentFieldDefault instanceof RestifyForeignKeysArray) {
       if (!otherModels[currentFieldDefault.modelType]) {
