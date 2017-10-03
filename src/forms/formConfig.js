@@ -59,6 +59,9 @@ export const DEFAULT_FORM_OBJECT = {
 }
 
 export const getComposedConfig = (config) => {
+  if (!config) {
+    return { ...DEFAULT_FORM_OBJECT }
+  }
   if (typeof config === 'string') {
     return RESTIFY_CONFIG.registeredForms[config]
   }
