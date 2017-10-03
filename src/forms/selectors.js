@@ -5,11 +5,11 @@ import { onInitRestify } from '../init'
 import { getComposedConfig } from './formConfig'
 
 
-export const checkErrors = (errors = {}, form = {}) => {
+export const checkErrors = (errors = {}, form = {}, validateAll) => {
   const errorsObj = (typeof errors === 'object' && errors !== null) ? errors : {}
   const formFields = Object.keys(form)
   return Object.keys(errorsObj).every(key => {
-    if (formFields.length && !formFields.some(field => field === key)) return true
+    if (!validateAll || formFields.length && !formFields.some(field => field === key)) return true
     const currentErrors = errorsObj[key]
     if (typeof currentErrors === 'object' && !Array.isArray(currentErrors)) return checkErrors(currentErrors, form[key])
     return !currentErrors || (Array.isArray(currentErrors) && !currentErrors.length)
@@ -23,15 +23,19 @@ const globalSelectors = {
   getField: (formType) => (name) => (state) => getNestedObjectField(state.forms[formType], name),
   getSavedField: (formType) => (name) => (state) => getNestedObjectField(state.forms[formType].$edit, name),
   getErrors: (formType) => (state) => state.forms[formType] && state.forms[formType].$errors || {},
-  getIsValid: (formType) => (state) =>
-    checkErrors(globalSelectors.getErrors(formType)(state), globalSelectors.getForm(formType)(state)),
+  getIsValid: (formType, formConfig) => (state) =>
+    checkErrors(
+      globalSelectors.getErrors(formType)(state),
+      globalSelectors.getForm(formType)(state),
+      formConfig.validateAll,
+    ),
   getEditingFields: (formType) => (state) => state.forms[formType] && state.forms[formType].$edit || {},
 }
 
-const getFormSelectors = (formType) => {
+const getFormSelectors = (formType, formConfig) => {
   return Object.keys(globalSelectors).reduce((memo, key) => ({
     ...memo,
-    [key]: globalSelectors[key](formType),
+    [key]: globalSelectors[key](formType, formConfig),
   }), {})
 }
 
@@ -48,7 +52,7 @@ const forms = {
 
 onInitRestify(() => {
   RESTIFY_CONFIG.formsTypes.forEach(formType => {
-    forms[formType] = getFormSelectors(formType)
+    forms[formType] = getFormSelectors(formType, RESTIFY_CONFIG.registeredForms[formType])
   })
 })
 

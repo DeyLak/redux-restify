@@ -53,6 +53,7 @@ export const DEFAULT_FORM_OBJECT = {
   // Of object is used, every node is following the same rules, as top-level preset or function
   validate: undefined,
   validateOnFieldChange: true, // Should form be validated after every field change
+  validateAll: false, // Should all registered form fields be validated, despite their presense in form values
   validateOnSubmit: true, // Should form be validated before submitting
   allowSendInvalid: false, // Allow to send form with errors to server
 }
