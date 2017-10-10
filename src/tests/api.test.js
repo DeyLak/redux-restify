@@ -68,21 +68,23 @@ describe('api', () => {
       },
     ],
   }
+  const mockArrayRequest = (response = testServerArrayResponse) => {
+    jasmine.Ajax.stubRequest(
+      `${TEST_API_HOST}${TEST_API_PREFIX}${TEST_MODEL_ENDPOINT}?page=1&page_size=10`,
+    ).andReturn({
+      status: 200,
+      responseText: JSON.stringify(response),
+      responseHeaders: [
+        {
+          name: 'Content-type',
+          value: 'application/json',
+        },
+      ],
+    })
+  }
   describe('Server interactions', () => {
     beforeEach(() => {
       jasmine.Ajax.install()
-      jasmine.Ajax.stubRequest(
-        `${TEST_API_HOST}${TEST_API_PREFIX}${TEST_MODEL_ENDPOINT}?page=1&page_size=10`,
-      ).andReturn({
-        status: 200,
-        responseText: JSON.stringify(testServerArrayResponse),
-        responseHeaders: [
-          {
-            name: 'Content-type',
-            value: 'application/json',
-          },
-        ],
-      })
     })
 
     afterEach(() => {
@@ -91,6 +93,7 @@ describe('api', () => {
 
     it(`initializes a background server request for array and returns empty array for unloaded one,
       but doesn't make another request for same config`, (done) => {
+      mockArrayRequest()
       const state = store.getState()
       const testArray = api.selectors.entityManager.testModel.getEntities(state).getArray()
       expect(testArray).toEqual([])
@@ -98,10 +101,24 @@ describe('api', () => {
     })
 
     it('can get a model asynchronously', (done) => {
+      mockArrayRequest()
       const state = store.getState()
       api.selectors.entityManager.testModel.getEntities(state).asyncGetArray()
         .then(array => {
           expect(array).toEqual(testServerArrayResponse.results)
+          done()
+        })
+    })
+
+    it('Throws an error for bad set pagination property', (done) => {
+      mockArrayRequest(testServerArrayResponse.results)
+      const state = store.getState()
+      api.selectors.entityManager.testModel.getEntities(state).asyncGetArray()
+        .then(() => {
+          done.fail('Expected to throw erorr on map function')
+        })
+        .catch((e) => {
+          expect(e.message).toMatch(/testModel/)
           done()
         })
     })

@@ -31,6 +31,10 @@ const globalActions = {
     parentEntities,
     specialConfig,
   ) => (dispatch) => {
+    if (!data || typeof data.map !== 'function') {
+      throw new Error(`Tried to update data for ${modelType}, but there is no map function on items!
+        May be you should set pagination propery of the model?`)
+    }
     return dispatch({
       type: ACTIONS_TYPES[modelType].updateData,
       data: data.map(item => {

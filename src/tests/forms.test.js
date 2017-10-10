@@ -27,16 +27,28 @@ describe('forms', () => {
   })
 
   it('changes a some fields with object', () => {
-    const fields = {
-      firstFieldName: 'firstFieldValue',
-      secondFieldName: 'secondFieldValue',
-    }
+    const values = [
+      {
+        firstFieldName: 'firstFieldValue',
+        secondFieldName: 'secondFieldValue',
+      },
+      {
+        firstFieldName: 'firstFieldValue',
+        secondFieldName: undefined,
+      },
+      {
+        firstFieldName: undefined,
+        secondFieldName: undefined,
+      },
+    ]
 
-    store.dispatch(forms.actions.testForm.changeSomeFields(fields))
-    Object.keys(fields).forEach(key => {
-      const state = store.getState()
-      const form = forms.selectors.testForm.getForm(state)
-      expect(getNestedObjectField(form, key)).toEqual(fields[key])
+    values.forEach(fields => {
+      store.dispatch(forms.actions.testForm.changeSomeFields(fields, true))
+      Object.keys(fields).forEach(key => {
+        const state = store.getState()
+        const form = forms.selectors.testForm.getForm(state)
+        expect(getNestedObjectField(form, key)).toEqual(fields[key])
+      })
     })
   })
 
