@@ -27,6 +27,19 @@ const getFormConfig = (formType) => (state) => {
 
 const globalSelectors = {
   getIsFormExist: (formType) => (state) => !!state.forms[formType],
+  getEndpoint: (formType) => () => {
+    let formConfig = RESTIFY_CONFIG.registeredForms[formType]
+    let apiConfig = {}
+    if (formConfig.model) {
+      formConfig = RESTIFY_CONFIG.registeredModels[formConfig.model]
+      apiConfig = RESTIFY_CONFIG.registeredApies[formConfig.apiName]
+    }
+    return {
+      apiHost: apiConfig.apiHost,
+      apiPrefix: apiConfig.apiPrefix,
+      endpoint: formConfig.endpoint,
+    }
+  },
   getForm: (formType) => (state) => removePrivateFields(replaceNulls(state.forms[formType])),
   getFormWithNulls: (formType) => (state) => removePrivateFields(state.forms[formType]),
   getField: (formType) => (name) => (state) => getNestedObjectField(state.forms[formType], name),

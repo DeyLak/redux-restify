@@ -40,6 +40,15 @@ const globalSelectors = {
   getSingles: (modelType) => (state) => state.api.entityManager[modelType].singleEntities,
   getLoadErrors: (modelType) => (state) => state.api.entityManager[modelType].loadErrorEntities,
   getCount: (modelType) => (state) => state.api.entityManager[modelType].count,
+  getEndpoint: (modelType) => () => {
+    const modelConfig = RESTIFY_CONFIG.registeredModels[modelType]
+    const apiConfig = RESTIFY_CONFIG.registeredApies[modelConfig.apiName]
+    return {
+      apiHost: apiConfig.apiHost,
+      apiPrefix: apiConfig.apiPrefix,
+      endpoint: modelConfig.endpoint,
+    }
+  },
 
   getEntities: (modelType, linkedModelsNames) => createSelector(
     [
