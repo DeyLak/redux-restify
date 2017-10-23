@@ -49,6 +49,15 @@ describe('api', () => {
     expect(state.api.entityManager.testModel.pages).toEqual({})
   })
 
+  it('returns endpoint', () => {
+    const endpoint = api.selectors.entityManager.testModel.getEndpoint()
+    expect(endpoint).toEqual({
+      apiHost: TEST_API_HOST,
+      apiPrefix: TEST_API_PREFIX,
+      endpoint: TEST_MODEL_ENDPOINT,
+    })
+  })
+
   const testServerArrayResponse = {
     count: 3,
     next: null,

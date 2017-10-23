@@ -32,6 +32,8 @@ const globalSelectors = {
     let apiConfig = {}
     if (formConfig.model) {
       formConfig = RESTIFY_CONFIG.registeredModels[formConfig.model]
+    }
+    if (formConfig.apiName) {
       apiConfig = RESTIFY_CONFIG.registeredApies[formConfig.apiName]
     }
     return {
