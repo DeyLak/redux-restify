@@ -38,6 +38,7 @@ export const modelsDefinitions = {
 
 export const formsDefinitions = {
   testForm: {
+    model: 'testModel',
     defaults: {
       test: true,
       testArray: [

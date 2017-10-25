@@ -5,11 +5,23 @@ import { getNestedObjectField } from 'helpers/nestedObjects'
 import {
   store,
   beforeEachFunc,
+  TEST_API_HOST,
+  TEST_API_PREFIX,
+  TEST_MODEL_ENDPOINT,
 } from './testConfigs'
 
 
 describe('forms', () => {
   beforeEach(beforeEachFunc)
+
+  it('returns endpoint', () => {
+    const endpoint = forms.selectors.testForm.getEndpoint()
+    expect(endpoint).toEqual({
+      apiHost: TEST_API_HOST,
+      apiPrefix: TEST_API_PREFIX,
+      endpoint: TEST_MODEL_ENDPOINT,
+    })
+  })
 
   it('changes a field with name(array or string path)', () => {
     const fieldNames = [
