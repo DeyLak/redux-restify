@@ -31,7 +31,7 @@ export const modelsDefinitions = {
     name: 'Test model',
     defaults: {
       id: undefined,
-      test: true,
+      test: undefined,
     },
   },
 }

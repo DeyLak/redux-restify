@@ -77,10 +77,11 @@ describe('api', () => {
       },
     ],
   }
-  const mockArrayRequest = (response = testServerArrayResponse) => {
-    jasmine.Ajax.stubRequest(
-      `${TEST_API_HOST}${TEST_API_PREFIX}${TEST_MODEL_ENDPOINT}?page=1&page_size=10`,
-    ).andReturn({
+  const modelUrl = `${TEST_API_HOST}${TEST_API_PREFIX}${TEST_MODEL_ENDPOINT}`
+  const mockArrayRequest = (response = testServerArrayResponse, {
+    url = `${modelUrl}?page=1&page_size=10`,
+  } = {}) => {
+    jasmine.Ajax.stubRequest(url).andReturn({
       status: 200,
       responseText: JSON.stringify(response),
       responseHeaders: [
@@ -138,6 +139,23 @@ describe('api', () => {
           expect(e.message).toMatch(/testModel/)
           done()
         })
+    })
+
+    const modelResponse = {
+      test: true,
+    }
+
+    it('can get a special model by empty id', (done) => {
+      mockArrayRequest(modelResponse, { url: modelUrl })
+      let currentModel = {}
+      const interval = setInterval(() => {
+        const state = store.getState()
+        currentModel = api.selectors.entityManager.testModel.getEntities(state).getById('')
+        if (currentModel.test === true) {
+          clearInterval(interval)
+          done()
+        }
+      }, 0)
     })
   })
 })
