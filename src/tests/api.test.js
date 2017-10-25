@@ -16,7 +16,7 @@ import {
 
 
 describe('api', () => {
-  beforeEach(beforeEachFunc)
+  beforeEach(() => beforeEachFunc())
 
   it('provides an EntityList object for each registered model', () => {
     const state = store.getState()
@@ -103,10 +103,18 @@ describe('api', () => {
     it(`initializes a background server request for array and returns empty array for unloaded one,
       but doesn't make another request for same config`, (done) => {
       mockArrayRequest()
-      const state = store.getState()
-      const testArray = api.selectors.entityManager.testModel.getEntities(state).getArray()
-      expect(testArray).toEqual([])
-      done()
+      let currentArray = []
+      const interval = setInterval(() => {
+        const state = store.getState()
+        currentArray = api.selectors.entityManager.testModel.getEntities(state).getArray()
+        if (currentArray.length > 0) {
+          clearInterval(interval)
+          expect(currentArray).toEqual(testServerArrayResponse.results)
+          done()
+        } else {
+          expect(currentArray).toEqual([])
+        }
+      }, 0)
     })
 
     it('can get a model asynchronously', (done) => {

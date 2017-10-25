@@ -1,5 +1,6 @@
 export const RESTIFY_DEFAULT_OPTIONS = {
   autoPropertiesIdRequestd: true,
+  orderableFormFieldName: 'order',
 }
 
 export const RESTIFY_CONFIG = {

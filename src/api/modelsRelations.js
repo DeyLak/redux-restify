@@ -23,6 +23,7 @@ export const mapDataToRestifyModel = (data, modelType) => {
     resultModel = objectToCamel(resultModel, {
       removeNulls: currentModel.removeNulls,
       orderArrays: currentModel.orderArrays,
+      orderField: RESTIFY_CONFIG.options.orderableFormFieldName,
     })
   }
 

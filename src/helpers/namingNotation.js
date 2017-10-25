@@ -13,6 +13,7 @@ const objectToCase = convertingFunc => (obj, config = {}) => {
   const {
     removeNulls = false,
     orderArrays = false,
+    orderField = 'order',
   } = config
   if (!isPureObject(obj)) {
     return obj === null && removeNulls ? undefined : obj
@@ -22,7 +23,7 @@ const objectToCase = convertingFunc => (obj, config = {}) => {
     let convertingArray = obj
     if (orderArrays) {
       convertingArray = sortBy(convertingArray, (item) => {
-        if (typeof item === 'object') return item.order
+        if (typeof item === 'object') return item[orderField]
         return ''
       })
     }

@@ -12,7 +12,7 @@ import {
 
 
 describe('forms', () => {
-  beforeEach(beforeEachFunc)
+  beforeEach(() => beforeEachFunc())
 
   it('returns endpoint', () => {
     const endpoint = forms.selectors.testForm.getEndpoint()
@@ -82,5 +82,19 @@ describe('forms', () => {
       const form = forms.selectors.testForm.getForm(state)
       expect(form.testArray).toEqual(index % 2 ? arrayToCheckReverse : arrayToCheck)
     })
+  })
+})
+
+const customOrderField = 'customOrder'
+
+describe('forms', () => {
+  beforeEach(() => beforeEachFunc({ options: { orderableFormFieldName: customOrderField } }))
+
+  it('can order arrays by any field', () => {
+    store.dispatch(forms.actions.testForm.insertToArray('testArray'))
+    const state = store.getState()
+    const form = forms.selectors.testForm.getForm(state)
+    expect(form.testArray[0][customOrderField]).toEqual(0)
+    expect(form.testArray[0].order).toBe(undefined)
   })
 })

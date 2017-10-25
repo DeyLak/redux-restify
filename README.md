@@ -7,3 +7,7 @@
 
 ### 10.10.2017
  1. Added error message for bad-set pagination property
+
+### 25.10.2017
+ 1. Added orderableFormFieldName to options. No forms and arrays can be ordered by any field.
+ 2. Added getEndpoint() selector to models and forms

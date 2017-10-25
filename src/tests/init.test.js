@@ -20,7 +20,7 @@ import {
 
 
 describe('initRestify', () => {
-  beforeEach(beforeEachFunc)
+  beforeEach(() => beforeEachFunc())
 
   it('initializes restify by creating forms, models and apies configurations with default properties', () => {
     expect(RESTIFY_CONFIG.registeredApies).toEqual(Object.keys(apiDefinitions).reduce((memo, key) => {

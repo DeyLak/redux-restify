@@ -66,12 +66,13 @@ const globalActions = {
 
     const state = getState()
     const currentFormConfig = selectors.getFormConfig(formType)(state)
+    const orderFieldName = RESTIFY_CONFIG.options.orderableFormFieldName
 
     // Manage orderable arrays
     if (Array.isArray(value)) {
       const arrayConfig = getFormArrayConfig(formType, name, currentFormConfig)
       if (arrayConfig.orderable) {
-        value = value.map((item, order) => ({ ...item, order }))
+        value = value.map((item, order) => ({ ...item, [orderFieldName]: order }))
       }
     }
 
@@ -92,13 +93,14 @@ const globalActions = {
     const currentFormConfig = selectors.getFormConfig(formType)(state)
 
     const valuesObj = {}
+    const orderFieldName = RESTIFY_CONFIG.options.orderableFormFieldName
     Object.keys(fieldsObject).forEach(key => {
       let currentValue = fieldsObject[key]
 
       if (Array.isArray(currentValue)) {
         const arrayConfig = getFormArrayConfig(formType, key, currentFormConfig)
         if (arrayConfig.orderable) {
-          currentValue = currentValue.map((item, order) => ({ ...item, order }))
+          currentValue = currentValue.map((item, order) => ({ ...item, [orderFieldName]: order }))
         }
       }
       if (forceUndefines || currentValue !== undefined) {
@@ -126,7 +128,7 @@ const globalActions = {
       if (Array.isArray(obj)) {
         const arrayConfig = getFormArrayConfig(formType, prevName, currentFormConfig)
         if (arrayConfig.orderable) {
-          return sortBy(obj, 'order')
+          return sortBy(obj, RESTIFY_CONFIG.options.orderableFormFieldName)
         }
         return obj
       }

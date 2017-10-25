@@ -55,11 +55,12 @@ export const formsDefinitions = {
 
 export let store
 
-export const beforeEachFunc = () => {
+export const beforeEachFunc = (config = {}) => {
   initRestify({
     apiDefinitions,
     modelsDefinitions,
     formsDefinitions,
+    ...config,
   })
   const apiReducer = api.getRestifyApiReducer()
   const formsReducer = forms.getRestifyFormReducer()
