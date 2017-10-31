@@ -66,7 +66,7 @@ export const formsDefinitions = {
     transformBeforeSubmit: {
       transformedField: (key, value, formValues) => {
         return formValues.test
-      }
+      },
     },
   },
 }
