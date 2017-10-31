@@ -78,7 +78,7 @@ describe('api', () => {
     ],
   }
   const modelUrl = `${TEST_API_HOST}${TEST_API_PREFIX}${TEST_MODEL_ENDPOINT}`
-  const mockArrayRequest = (response = testServerArrayResponse, {
+  const mockRequest = (response = testServerArrayResponse, {
     url = `${modelUrl}?page=1&page_size=10`,
   } = {}) => {
     jasmine.Ajax.stubRequest(url).andReturn({
@@ -103,7 +103,7 @@ describe('api', () => {
 
     it(`initializes a background server request for array and returns empty array for unloaded one,
       but doesn't make another request for same config`, (done) => {
-      mockArrayRequest()
+      mockRequest()
       let currentArray = []
       const interval = setInterval(() => {
         const state = store.getState()
@@ -119,7 +119,7 @@ describe('api', () => {
     })
 
     it('can get a model asynchronously', (done) => {
-      mockArrayRequest()
+      mockRequest()
       const state = store.getState()
       api.selectors.entityManager.testModel.getEntities(state).asyncGetArray()
         .then(array => {
@@ -129,7 +129,7 @@ describe('api', () => {
     })
 
     it('Throws an error for bad set pagination property', (done) => {
-      mockArrayRequest(testServerArrayResponse.results)
+      mockRequest(testServerArrayResponse.results)
       const state = store.getState()
       api.selectors.entityManager.testModel.getEntities(state).asyncGetArray()
         .then(() => {
@@ -142,16 +142,34 @@ describe('api', () => {
     })
 
     const modelResponse = {
+      id: 1,
+      special_id: 999,
       test: true,
     }
 
     it('can get a special model by empty id', (done) => {
-      mockArrayRequest(modelResponse, { url: modelUrl })
+      mockRequest(modelResponse, { url: modelUrl })
       let currentModel = {}
       const interval = setInterval(() => {
         const state = store.getState()
         currentModel = api.selectors.entityManager.testModel.getEntities(state).getById('')
-        if (currentModel.test === true) {
+        if (currentModel.test === modelResponse.test) {
+          clearInterval(interval)
+          done()
+        }
+      }, 0)
+    })
+
+    it('can get a model with special id field and map it to id field', (done) => {
+      mockRequest(modelResponse, { url: `${modelUrl}${modelResponse.special_id}/` })
+      let currentModel = {}
+      const interval = setInterval(() => {
+        const state = store.getState()
+        currentModel = api.selectors.entityManager.testModelOtherId.getEntities(state).getById(modelResponse.special_id)
+        if (
+          currentModel.id === modelResponse.special_id &&
+          currentModel.test === modelResponse.test
+        ) {
           clearInterval(interval)
           done()
         }

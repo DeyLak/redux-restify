@@ -34,6 +34,16 @@ export const modelsDefinitions = {
       test: undefined,
     },
   },
+  testModelOtherId: {
+    apiName: 'testApi',
+    endpoint: TEST_MODEL_ENDPOINT,
+    name: 'Test model other id',
+    idField: 'specialId',
+    defaults: {
+      specialId: undefined,
+      test: undefined,
+    },
+  },
 }
 
 export const formsDefinitions = {

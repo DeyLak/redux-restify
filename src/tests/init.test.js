@@ -58,7 +58,7 @@ describe('initRestify', () => {
 
   it('provides api and forms reducers for each registered entitiy', () => {
     const state = store.getState()
-    expect(Object.keys(state.api.entityManager)).toEqual(['testModel'])
+    expect(Object.keys(state.api.entityManager)).toEqual(['testModel', 'testModelOtherId'])
     expect(Object.keys(state.forms)).toEqual(['$configs', 'testForm'])
   })
 })
