@@ -33,6 +33,9 @@ export const DEFAULT_FORM_OBJECT = {
   // Form fields, that shoudn't be submitted to server, ex: { myField: true }
   // Can also be a function from (key, formValues, keyParentPath) => bool, where keyParentPath - is array of keys
   submitExclude: {},
+  // Performs form data transformation before sending it to server
+  // Object with form keys, that should be transformed (key, value, formValues) => newValue
+  transformBeforeSubmit: {},
   resetOnSubmit: false, // Form can be reseted after submitting, for reuse
   deleteOnSubmit: false, // If the form is temporary, it can be deleted after success submitting
   convertToSnakeCaseBeforeSend: true, // All fields in form are converted to lower_snake_case before submit

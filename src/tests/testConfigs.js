@@ -14,6 +14,8 @@ export const TEST_TOKEN = 'test-token'
 export const TEST_API_PREFIX = 'test-api/v1.0/'
 export const TEST_MODEL_ENDPOINT = 'test-model/'
 
+export const modelUrl = `${TEST_API_HOST}${TEST_API_PREFIX}${TEST_MODEL_ENDPOINT}`
+
 export const apiDefinitions = {
   testApi: {
     getToken: () => TEST_TOKEN,
@@ -50,6 +52,7 @@ export const formsDefinitions = {
   testForm: {
     model: 'testModel',
     defaults: {
+      transformedField: undefined,
       test: true,
       testArray: [
         {
@@ -59,6 +62,11 @@ export const formsDefinitions = {
           orderable: true,
         },
       ],
+    },
+    transformBeforeSubmit: {
+      transformedField: (key, value, formValues) => {
+        return formValues.test
+      }
     },
   },
 }

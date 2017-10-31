@@ -84,7 +84,7 @@ export const mutateObject = (predicate, transformFunc, keyParentPath = []) => (o
     if (predicate(key, obj[key], obj, keyParentPath)) {
       return {
         ...memo,
-        [key]: transformFunc(obj[key]),
+        [key]: transformFunc(obj[key], keyParentPath.concat(key)),
       }
     }
     return {

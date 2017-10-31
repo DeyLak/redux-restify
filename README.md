@@ -15,3 +15,4 @@
 
 ### 31.10.2017
  1. Fixed unregistered field warning for custom idField
+ 2. Added `transformBeforeSubmit` option to form config

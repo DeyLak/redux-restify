@@ -434,7 +434,7 @@ const globalActions = {
         return getNestedObjectField(currentForm.submitExclude, keyParentPath.concat(key)) === true
       }
     }
-    const data = mutateObject(
+    let data = mutateObject(
       (key, value, obj, keyParentPath) => {
         if (submitExcludeFunc(key, currentValues, keyParentPath)) return true
         // fakeId plugin checks for fake uuids(string, instead of number) not to send them
@@ -462,6 +462,16 @@ const globalActions = {
       },
       () => undefined,
     )(currentValues)
+
+    if (typeof currentForm.transformBeforeSubmit === 'object') {
+      data = mutateObject(
+        (key) => !!currentForm.transformBeforeSubmit[key],
+        (value, path) => {
+          const transformFunc = getNestedObjectField(currentForm.transformBeforeSubmit, path)
+          return transformFunc(path, getNestedObjectField(currentValues, path), currentValues)
+        },
+      )(data)
+    }
 
     return new Promise((resolve, reject) => {
       const successCallbacks = []

@@ -12,6 +12,8 @@ import {
   TEST_API_HOST,
   TEST_API_PREFIX,
   TEST_MODEL_ENDPOINT,
+
+  modelUrl,
 } from './testConfigs'
 
 
@@ -77,7 +79,6 @@ describe('api', () => {
       },
     ],
   }
-  const modelUrl = `${TEST_API_HOST}${TEST_API_PREFIX}${TEST_MODEL_ENDPOINT}`
   const mockRequest = (response = testServerArrayResponse, {
     url = `${modelUrl}?page=1&page_size=10`,
   } = {}) => {

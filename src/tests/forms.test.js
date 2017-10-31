@@ -8,6 +8,8 @@ import {
   TEST_API_HOST,
   TEST_API_PREFIX,
   TEST_MODEL_ENDPOINT,
+
+  modelUrl,
 } from './testConfigs'
 
 
@@ -86,7 +88,6 @@ describe('forms', () => {
 })
 
 const customOrderField = 'customOrder'
-
 describe('forms', () => {
   beforeEach(() => beforeEachFunc({ options: { orderableFormFieldName: customOrderField } }))
 
@@ -96,5 +97,36 @@ describe('forms', () => {
     const form = forms.selectors.testForm.getForm(state)
     expect(form.testArray[0][customOrderField]).toEqual(0)
     expect(form.testArray[0].order).toBe(undefined)
+  })
+})
+
+describe('forms', () => {
+  beforeEach(() => {
+    beforeEachFunc()
+    jasmine.Ajax.install()
+  })
+
+  afterEach(() => {
+    jasmine.Ajax.uninstall()
+  })
+
+  it('Can transform fields before sending them', () => {
+    jasmine.Ajax.stubRequest(modelUrl).andReturn({
+      status: 200,
+      responseText: JSON.stringify({}),
+      responseHeaders: [
+        {
+          name: 'Content-type',
+          value: 'application/json',
+        },
+      ],
+    })
+    store.dispatch(forms.actions.testForm.submit())
+    const request = jasmine.Ajax.requests.mostRecent()
+    expect(request.data()).toEqual({
+      transformed_field: true,
+      test: true,
+      test_array: [],
+    })
   })
 })
