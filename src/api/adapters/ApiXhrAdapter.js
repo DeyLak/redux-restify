@@ -14,12 +14,12 @@ const allow = [200, 201, 203, 204, 400, 401, 403]
 const checkStatus = (api, config) => {
   if (allow.includes(api.status)) {
     const responseType = api.getResponseHeader(CONTENT_TYPE_HEADER)
+    if (config.isBinary) {
+      return api.response
+    }
     if (responseType && responseType.includes(CONTENT_TYPE_JSON) && api.responseText && api.responseText !== '') {
       const result = JSON.parse(api.responseText)
       return config.convertToCamelCase ? objectToCamel(result, config) : result
-    }
-    if (config.isBinary) {
-      return api.response
     }
     if (responseType && responseType.includes(CONTENT_TYPE_HTML)) {
       return api.responseText
