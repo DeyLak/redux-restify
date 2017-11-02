@@ -214,11 +214,12 @@ const globalActions = {
     const {
       query,
       urlHash,
+      useModelEndpoint = true,
     } = config
     const currentModel = RESTIFY_CONFIG.registeredModels[modelType]
-    const urlToLoad = `${currentModel.endpoint}${id}${id ? '/' : ''}`
+    const urlToLoad = `${useModelEndpoint ? currentModel.endpoint : ''}${id}${id ? '/' : ''}`
     return dispatch(apiGeneralActions.callGet({
-      apiName: currentModel.apiName,
+      apiName: config.apiName || currentModel.apiName,
       url: urlToLoad,
       onSuccess: (data) => () => {
         dispatch(globalActions.updateById(modelType)(id, data, query))

@@ -12,6 +12,7 @@ import {
   TEST_API_HOST,
   TEST_API_PREFIX,
   TEST_MODEL_ENDPOINT,
+  OTHER_TEST_API_PREFIX,
 
   modelUrl,
 } from './testConfigs'
@@ -79,8 +80,9 @@ describe('api', () => {
       },
     ],
   }
+  const defaultUrl = `${modelUrl}?page=1&page_size=10`
   const mockRequest = (response = testServerArrayResponse, {
-    url = `${modelUrl}?page=1&page_size=10`,
+    url = defaultUrl,
   } = {}) => {
     jasmine.Ajax.stubRequest(url).andReturn({
       status: 200,
@@ -119,6 +121,29 @@ describe('api', () => {
       }, 0)
     })
 
+    // TODO make this work
+    // it('Stores an error response for request and doesn\'t make other request' , (done) => {
+    //   jasmine.Ajax.stubRequest(defaultUrl).andReturn({
+    //     status: 404,
+    //     responseText: 'Not found',
+    //   })
+    //   console.log('erorr test')
+    //   let currentArray = []
+    //   const interval = setInterval(() => {
+    //     const state = store.getState()
+    //     currentArray = api.selectors.entityManager.testModel.getEntities(state).getArray()
+    //     const request = jasmine.Ajax.requests.mostRecent()
+    //     expect(request.status).toEqual(404)
+    //     if (currentArray.length > 0) {
+    //       clearInterval(interval)
+    //       expect(currentArray).toEqual(testServerArrayResponse.results)
+    //       done()
+    //     } else {
+    //       expect(currentArray).toEqual([])
+    //     }
+    //   }, 0)
+    // })
+
     it('can get a model asynchronously', (done) => {
       mockRequest()
       const state = store.getState()
@@ -144,9 +169,34 @@ describe('api', () => {
 
     const modelResponse = {
       id: 1,
-      special_id: 999,
       test: true,
     }
+    const customUrl = 'custom-url'
+
+    const urls = [
+      `${TEST_API_HOST}${TEST_API_PREFIX}${customUrl}/`,
+      `${TEST_API_HOST}${OTHER_TEST_API_PREFIX}${customUrl}/`,
+    ]
+    const apiNames = [
+      'testApi',
+      'otherTestApi',
+    ]
+    urls.forEach((url, index) => {
+      it(`can get a model by special url and custom api name (${index})`, (done) => {
+        mockRequest(modelResponse, { url })
+        let state = store.getState()
+        api.selectors.entityManager.testModel.getEntities(state)
+          .asyncGetByUrl(customUrl, { apiName: apiNames[index]})
+          .then((object) => {
+            expect(object).toEqual(modelResponse)
+            state = store.getState()
+            const recievedObject = api.selectors.entityManager.testModel.getEntities(state)
+              .getByUrl(customUrl, { apiName: apiNames[index]})
+            expect(recievedObject).toEqual(modelResponse)
+            done()
+          })
+      })
+    })
 
     it('can get a special model by empty id', (done) => {
       mockRequest(modelResponse, { url: modelUrl })
@@ -155,21 +205,27 @@ describe('api', () => {
         const state = store.getState()
         currentModel = api.selectors.entityManager.testModel.getEntities(state).getById('')
         if (currentModel.test === modelResponse.test) {
+          expect(currentModel).toEqual(modelResponse)
           clearInterval(interval)
           done()
         }
       }, 0)
     })
 
+    const specialModelResponse = {
+      special_id: 999,
+      test: true,
+    }
+
     it('can get a model with special id field and map it to id field', (done) => {
-      mockRequest(modelResponse, { url: `${modelUrl}${modelResponse.special_id}/` })
+      mockRequest(specialModelResponse, { url: `${modelUrl}${specialModelResponse.special_id}/` })
       let currentModel = {}
       const interval = setInterval(() => {
         const state = store.getState()
-        currentModel = api.selectors.entityManager.testModelOtherId.getEntities(state).getById(modelResponse.special_id)
+        currentModel = api.selectors.entityManager.testModelOtherId.getEntities(state).getById(specialModelResponse.special_id)
         if (
-          currentModel.id === modelResponse.special_id &&
-          currentModel.test === modelResponse.test
+          currentModel.id === specialModelResponse.special_id &&
+          currentModel.test === specialModelResponse.test
         ) {
           clearInterval(interval)
           done()

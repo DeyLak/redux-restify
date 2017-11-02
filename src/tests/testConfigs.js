@@ -12,6 +12,7 @@ import { createRestifyStore } from 'helpers/tests'
 export const TEST_API_HOST = 'http://test.com/'
 export const TEST_TOKEN = 'test-token'
 export const TEST_API_PREFIX = 'test-api/v1.0/'
+export const OTHER_TEST_API_PREFIX = 'other-test-api/v2.0/'
 export const TEST_MODEL_ENDPOINT = 'test-model/'
 
 export const modelUrl = `${TEST_API_HOST}${TEST_API_PREFIX}${TEST_MODEL_ENDPOINT}`
@@ -21,6 +22,13 @@ export const apiDefinitions = {
     getToken: () => TEST_TOKEN,
     apiHost: TEST_API_HOST,
     apiPrefix: TEST_API_PREFIX,
+    allowedNoTokenEndpoints: [],
+    httpCodesCallbacks: () => {},
+  },
+  otherTestApi: {
+    getToken: () => TEST_TOKEN,
+    apiHost: TEST_API_HOST,
+    apiPrefix: OTHER_TEST_API_PREFIX,
     allowedNoTokenEndpoints: [],
     httpCodesCallbacks: () => {},
   },

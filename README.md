@@ -16,3 +16,6 @@
 ### 31.10.2017
  1. Fixed unregistered field warning for custom idField
  2. Added `transformBeforeSubmit` option to form config
+
+### 2.11.2017
+ 1. Added `getByUrl` and `asyncGetByUrl` methods to EntityList. Also, you can define `apiName` in config

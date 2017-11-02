@@ -258,6 +258,7 @@ class EntityList {
     if (shouldLoad) {
       this.idLoaded[specialId] = this.asyncDispatch(entityManager[this.modelType]
         .loadById(id, {
+          ...config,
           query,
           urlHash: specialId,
         })).then((result) => {
@@ -305,6 +306,7 @@ class EntityList {
     }
     if (this.idLoaded[specialId]) return this.idLoaded[specialId]
     this.idLoaded[specialId] = this.dispatch(entityManager[this.modelType].loadById(id, {
+      ...config,
       query,
       urlHash: specialId,
     })).then(result => {
@@ -312,6 +314,20 @@ class EntityList {
       return result
     })
     return this.idLoaded[specialId]
+  }
+
+  getByUrl(url, config = {}) {
+    return this.getById(url, {
+      ...config,
+      useModelEndpoint: false,
+    })
+  }
+
+  async asyncGetByUrl(url, config = {}) {
+    return this.asyncGetById(url, {
+      ...config,
+      useModelEndpoint: false,
+    })
   }
 
   calculateArrays() {
