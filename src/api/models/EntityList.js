@@ -339,7 +339,8 @@ class EntityList {
                 .map(item => {
                   if (typeof item !== 'object') return this.getById(item)
                   return item
-                }),
+                })
+                .filter(item => item),
         )
       }, []),
     }), {})
