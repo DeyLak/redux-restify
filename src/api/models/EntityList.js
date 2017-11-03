@@ -340,7 +340,7 @@ class EntityList {
                   if (typeof item !== 'object') return this.getById(item)
                   return item
                 })
-                .filter(item => item && !item.deleted),
+                .filter(item => item),
         )
       }, []),
     }), {})

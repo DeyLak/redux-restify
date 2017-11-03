@@ -186,12 +186,12 @@ describe('api', () => {
         mockRequest(modelResponse, { url })
         let state = store.getState()
         api.selectors.entityManager.testModel.getEntities(state)
-          .asyncGetByUrl(customUrl, { apiName: apiNames[index]})
+          .asyncGetByUrl(customUrl, { apiName: apiNames[index] })
           .then((object) => {
             expect(object).toEqual(modelResponse)
             state = store.getState()
             const recievedObject = api.selectors.entityManager.testModel.getEntities(state)
-              .getByUrl(customUrl, { apiName: apiNames[index]})
+              .getByUrl(customUrl, { apiName: apiNames[index] })
             expect(recievedObject).toEqual(modelResponse)
             done()
           })
@@ -222,7 +222,8 @@ describe('api', () => {
       let currentModel = {}
       const interval = setInterval(() => {
         const state = store.getState()
-        currentModel = api.selectors.entityManager.testModelOtherId.getEntities(state).getById(specialModelResponse.special_id)
+        currentModel = api.selectors.entityManager.testModelOtherId.getEntities(state)
+        .getById(specialModelResponse.special_id)
         if (
           currentModel.id === specialModelResponse.special_id &&
           currentModel.test === specialModelResponse.test
