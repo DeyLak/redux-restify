@@ -217,7 +217,7 @@ const globalActions = {
       useModelEndpoint = true,
     } = config
     const currentModel = RESTIFY_CONFIG.registeredModels[modelType]
-    const urlToLoad = `${useModelEndpoint ? currentModel.endpoint : ''}${id}${id ? '/' : ''}`
+    const urlToLoad = `${useModelEndpoint ? currentModel.endpoint : ''}${id}${id && !id.endsWith('/') ? '/' : ''}`
     return dispatch(apiGeneralActions.callGet({
       apiName: config.apiName || currentModel.apiName,
       url: urlToLoad,
