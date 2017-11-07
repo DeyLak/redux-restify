@@ -144,7 +144,7 @@ describe('api', () => {
     //   }, 0)
     // })
 
-    it('can get a model asynchronously', (done) => {
+    it('can get a model array asynchronously', (done) => {
       mockRequest()
       const state = store.getState()
       api.selectors.entityManager.testModel.getEntities(state).asyncGetArray()
@@ -171,8 +171,24 @@ describe('api', () => {
       id: 1,
       test: true,
     }
-    const customUrl = 'custom-url'
 
+    const configs = [
+      {},
+      { forceLoad: true },
+    ]
+    configs.forEach((config, index) => {
+      it(`can get a model asynchronously ${index}`, (done) => {
+        mockRequest(modelResponse, { url: `${modelUrl}1/` })
+        const state = store.getState()
+        api.selectors.entityManager.testModel.getEntities(state).asyncGetById(1, config)
+          .then(model => {
+            expect(model).toEqual(modelResponse)
+            done()
+          })
+      })
+    })
+
+    const customUrl = 'custom-url'
     const urls = [
       `${TEST_API_HOST}${TEST_API_PREFIX}${customUrl}/`,
       `${TEST_API_HOST}${OTHER_TEST_API_PREFIX}${customUrl}/`,

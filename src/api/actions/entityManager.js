@@ -234,8 +234,11 @@ const globalActions = {
     }))
     .then(() => {
       const state = getState()
-      // TODO by @deylak check this for conflicts
-      return selectors.entityManager[modelType].getEntities(state).getById(id, config)
+      return selectors.entityManager[modelType].getEntities(state).getById(id, {
+        ...config,
+        forceLoad: false,
+        preventLoad: true,
+      })
     })
   },
 
