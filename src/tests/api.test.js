@@ -15,6 +15,7 @@ import {
   TEST_MODEL_ENDPOINT,
   OTHER_TEST_API_PREFIX,
   modelsDefinitions,
+  responseHeaders,
 
   modelUrl,
 } from './testConfigs'
@@ -89,12 +90,7 @@ describe('api', () => {
     jasmine.Ajax.stubRequest(url).andReturn({
       status: 200,
       responseText: JSON.stringify(response),
-      responseHeaders: [
-        {
-          name: 'Content-type',
-          value: 'application/json',
-        },
-      ],
+      responseHeaders,
     })
   }
   describe('Server interactions', () => {
@@ -269,35 +265,60 @@ describe('api', () => {
       },
     ]
     formNames.forEach((formName, index) => {
-      it('Can update an entity by id, after form submitting', (done) => {
+      it('Can update an entity by id, after form submitting: post and then patch', (done) => {
         const idsObj = idsObjects[index]
+        // Test post
         jasmine.Ajax.stubRequest(modelUrl).andReturn({
           status: 201,
           responseText: JSON.stringify({
             test: true,
             ...idsObj,
           }),
-          responseHeaders: [
-            {
-              name: 'Content-type',
-              value: 'application/json',
-            },
-          ],
+          responseHeaders,
         })
+        const modelName = modelNames[index]
+        const idField = modelsDefinitions[modelName].idField || 'id'
+
         store.dispatch(forms.actions[formName].changeField('test', true))
         store.dispatch(forms.actions[formName].submit()).then(() => {
-          const request = jasmine.Ajax.requests.mostRecent()
-          const state = store.getState()
-          const currentForm = forms.selectors[formName].getForm(state)
+          // This is just for checking objects equality, cause of id fields are injected in getById result
+          store.dispatch(forms.actions[formName].changeField('id', idsObj[idField]))
+          let request = jasmine.Ajax.requests.mostRecent()
+          let state = store.getState()
+          let currentForm = forms.selectors[formName].getForm(state)
+
           expect(request.data().test).toEqual(currentForm.test)
-          const modelName = modelNames[index]
-          const idField = modelsDefinitions[modelName].idField || 'id'
-          const recievedEntity = api.selectors.entityManager[modelName].getEntities(state).getById(idsObj[idField])
-          expect(recievedEntity).toEqual({
-            ...currentForm,
+          let recievedEntity = api.selectors.entityManager[modelName].getEntities(state).getById(idsObj[idField])
+          let checkEntity = {
             ...idsObj,
+            ...currentForm,
+          }
+          expect(recievedEntity).toEqual(checkEntity)
+
+          // Test patch
+          store.dispatch(forms.actions[formName].changeField('test', false))
+          jasmine.Ajax.stubRequest(`${modelUrl}${idsObj[idField]}/`).andReturn({
+            status: 200,
+            responseText: JSON.stringify({
+              test: false,
+              ...idsObj,
+            }),
+            responseHeaders,
           })
-          done()
+          store.dispatch(forms.actions[formName].submit()).then(() => {
+            request = jasmine.Ajax.requests.mostRecent()
+            state = store.getState()
+            currentForm = forms.selectors[formName].getForm(state)
+
+            expect(request.data().test).toEqual(currentForm.test)
+            recievedEntity = api.selectors.entityManager[modelName].getEntities(state).getById(idsObj[idField])
+            checkEntity = {
+              ...currentForm,
+              ...idsObj,
+            }
+            expect(recievedEntity).toEqual(checkEntity)
+            done()
+          })
         })
       })
     })

@@ -17,6 +17,13 @@ export const TEST_MODEL_ENDPOINT = 'test-model/'
 
 export const modelUrl = `${TEST_API_HOST}${TEST_API_PREFIX}${TEST_MODEL_ENDPOINT}`
 
+export const responseHeaders = [
+  {
+    name: 'Content-type',
+    value: 'application/json',
+  },
+]
+
 export const apiDefinitions = {
   testApi: {
     getToken: () => TEST_TOKEN,
@@ -50,6 +57,7 @@ export const modelsDefinitions = {
     name: 'Test model other id',
     idField: 'specialId',
     defaults: {
+      id: undefined,
       specialId: undefined,
       test: undefined,
     },

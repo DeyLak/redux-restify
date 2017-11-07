@@ -414,8 +414,16 @@ const globalActions = {
   },
 
   submit: (formType) => () => (dispatch, getState) => {
-    const state = getState()
+    let state = getState()
     const currentForm = selectors.getFormConfig(formType)(state)
+    let currentModel
+    if (currentForm.model) {
+      currentModel = RESTIFY_CONFIG.registeredModels[currentForm.model]
+    }
+    let idField = 'id'
+    if (currentModel) {
+      idField = currentModel.idField
+    }
     if (currentForm.validate && currentForm.validateOnSubmit) {
       const errors = dispatch(globalActions.validate(formType)())
       if (!checkErrors(errors)) {
@@ -456,7 +464,7 @@ const globalActions = {
           }
         }
         if (!parentConfig) return false
-        if (parentConfig && parentConfig.fakeId && key === 'id') {
+        if (parentConfig && parentConfig.fakeId && key === idField) {
           return typeof value === 'string'
         }
         return false
@@ -490,8 +498,7 @@ const globalActions = {
       }
       let currentApiName = currentForm.apiName
       const currentId = data.id || currentForm.id
-      if (currentForm.model) {
-        const currentModel = RESTIFY_CONFIG.registeredModels[currentForm.model]
+      if (currentModel) {
         url = currentModel.endpoint
         currentApiName = currentModel.apiName
         if (currentId) {
@@ -500,7 +507,7 @@ const globalActions = {
         }
         if (currentForm.updateEntity) {
           successCallbacks.push((res) => () => {
-            dispatch(api.actions.entityManager[currentForm.model].updateById(res[currentModel.idField], res))
+            dispatch(api.actions.entityManager[currentForm.model].updateById(res[idField], res))
           })
         }
         const actionType = currentId ? ACTION_UPDATE : ACTION_CREATE
@@ -508,7 +515,17 @@ const globalActions = {
       }
 
       // Workaround for dispatching callbacks(behaves like thunk function)
-      successCallbacks.push((res, status) => () => resolve({ data: res, status }))
+      successCallbacks.push((res, status) => () => {
+        if (currentForm.model && (currentId || res[idField])) {
+          state = getState()
+          resolve({
+            data: api.selectors.entityManager[currentForm.model].getEntities(state).getById(currentId || res[idField]),
+            status,
+          })
+        } else {
+          resolve({ data: res, status })
+        }
+      })
       errorCallbacks.push((res, status) => () => reject({ data: res, status }))
 
       errorCallbacks.push(globalActions.setErrors(formType))
