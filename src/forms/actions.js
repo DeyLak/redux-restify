@@ -505,17 +505,15 @@ const globalActions = {
           dispatch(api.actions.entityManager[currentForm.model].updateOptimisticById(currentId, data))
           errorCallbacks.push(api.actions.entityManager[currentForm.model].discardOptimisticUpdateById(currentId))
         }
-        if (currentForm.updateEntity) {
-          successCallbacks.push((res) => () => {
-            dispatch(api.actions.entityManager[currentForm.model].updateById(res[idField], res))
-          })
-        }
         const actionType = currentId ? ACTION_UPDATE : ACTION_CREATE
         successCallbacks.push(() => api.actions.entityManager[currentForm.model].showEntityAlert(actionType))
       }
 
       // Workaround for dispatching callbacks(behaves like thunk function)
       successCallbacks.push((res, status) => () => {
+        if (currentForm.updateEntity) {
+          dispatch(api.actions.entityManager[currentForm.model].updateById(res[idField], res))
+        }
         if (currentForm.model && (currentId || res[idField])) {
           state = getState()
           resolve({
