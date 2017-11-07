@@ -88,7 +88,15 @@ const getEntityManagerReducer = (modelTypes) => {
             ...state,
             singleEntities: {
               ...state.singleEntities,
-              [specialId]: mergeAndReplaceArrays({}, currentEntity, makeEntityObject(action.data)),
+              [specialId]: mergeAndReplaceArrays(
+                {},
+                {
+                  actual: (currentEntity && currentEntity.actual) || {},
+                  optimistic: {},
+                  $optimisticCount: (currentEntity && currentEntity.$optimisticCount) || 0,
+                },
+                makeEntityObject(action.data),
+              ),
             },
             // We are not clearing pages everytime here for smooth lists behavior for user
             pages: action.allowClearPages && state.singleEntities[specialId] === undefined ? {} : state.pages,
