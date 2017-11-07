@@ -77,6 +77,18 @@ export const formsDefinitions = {
       },
     },
   },
+  testRequestFormId: {
+    model: 'testModel',
+    defaults: {
+      test: undefined,
+    },
+  },
+  testRequestFormOtherId: {
+    model: 'testModelOtherId',
+    defaults: {
+      test: undefined,
+    },
+  },
   arrayTestForm: {
     model: 'testModel',
     defaults: {

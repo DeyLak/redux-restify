@@ -500,7 +500,7 @@ const globalActions = {
         }
         if (currentForm.updateEntity) {
           successCallbacks.push((res) => () => {
-            dispatch(api.actions.entityManager[currentForm.model].updateById(res.id, res))
+            dispatch(api.actions.entityManager[currentForm.model].updateById(res[currentModel.idField], res))
           })
         }
         const actionType = currentId ? ACTION_UPDATE : ACTION_CREATE

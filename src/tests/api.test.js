@@ -1,3 +1,4 @@
+import forms from '../forms'
 import api from '../api'
 
 import { removePrivateFields } from 'helpers/nestedObjects'
@@ -13,6 +14,7 @@ import {
   TEST_API_PREFIX,
   TEST_MODEL_ENDPOINT,
   OTHER_TEST_API_PREFIX,
+  modelsDefinitions,
 
   modelUrl,
 } from './testConfigs'
@@ -176,8 +178,8 @@ describe('api', () => {
       {},
       { forceLoad: true },
     ]
-    configs.forEach((config, index) => {
-      it(`can get a model asynchronously ${index}`, (done) => {
+    configs.forEach(config => {
+      it('can get a model asynchronously', (done) => {
         mockRequest(modelResponse, { url: `${modelUrl}1/` })
         const state = store.getState()
         api.selectors.entityManager.testModel.getEntities(state).asyncGetById(1, config)
@@ -198,7 +200,7 @@ describe('api', () => {
       'otherTestApi',
     ]
     urls.forEach((url, index) => {
-      it(`can get a model by special url and custom api name (${index})`, (done) => {
+      it('can get a model by special url and custom api name', (done) => {
         mockRequest(modelResponse, { url })
         let state = store.getState()
         api.selectors.entityManager.testModel.getEntities(state)
@@ -248,6 +250,56 @@ describe('api', () => {
           done()
         }
       }, 0)
+    })
+
+    const formNames = [
+      'testRequestFormId',
+      'testRequestFormOtherId',
+    ]
+    const modelNames = [
+      'testModel',
+      'testModelOtherId',
+    ]
+    const idsObjects = [
+      {
+        id: 1,
+      },
+      {
+        specialId: 'special',
+      },
+    ]
+    formNames.forEach((formName, index) => {
+      it('Can update an entity by id, after form submitting', (done) => {
+        const idsObj = idsObjects[index]
+        jasmine.Ajax.stubRequest(modelUrl).andReturn({
+          status: 201,
+          responseText: JSON.stringify({
+            test: true,
+            ...idsObj,
+          }),
+          responseHeaders: [
+            {
+              name: 'Content-type',
+              value: 'application/json',
+            },
+          ],
+        })
+        store.dispatch(forms.actions[formName].changeField('test', true))
+        store.dispatch(forms.actions[formName].submit()).then(() => {
+          const request = jasmine.Ajax.requests.mostRecent()
+          const state = store.getState()
+          const currentForm = forms.selectors[formName].getForm(state)
+          expect(request.data().test).toEqual(currentForm.test)
+          const modelName = modelNames[index]
+          const idField = modelsDefinitions[modelName].idField || 'id'
+          const recievedEntity = api.selectors.entityManager[modelName].getEntities(state).getById(idsObj[idField])
+          expect(recievedEntity).toEqual({
+            ...currentForm,
+            ...idsObj,
+          })
+          done()
+        })
+      })
     })
   })
 })

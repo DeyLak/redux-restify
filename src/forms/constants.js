@@ -1,7 +1,3 @@
-import {
-  DEFAULT_FIELD_FUNCTIONS,
-  DEFAULT_FIELD_FUNCTIONS_VALUES,
-} from './formConfig'
 import { makeActionsBundle } from 'helpers/actions'
 import { RESTIFY_CONFIG } from '../config'
 import { onRegisterForm } from '../init'
