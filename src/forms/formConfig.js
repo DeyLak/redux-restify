@@ -162,10 +162,7 @@ export const getDefaultFormObject = (config) => {
 
 const createFormConfig = (config) => {
   const composedConfig = getComposedConfig(config)
-  return {
-    ...DEFAULT_FORM_OBJECT,
-    ...composedConfig,
-  }
+  return mergeAndReplaceArrays({}, DEFAULT_FORM_OBJECT, composedConfig)
 }
 
 export default createFormConfig

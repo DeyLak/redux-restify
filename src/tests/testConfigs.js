@@ -57,7 +57,6 @@ export const modelsDefinitions = {
     name: 'Test model other id',
     idField: 'specialId',
     defaults: {
-      id: undefined,
       specialId: undefined,
       test: undefined,
     },
