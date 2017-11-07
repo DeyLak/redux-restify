@@ -3,9 +3,8 @@ import unset from 'lodash/unset'
 import {
   ACTIONS_TYPES,
   GENERAL_FORMS_ACTIONS,
-  getFormDefaultValue,
 } from './constants'
-import { getDefaultFormObject } from './formConfig'
+import { getFormDefaultValue, getDefaultFormObject } from './formConfig'
 import { ROUTER_LOCATION_CHANGE_ACTION, INIT_ACTION } from '../constants'
 import { getRecursiveObjectReplacement, removeUndefinedKeys } from 'helpers/nestedObjects'
 

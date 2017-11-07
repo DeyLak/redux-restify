@@ -19,3 +19,6 @@
 
 ### 2.11.2017
  1. Added `getByUrl` and `asyncGetByUrl` methods to EntityList. Also, you can define `apiName` in config
+
+### 7.11.2017
+ 1. `transformBeforeSubmit` can be a function (formValues) => data. Can be used to send arrays

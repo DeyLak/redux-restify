@@ -77,6 +77,22 @@ export const formsDefinitions = {
       },
     },
   },
+  arrayTestForm: {
+    model: 'testModel',
+    defaults: {
+      arrayField: [
+        {
+          test: true,
+        },
+        {
+          count: 5,
+        },
+      ],
+    },
+    transformBeforeSubmit: (data) => {
+      return data.arrayField
+    },
+  },
 }
 
 export let store

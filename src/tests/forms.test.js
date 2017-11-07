@@ -85,6 +85,12 @@ describe('forms', () => {
       expect(form.testArray).toEqual(index % 2 ? arrayToCheckReverse : arrayToCheck)
     })
   })
+
+  it('can set default count for array fields)', () => {
+    const state = store.getState()
+    const form = forms.selectors.arrayTestForm.getForm(state)
+    expect(form.arrayField).toEqual(new Array(5).fill(0).map(() => ({ test: true })))
+  })
 })
 
 const customOrderField = 'customOrder'
@@ -128,5 +134,21 @@ describe('forms', () => {
       test: true,
       test_array: [],
     })
+  })
+
+  it('Can send array, by using transform function', () => {
+    jasmine.Ajax.stubRequest(modelUrl).andReturn({
+      status: 200,
+      responseText: JSON.stringify({}),
+      responseHeaders: [
+        {
+          name: 'Content-type',
+          value: 'application/json',
+        },
+      ],
+    })
+    store.dispatch(forms.actions.arrayTestForm.submit())
+    const request = jasmine.Ajax.requests.mostRecent()
+    expect(request.data()).toEqual(new Array(5).fill(0).map(() => ({ test: true })))
   })
 })
