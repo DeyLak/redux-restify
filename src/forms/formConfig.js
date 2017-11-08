@@ -98,7 +98,7 @@ export const getDefaultObject = (obj) => {
     if (obj[ARRAY_CONFIG_INDEX] === undefined) return []
     return (new Array(obj[ARRAY_CONFIG_INDEX].count || 0)).fill(getDefaultObject(obj[ARRAY_DEFAULTS_INDEX]))
   }
-  if (typeof obj === 'object') {
+  if (isPureObject(obj)) {
     return Object.keys(obj).reduce((memo, key) => ({
       ...memo,
       [key]: getDefaultObject(obj[key]),
@@ -162,7 +162,10 @@ export const getDefaultFormObject = (config) => {
 
 const createFormConfig = (config) => {
   const composedConfig = getComposedConfig(config)
-  return mergeAndReplaceArrays({}, DEFAULT_FORM_OBJECT, composedConfig)
+  return {
+    ...DEFAULT_FORM_OBJECT,
+    ...composedConfig,
+  }
 }
 
 export default createFormConfig
