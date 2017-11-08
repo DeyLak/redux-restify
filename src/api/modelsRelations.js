@@ -67,7 +67,7 @@ export const mapDataToRestifyModel = (data, modelType) => {
         }
       } else {
         set(resultModel, currentConfigPath, undefined)
-        set(resultModel, modelIdPath, currentFieldDefault instanceof RestifyForeignKeysArray ? [] : undefined)
+        set(resultModel, modelIdPath, undefined)
       }
     } else if (currentFieldDefault instanceof RestifyArray && Array.isArray(currentField)) {
       currentField.forEach((item, index) => {

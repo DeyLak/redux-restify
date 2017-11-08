@@ -4,6 +4,7 @@ import {
 } from '../init'
 
 import api from '../api'
+import RestifyForeignKeysArray from '../api/models/RestifyForeignKeysArray'
 import forms from '../forms'
 
 import { createRestifyStore } from 'helpers/tests'
@@ -49,6 +50,7 @@ export const modelsDefinitions = {
     defaults: {
       id: undefined,
       test: undefined,
+      notInForeignKey: undefined,
     },
   },
   testModelOtherId: {
@@ -59,6 +61,28 @@ export const modelsDefinitions = {
     defaults: {
       specialId: undefined,
       test: undefined,
+    },
+  },
+  testModelWithForeignKey: {
+    apiName: 'testApi',
+    endpoint: TEST_MODEL_ENDPOINT,
+    name: 'Test model with foreign key',
+    pagination: false,
+    defaults: {
+      id: undefined,
+      test: undefined,
+      notInArray: new RestifyForeignKeysArray('testModel'),
+      notInForeignKey: undefined,
+    },
+  },
+  testModelWithForeignKey2: {
+    apiName: 'testApi',
+    endpoint: TEST_MODEL_ENDPOINT,
+    name: 'Test model with foreign key 2',
+    pagination: false,
+    defaults: {
+      id: undefined,
+      foreignKeys: new RestifyForeignKeysArray('testModelWithForeignKey'),
     },
   },
 }

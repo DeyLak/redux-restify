@@ -71,11 +71,11 @@ describe('api', () => {
     results: [
       {
         id: 1,
-        test: false,
+        test: true,
       },
       {
         id: 2,
-        test: false,
+        test: true,
       },
       {
         id: 3,
@@ -168,6 +168,37 @@ describe('api', () => {
     const modelResponse = {
       id: 1,
       test: true,
+      notInForeignKey: true,
+    }
+
+    const modelWithForeignKeyResponse = {
+      id: 1,
+      test: true,
+      notInForeignKey: true,
+      notInArray: testServerArrayResponse.results,
+    }
+
+    const modelWithForeignKey2Response = {
+      id: 1,
+      foreignKeys: [
+        {
+          id: 1,
+          test: false,
+        },
+        {
+          id: 2,
+          test: true,
+        },
+      ],
+    }
+    const modelWithForeignKeyRestifyModel = {
+      ...modelWithForeignKeyResponse,
+      notInArrayIds: testServerArrayResponse.results.map(item => item.id),
+    }
+
+    const modelWithForeignKeyResponse2 = {
+      ...modelWithForeignKeyRestifyModel,
+      test: false,
     }
 
     const configs = [
@@ -175,15 +206,42 @@ describe('api', () => {
       { forceLoad: true },
     ]
     configs.forEach(config => {
-      it('can get a model asynchronously', (done) => {
-        mockRequest(modelResponse, { url: `${modelUrl}1/` })
-        const state = store.getState()
-        api.selectors.entityManager.testModel.getEntities(state).asyncGetById(1, config)
+      it('can get a model asynchronously and then receive array without rewriting missing fields', (done) => {
+        mockRequest(modelWithForeignKeyResponse, { url: `${modelUrl}1/` })
+        let state = store.getState()
+        api.selectors.entityManager.testModelWithForeignKey.getEntities(state).asyncGetById(1, config)
           .then(model => {
-            expect(model).toEqual(modelResponse)
+            expect(model).toEqual(modelWithForeignKeyRestifyModel)
+            mockRequest([modelWithForeignKeyResponse])
+            state = store.getState()
+            api.selectors.entityManager.testModelWithForeignKey.getEntities(state).asyncGetArray().then(() => {
+              state = store.getState()
+              const currentEntity = api.selectors.entityManager.testModelWithForeignKey.getEntities(state).getById(1)
+              expect(currentEntity).toEqual(modelWithForeignKeyRestifyModel)
+            })
             done()
           })
       })
+    })
+
+    it('can get a model asynchronously and then receive this model in foreign key without rewriting fields', (done) => {
+      const idUrl = `${modelUrl}1/`
+      mockRequest(modelWithForeignKeyResponse, { url: idUrl })
+      let state = store.getState()
+      api.selectors.entityManager.testModelWithForeignKey.getEntities(state).asyncGetById(1)
+        .then(model => {
+          expect(model).toEqual(modelWithForeignKeyRestifyModel)
+          mockRequest(modelWithForeignKey2Response, { url: idUrl })
+          api.selectors.entityManager.testModelWithForeignKey2.getEntities(state).asyncGetById(1)
+            .then((newModel) => {
+              expect(newModel.foreignKeys[0]).toEqual(modelWithForeignKeyResponse2)
+              state = store.getState()
+              const currentEntity = api.selectors.entityManager.testModelWithForeignKey.getEntities(state).getById(1)
+              expect(currentEntity).toEqual(modelWithForeignKeyResponse2)
+              expect(currentEntity.notInForeignKey).toBe(true)
+              done()
+            })
+        })
     })
 
     const customUrl = 'custom-url'

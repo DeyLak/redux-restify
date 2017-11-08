@@ -225,9 +225,7 @@ const globalActions = {
     return dispatch(apiGeneralActions.callGet({
       apiName: config.apiName || currentModel.apiName,
       url: urlToLoad,
-      onSuccess: (data) => () => {
-        dispatch(globalActions.updateById(modelType)(id, data, query))
-      },
+      onSuccess: (data) => () => dispatch(globalActions.updateById(modelType)(id, data, query)),
       onError: globalActions.setLoadErrorForId(modelType)(id, true, query),
       query,
       urlHash,
