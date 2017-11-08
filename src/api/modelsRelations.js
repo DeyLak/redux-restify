@@ -1,4 +1,5 @@
 import set from 'lodash/set'
+import unset from 'lodash/unset'
 
 import {
   RestifyArray,
@@ -59,15 +60,15 @@ export const mapDataToRestifyModel = (data, modelType) => {
           mappedIds.push(model.id)
         })
         // Setting fields of the restify model
-        set(resultModel, currentConfigPath, undefined)
+        unset(resultModel, currentConfigPath)
         if (currentFieldDefault instanceof RestifyForeignKeysArray) {
           set(resultModel, modelIdPath, mappedIds)
         } else {
           set(resultModel, modelIdPath, mappedIds[0])
         }
       } else {
-        set(resultModel, currentConfigPath, undefined)
-        set(resultModel, modelIdPath, undefined)
+        unset(resultModel, currentConfigPath)
+        unset(resultModel, modelIdPath)
       }
     } else if (currentFieldDefault instanceof RestifyArray && Array.isArray(currentField)) {
       currentField.forEach((item, index) => {

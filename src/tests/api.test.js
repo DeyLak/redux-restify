@@ -244,6 +244,35 @@ describe('api', () => {
         })
     })
 
+    it('can get a model asynchronously without some keys, and then get them by auto request', (done) => {
+      const idUrl = `${modelUrl}1/`
+      mockRequest(modelWithForeignKey2Response, { url: idUrl })
+      let state = store.getState()
+      api.selectors.entityManager.testModelWithForeignKey2.getEntities(state).asyncGetById(1)
+        .then(model => {
+          state = store.getState()
+          let currentEntity = api.selectors.entityManager.testModelWithForeignKey.getEntities(state).getById(1)
+          expect(currentEntity).toEqual({
+            ...modelWithForeignKey2Response.foreignKeys[0],
+            notInArrayIds: [],
+            notInArray: [],
+          })
+
+          mockRequest(modelWithForeignKeyResponse, { url: idUrl })
+          const interval = setInterval(() => {
+            state = store.getState()
+            currentEntity = api.selectors.entityManager.testModelWithForeignKey.getEntities(state).getById(1)
+            if (currentEntity.notInArray.length > 0) {
+              clearInterval(interval)
+              expect(currentEntity).toEqual(modelWithForeignKeyRestifyModel)
+              done()
+            } else {
+              expect(currentEntity.notInArray).toEqual([])
+            }
+          }, 0)
+        })
+    })
+
     const customUrl = 'custom-url'
     const urls = [
       `${TEST_API_HOST}${TEST_API_PREFIX}${customUrl}/`,

@@ -113,6 +113,9 @@ class EntityList {
   getRestifyModel(normalized, {
     isNestedModel = false,
   } = {}) {
+    // Connected models keys, wich are not stored in store and can be misrecognized as missing keys
+    const modelKeys = {}
+
     const mapDefaultKeysToModel = (configPath = [], defaults = this.modelConfig.defaults) => (memo, key) => {
       const currentConfigPath = configPath.concat(key)
       const currentField = defaults[key]
@@ -122,7 +125,7 @@ class EntityList {
       }
       if (currentField instanceof RestifyForeignKey || currentField instanceof RestifyForeignKeysArray) {
         const modelIdField = currentField.getIdField(key)
-        const normalizedIdField = getNestedObjectField(normalized, configPath.concat(modelIdField))
+        let normalizedIdField = getNestedObjectField(normalized, configPath.concat(modelIdField))
         // Getting linked model, or using same model for in-model references
         let linkedModel
         if (currentField.modelType === this.modelType) {
@@ -137,7 +140,8 @@ class EntityList {
           // Creating nested object from normalized data
           let denormalized
           if (currentField instanceof RestifyForeignKeysArray) {
-            denormalized = (normalizedIdField || []).map(id => {
+            normalizedIdField = normalizedIdField || []
+            denormalized = normalizedIdField.map(id => {
               return linkedModel.getById(id, {
                 isNestedModel: true,
                 preventLoad: true,
@@ -149,10 +153,15 @@ class EntityList {
               preventLoad: true,
             })
           }
-          mappedFields = {
-            [key]: denormalized,
-            [modelIdField]: normalizedIdField,
-          }
+          // if (normalizedIdField) {
+            mappedFields = {
+              [key]: denormalized,
+              [modelIdField]: normalizedIdField,
+            }
+            modelKeys[key] = modelIdField
+          // } else {
+          //   mappedFields = {}
+          // }
         } else {
           // Nested model calculation not allowed, so not include this field
           mappedFields = {}
@@ -196,10 +205,10 @@ class EntityList {
       }
     })
     Object.keys(this.modelConfig.defaults).forEach(key => {
-      if (!Object.prototype.hasOwnProperty.call(normalized, key)) {
+      if (!Object.prototype.hasOwnProperty.call(normalized, modelKeys[key] || key)) {
         const defaultValue = result[key]
         Object.defineProperty(result, key, {
-          enumerable: false,
+          enumerable: !!modelKeys[key],
           get: () => {
             if (RESTIFY_CONFIG.options.autoPropertiesIdRequestd && !this.idLoaded[result.id]) {
               this.idLoaded[result.id] = this.asyncDispatch(entityManager[this.modelType]
