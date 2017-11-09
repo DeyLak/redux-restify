@@ -24,5 +24,5 @@
  1. `transformBeforeSubmit` can be a function (formValues) => data. Can be used to send arrays
 
 ### 9.11.2017
- 1. Added `getFormsByRegExp` selector to forms selectors. Returns object with form name keys
+ 1. Added opportunity to pass RegExp to `getForm`(and others) selectors. Returns object with matched form name keys
  2. Added opportunity to pass form names array to `getFormActions`. Returns object with form name keys

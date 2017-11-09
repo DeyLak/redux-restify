@@ -54,7 +54,7 @@ describe('forms', () => {
     const formRegExp = /^test/
     const state = store.getState()
 
-    const formsObjects = forms.selectors.getFormsByRegExp(formRegExp)(state)
+    const formsObjects = forms.selectors.getForm(formRegExp)(state)
     expect(Object.keys(formsObjects)).toEqual([
       'testForm',
       'testRequestFormId',
@@ -72,7 +72,7 @@ describe('forms', () => {
     const formRegExp = /^test/
     const state = store.getState()
 
-    const formsObjects = forms.selectors.getFormsByRegExp(formRegExp)(state)
+    const formsObjects = forms.selectors.getForm(formRegExp)(state)
     const multiFormsAction = forms.getFormActions(Object.keys(formsObjects))
     Object.keys(formsObjects).forEach(key => {
       expect(multiFormsAction[key]).toEqual(forms.actions[key])
