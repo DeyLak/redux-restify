@@ -544,11 +544,21 @@ const globalActions = {
   },
 }
 
-export const getFormActions = (formType) => {
+const getSingleFormActions = (formType) => {
   return Object.keys(globalActions).reduce((memo, key) => ({
     ...memo,
     [key]: globalActions[key](formType),
   }), {})
+}
+
+export const getFormActions = (formType) => {
+  if (Array.isArray(formType)) {
+    return formType.reduce((memo, type) => ({
+      ...memo,
+      [type]: getSingleFormActions(type),
+    }), {})
+  }
+  return getSingleFormActions(formType)
 }
 
 const forms = {

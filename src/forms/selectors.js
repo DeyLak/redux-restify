@@ -68,6 +68,15 @@ const getFormSelectors = (formType) => {
 const forms = {
   ...globalSelectors,
   getFormConfig,
+  getFormsByRegExp: (formNameRegExp) => (state) => {
+    return Object.keys(state.forms).reduce((memo, key) => {
+      if (!formNameRegExp.test(key)) return memo
+      return {
+        ...memo,
+        [key]: globalSelectors.getForm(key)(state),
+      }
+    }, {})
+  },
 }
 
 onInitRestify(() => {

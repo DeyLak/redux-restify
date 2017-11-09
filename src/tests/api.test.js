@@ -249,7 +249,7 @@ describe('api', () => {
       mockRequest(modelWithForeignKey2Response, { url: idUrl })
       let state = store.getState()
       api.selectors.entityManager.testModelWithForeignKey2.getEntities(state).asyncGetById(1)
-        .then(model => {
+        .then(() => {
           state = store.getState()
           let currentEntity = api.selectors.entityManager.testModelWithForeignKey.getEntities(state).getById(1)
           expect(currentEntity).toEqual({

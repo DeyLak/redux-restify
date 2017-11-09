@@ -13,8 +13,18 @@ import {
 } from './testConfigs'
 
 
+const functionEquality = (first, second) => {
+  if (typeof first === 'function' && typeof second === 'function') {
+    return first.toString() === second.toString()
+  }
+  return undefined
+}
+
 describe('forms', () => {
-  beforeEach(() => beforeEachFunc())
+  beforeEach(() => {
+    jasmine.addCustomEqualityTester(functionEquality)
+    beforeEachFunc()
+  })
 
   it('returns endpoint', () => {
     const endpoint = forms.selectors.testForm.getEndpoint()
@@ -37,6 +47,35 @@ describe('forms', () => {
       const state = store.getState()
       const form = forms.selectors.testForm.getForm(state)
       expect(getNestedObjectField(form, name)).toEqual(fieldValue)
+    })
+  })
+
+  it('can return forms by RegExp', () => {
+    const formRegExp = /^test/
+    const state = store.getState()
+
+    const formsObjects = forms.selectors.getFormsByRegExp(formRegExp)(state)
+    expect(Object.keys(formsObjects)).toEqual([
+      'testForm',
+      'testRequestFormId',
+      'testRequestFormOtherId',
+    ])
+    Object.keys(formsObjects).forEach(key => {
+      expect(formsObjects[key]).toEqual(forms.selectors.getForm(key)(state))
+    })
+  })
+
+  it('can get forms actions from formName, or from array', () => {
+    const singleFormActions = forms.getFormActions('testRequestFormOtherId')
+    expect(singleFormActions).toEqual(forms.actions.testRequestFormOtherId)
+
+    const formRegExp = /^test/
+    const state = store.getState()
+
+    const formsObjects = forms.selectors.getFormsByRegExp(formRegExp)(state)
+    const multiFormsAction = forms.getFormActions(Object.keys(formsObjects))
+    Object.keys(formsObjects).forEach(key => {
+      expect(multiFormsAction[key]).toEqual(forms.actions[key])
     })
   })
 

@@ -153,15 +153,11 @@ class EntityList {
               preventLoad: true,
             })
           }
-          // if (normalizedIdField) {
-            mappedFields = {
-              [key]: denormalized,
-              [modelIdField]: normalizedIdField,
-            }
-            modelKeys[key] = modelIdField
-          // } else {
-          //   mappedFields = {}
-          // }
+          mappedFields = {
+            [key]: denormalized,
+            [modelIdField]: normalizedIdField,
+          }
+          modelKeys[key] = modelIdField
         } else {
           // Nested model calculation not allowed, so not include this field
           mappedFields = {}
