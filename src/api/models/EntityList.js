@@ -206,7 +206,10 @@ class EntityList {
         Object.defineProperty(result, key, {
           enumerable: !!modelKeys[key],
           get: () => {
-            if (RESTIFY_CONFIG.options.autoPropertiesIdRequestd && !this.idLoaded[result.id]) {
+            if (isDefAndNotNull(result.id) &&
+              RESTIFY_CONFIG.options.autoPropertiesIdRequestd &&
+              !this.idLoaded[result.id]
+            ) {
               this.idLoaded[result.id] = this.asyncDispatch(entityManager[this.modelType]
                 .loadById(result.id)).then((res) => {
                   this.idLoaded[result.id] = false
@@ -243,11 +246,18 @@ class EntityList {
       forceLoad = false,
     } = config
     const specialId = getSpecialIdWithQuery(id, query)
-    if (!forceLoad && !isDefAndNotNull(specialId) || this.errors[specialId]) {
+    if (!isDefAndNotNull(specialId)) {
       return {
         ...this.getDefaulObject(id),
-        $error: isDefAndNotNull(specialId),
-        $loading: !isDefAndNotNull(specialId),
+        $error: false,
+        $loading: false,
+      }
+    }
+    if (!forceLoad && this.errors[specialId]) {
+      return {
+        ...this.getDefaulObject(id),
+        $error: true,
+        $loading: false,
       }
     }
 

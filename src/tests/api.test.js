@@ -313,6 +313,36 @@ describe('api', () => {
       }, 0)
     })
 
+    it('doesn\'t make a request for undefined id', (done) => {
+      mockRequest(modelResponse, { url: `${modelUrl}/undefined/` })
+      const state = store.getState()
+      const entity = api.selectors.entityManager.testModel.getEntities(state).getById(undefined, { forceLoad: true })
+      expect(entity.$error).toBe(false)
+      expect(entity.$loading).toBe(false)
+
+      api.selectors.entityManager.testModel.getEntities(state).asyncGetById(undefined, { forceLoad: true })
+        .then(model => {
+          const request = jasmine.Ajax.requests.mostRecent()
+          expect(request).toBe(undefined)
+          expect(model).toBe(undefined)
+          done()
+        })
+    })
+
+    it('stores error for bad id request', (done) => {
+      jasmine.Ajax.stubRequest(`${modelUrl}1/`).andReturn({
+        status: 404,
+        responseText: 'Not found',
+        responseHeaders,
+      })
+      const state = store.getState()
+      api.selectors.entityManager.testModel.getEntities(state).asyncGetById(1)
+        .then(model => {
+          expect(model.$error).toBe(true)
+          done()
+        })
+    })
+
     const specialModelResponse = {
       special_id: 999,
       test: true,
