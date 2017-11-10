@@ -70,12 +70,16 @@ describe('forms', () => {
     expect(singleFormActions).toEqual(forms.actions.testRequestFormOtherId)
 
     const formRegExp = /^test/
-    const state = store.getState()
+    let state = store.getState()
 
-    const formsObjects = forms.selectors.getForm(formRegExp)(state)
+    let formsObjects = forms.selectors.getForm(formRegExp)(state)
     const multiFormsAction = forms.getFormActions(Object.keys(formsObjects))
     Object.keys(formsObjects).forEach(key => {
       expect(multiFormsAction[key]).toEqual(forms.actions[key])
+      store.dispatch(multiFormsAction[key].changeField('test', false))
+      state = store.getState()
+      formsObjects = forms.selectors.getForm(formRegExp)(state)
+      expect(formsObjects[key].test).toBe(false)
     })
   })
 
