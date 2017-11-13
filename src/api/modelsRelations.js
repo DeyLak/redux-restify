@@ -82,7 +82,8 @@ export const mapDataToRestifyModel = (data, modelType) => {
     } else if (isPureObject(currentFieldDefault) && !Array.isArray(currentFieldDefault)) {
       Object.keys(currentFieldDefault).forEach(normalizeKeys(currentConfigPath, currentFieldDefault))
     } else if (currentModel.removeNulls && currentField === null) {
-      unset(resultModel, currentConfigPath)
+      set(resultModel, currentConfigPath, undefined)
+      // unset(resultModel, currentConfigPath)
     }
   }
   Object.keys(currentModel.defaults).forEach(normalizeKeys())

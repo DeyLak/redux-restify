@@ -171,10 +171,16 @@ describe('api', () => {
       notInForeignKey: true,
     }
 
-    const modelResponseWithNull = {
+    const modelForeignKeyResponseWithNull = {
       id: 1,
       test: true,
       singleForeignKey: null,
+    }
+
+    const modelResponseWithNull = {
+      id: 1,
+      test: true,
+      notInForeignKey: null,
     }
 
     const modelWithForeignKeyResponse = {
@@ -277,9 +283,9 @@ describe('api', () => {
         })
     })
 
-    it('can get a model asynchronously with null key and don\t make request for it again', (done) => {
+    it('can get a model asynchronously with null foreign key and don\t make request for it again', (done) => {
       const idUrl = `${modelUrl}1/`
-      mockRequest(modelResponseWithNull, { url: idUrl })
+      mockRequest(modelForeignKeyResponseWithNull, { url: idUrl })
       let state = store.getState()
       api.selectors.entityManager.testModelWithForeignKey.getEntities(state).asyncGetById(1)
         .then(() => {
@@ -292,6 +298,31 @@ describe('api', () => {
           expect(nullFieldValue.$loading).toBe(false)
           expect(nullFieldValue.$error).toBe(false)
           expect(nullFieldValue.id).toBe(undefined)
+          setTimeout(() => {
+            const newRequest = jasmine.Ajax.requests.mostRecent()
+            expect(request).toBe(newRequest)
+            done()
+          }, 1)
+        })
+    })
+
+    it('can get a model asynchronously with null key and don\t make request for it again', (done) => {
+      const idUrl = `${modelUrl}1/`
+      mockRequest(modelResponseWithNull, { url: idUrl })
+      let state = store.getState()
+      api.selectors.entityManager.testModelWithForeignKey.getEntities(state).asyncGetById(1)
+        .then(() => {
+          const request = jasmine.Ajax.requests.mostRecent()
+          state = store.getState()
+          const currentEntity = api.selectors.entityManager.testModelWithForeignKey.getEntities(state).getById(1)
+          expect(currentEntity).toEqual({
+            ...modelResponseWithNull,
+            notInForeignKey: undefined,
+          })
+
+          mockRequest(modelWithForeignKeyResponse, { url: idUrl })
+          const nullFieldValue = currentEntity.notInForeignKey
+          expect(nullFieldValue).toBe(undefined)
           setTimeout(() => {
             const newRequest = jasmine.Ajax.requests.mostRecent()
             expect(request).toBe(newRequest)
