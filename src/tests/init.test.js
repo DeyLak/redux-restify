@@ -8,7 +8,7 @@ import { RESTIFY_CONFIG } from '../config'
 import ApiXhrAdapter from '../api/adapters/ApiXhrAdapter'
 
 import createFormConfig from '../forms/formConfig'
-import { createModelConfig } from '../api/constants'
+import createModelConfig from '../api/modelConfig'
 
 import {
   apiDefinitions,

@@ -331,6 +331,12 @@ describe('api', () => {
         })
     })
 
+    it('can get a default model with default fields for arrays, while loading it', () => {
+      const state = store.getState()
+      const currentEntity = api.selectors.entityManager.testModelWithForeignKey2.getEntities(state).getById(1)
+      expect(currentEntity.foreignKeys).toEqual([])
+    })
+
     const customUrl = 'custom-url'
     const urls = [
       `${TEST_API_HOST}${TEST_API_PREFIX}${customUrl}/`,

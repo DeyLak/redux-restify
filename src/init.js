@@ -1,10 +1,8 @@
 import defaults from 'lodash/defaults'
 
 import createFormConfig from './forms/formConfig'
-import {
-  createModelConfig,
-  DEFAULT_API_NAME,
-} from './api/constants'
+import { DEFAULT_API_NAME } from './api/constants'
+import createModelConfig from './api/modelConfig'
 import ApiXhrAdapter from './api/adapters/ApiXhrAdapter'
 import {
   RESTIFY_DEFAULT_OPTIONS,
