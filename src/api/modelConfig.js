@@ -28,9 +28,13 @@ const createModelConfig = (config) => {
   }
   const foreignKeysDefaults = Object.keys(config.defaults).reduce((memo, key) => {
     if (config.defaults[key] instanceof RestifyForeignKeysArray || config.defaults[key] instanceof RestifyArray) {
+      let newKey = key
+      if (config.defaults[key] instanceof RestifyForeignKeysArray) {
+        newKey = config.defaults[key].getIdField(key)
+      }
       return {
         ...memo,
-        [config.defaults[key].getIdField(key)]: [],
+        [newKey]: [],
       }
     }
     return memo
