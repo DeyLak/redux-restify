@@ -171,6 +171,12 @@ describe('api', () => {
       notInForeignKey: true,
     }
 
+    const modelResponseWithNull = {
+      id: 1,
+      test: true,
+      singleForeignKey: null,
+    }
+
     const modelWithForeignKeyResponse = {
       id: 1,
       test: true,
@@ -268,6 +274,29 @@ describe('api', () => {
               expect(currentEntity.notInArray).toEqual([])
             }
           }, 0)
+        })
+    })
+
+    it('can get a model asynchronously with null key and don\t make request for it again', (done) => {
+      const idUrl = `${modelUrl}1/`
+      mockRequest(modelResponseWithNull, { url: idUrl })
+      let state = store.getState()
+      api.selectors.entityManager.testModelWithForeignKey.getEntities(state).asyncGetById(1)
+        .then(() => {
+          const request = jasmine.Ajax.requests.mostRecent()
+          state = store.getState()
+          const currentEntity = api.selectors.entityManager.testModelWithForeignKey.getEntities(state).getById(1)
+
+          mockRequest(modelWithForeignKeyResponse, { url: idUrl })
+          const nullFieldValue = currentEntity.singleForeignKey
+          expect(nullFieldValue.$loading).toBe(false)
+          expect(nullFieldValue.$error).toBe(false)
+          expect(nullFieldValue.id).toBe(undefined)
+          setTimeout(() => {
+            const newRequest = jasmine.Ajax.requests.mostRecent()
+            expect(request).toBe(newRequest)
+            done()
+          }, 1)
         })
     })
 

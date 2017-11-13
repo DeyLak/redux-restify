@@ -22,7 +22,7 @@ export const mapDataToRestifyModel = (data, modelType) => {
   let resultModel = { ...data }
   if (currentModel.convertToCamelCase) {
     resultModel = objectToCamel(resultModel, {
-      removeNulls: currentModel.removeNulls,
+      removeNulls: false,
       orderArrays: currentModel.orderArrays,
       orderField: RESTIFY_CONFIG.options.orderableFormFieldName,
     })
@@ -34,7 +34,6 @@ export const mapDataToRestifyModel = (data, modelType) => {
     const currentConfigPath = configPath.concat(key)
     const currentFieldDefault = defaults[key]
     const currentField = getNestedObjectField(resultModel, currentConfigPath)
-
     if (currentFieldDefault instanceof RestifyForeignKey || currentFieldDefault instanceof RestifyForeignKeysArray) {
       if (!otherModels[currentFieldDefault.modelType]) {
         otherModels[currentFieldDefault.modelType] = []
@@ -68,7 +67,11 @@ export const mapDataToRestifyModel = (data, modelType) => {
         }
       } else {
         unset(resultModel, currentConfigPath)
-        unset(resultModel, modelIdPath)
+        if (currentField === null) {
+          set(resultModel, modelIdPath, null)
+        } else {
+          unset(resultModel, modelIdPath)
+        }
       }
     } else if (currentFieldDefault instanceof RestifyArray && Array.isArray(currentField)) {
       currentField.forEach((item, index) => {
@@ -78,6 +81,8 @@ export const mapDataToRestifyModel = (data, modelType) => {
       })
     } else if (isPureObject(currentFieldDefault) && !Array.isArray(currentFieldDefault)) {
       Object.keys(currentFieldDefault).forEach(normalizeKeys(currentConfigPath, currentFieldDefault))
+    } else if (currentModel.removeNulls && currentField === null) {
+      unset(resultModel, currentConfigPath)
     }
   }
   Object.keys(currentModel.defaults).forEach(normalizeKeys())

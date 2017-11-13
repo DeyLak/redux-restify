@@ -148,6 +148,7 @@ class EntityList {
               })
             })
           } else {
+            normalizedIdField = normalizedIdField || undefined
             denormalized = linkedModel.getById(normalizedIdField, {
               isNestedModel: true,
               preventLoad: true,

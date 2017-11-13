@@ -5,6 +5,7 @@ import {
 
 import api from '../api'
 import RestifyForeignKeysArray from '../api/models/RestifyForeignKeysArray'
+import RestifyForeignKey from '../api/models/RestifyForeignKey'
 import forms from '../forms'
 
 import { createRestifyStore } from 'helpers/tests'
@@ -71,6 +72,7 @@ export const modelsDefinitions = {
     defaults: {
       id: undefined,
       test: undefined,
+      singleForeignKey: new RestifyForeignKey('testModel'),
       notInArray: new RestifyForeignKeysArray('testModel'),
       notInForeignKey: undefined,
     },
