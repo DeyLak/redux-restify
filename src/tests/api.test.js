@@ -254,8 +254,6 @@ describe('api', () => {
           let currentEntity = api.selectors.entityManager.testModelWithForeignKey.getEntities(state).getById(1)
           expect(currentEntity).toEqual({
             ...modelWithForeignKey2Response.foreignKeys[0],
-            notInArrayIds: [],
-            notInArray: [],
           })
 
           mockRequest(modelWithForeignKeyResponse, { url: idUrl })

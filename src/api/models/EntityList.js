@@ -203,26 +203,33 @@ class EntityList {
     Object.keys(this.modelConfig.defaults).forEach(key => {
       if (!Object.prototype.hasOwnProperty.call(normalized, modelKeys[key] || key)) {
         const defaultValue = result[key]
+        const autoGetter = () => {
+          if (isDefAndNotNull(result.id) &&
+            RESTIFY_CONFIG.options.autoPropertiesIdRequestd &&
+            !this.idLoaded[result.id]
+          ) {
+            this.idLoaded[result.id] = this.asyncDispatch(entityManager[this.modelType]
+              .loadById(result.id)).then((res) => {
+                this.idLoaded[result.id] = false
+                if (!Object.keys(res).includes(key)) {
+                  console.warn(`
+                    Call to ${key} property of ${this.modelType},
+                    which is presented at model config, but can not be recieved via id request!
+                  `.trim())
+                }
+              })
+          }
+          return defaultValue
+        }
+        if (modelKeys[key]) {
+          Object.defineProperty(result, modelKeys[key], {
+            enumerable: false,
+            get: autoGetter,
+          })
+        }
         Object.defineProperty(result, key, {
-          enumerable: !!modelKeys[key],
-          get: () => {
-            if (isDefAndNotNull(result.id) &&
-              RESTIFY_CONFIG.options.autoPropertiesIdRequestd &&
-              !this.idLoaded[result.id]
-            ) {
-              this.idLoaded[result.id] = this.asyncDispatch(entityManager[this.modelType]
-                .loadById(result.id)).then((res) => {
-                  this.idLoaded[result.id] = false
-                  if (!Object.keys(res).includes(key)) {
-                    console.warn(`
-                      Call to ${key} property of ${this.modelType},
-                      which is presented at model config, but can not be recieved via id request!
-                    `.trim())
-                  }
-                })
-            }
-            return defaultValue
-          },
+          enumerable: false,
+          get: autoGetter,
         })
       }
     })
