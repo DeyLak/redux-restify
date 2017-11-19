@@ -22,7 +22,7 @@ import { objectToLowerSnake } from 'helpers/namingNotation'
 import { isPureObject } from 'helpers/def'
 import { mutateObject, getRecursiveObjectReplacement, getNestedObjectField } from 'helpers/nestedObjects'
 
-import api from '../api'
+import api, { RestifyForeignKey, RestifyForeignKeysArray } from '../api'
 import { RESTIFY_CONFIG } from '../config'
 import { onInitRestify } from '../init'
 import { ACTION_UPDATE, ACTION_CREATE } from '../constants'
@@ -123,7 +123,17 @@ const globalActions = {
   applyServerData: (formType) => (data) => (dispatch, getState) => {
     const state = getState()
     const currentFormConfig = selectors.getFormConfig(formType)(state)
-
+    let currentModel
+    if (currentFormConfig.model) {
+      currentModel = RESTIFY_CONFIG.registeredModels[currentFormConfig.model]
+    }
+    const keysToPass = Object.keys(currentModel.defaults).reduce((memo, key) => {
+      const currentField = currentModel.defaults[key]
+      if (currentField instanceof RestifyForeignKey || currentField instanceof RestifyForeignKeysArray) {
+        return memo.concat(currentField.getIdField(key))
+      }
+      return memo
+    }, [])
     const dataReduceFunc = (prevName) => (obj) => {
       if (typeof obj !== 'object' || obj === null) return obj
       if (Array.isArray(obj)) {
@@ -133,10 +143,30 @@ const globalActions = {
         }
         return obj
       }
-      return Object.keys(obj).reduce((memo, key) => ({
-        ...memo,
-        [key]: dataReduceFunc(prevName.concat(key))(obj[key]),
-      }), {})
+      return Object.keys(obj).reduce((memo, key) => {
+        if (keysToPass.includes(key)) {
+          return memo
+        }
+        let keyValue
+        let currentField
+        if (currentModel && currentModel.defaults[key]) {
+          currentField = currentModel.defaults[key]
+        }
+        if (currentField &&
+          (currentField instanceof RestifyForeignKey || currentField instanceof RestifyForeignKeysArray)) {
+          if (currentField instanceof RestifyForeignKey) {
+            keyValue = obj[key].id
+          } else {
+            keyValue = obj[key].map(item => item.id)
+          }
+        } else {
+          keyValue = dataReduceFunc(prevName.concat(key))(obj[key])
+        }
+        return {
+          ...memo,
+          [key]: keyValue,
+        }
+      }, {})
     }
 
     return dispatch(globalActions.changeSomeFields(formType)(dataReduceFunc([])(data)))

@@ -122,6 +122,12 @@ export const formsDefinitions = {
       test: undefined,
     },
   },
+  foreignKeyTestForm: {
+    model: 'testModelWithForeignKey',
+    defaults: {
+      test: undefined,
+    },
+  },
   arrayTestForm: {
     model: 'testModel',
     defaults: {

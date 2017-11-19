@@ -29,3 +29,4 @@
 
 ### 19.11.2017
  1. Now `RestifyForeignKey` and `RestifyForeignKeysArray` can be set for plain id fields, or even for changing behaviour from model to id fields. They will return model by auto-request anyway
+ 2. `applyServerData` now respects form model field and map models into ids for sending to server

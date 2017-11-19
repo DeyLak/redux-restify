@@ -190,6 +190,14 @@ describe('api', () => {
       notInArray: testServerArrayResponse.results,
     }
 
+    const modelWithForeignKeyResponseWithNull = {
+      id: 1,
+      test: true,
+      notInForeignKey: true,
+      singleForeignKey: null,
+      notInArray: testServerArrayResponse.results,
+    }
+
     const modelWithForeignKeyResponseId2 = {
       ...modelWithForeignKeyResponse,
       id: 2,
@@ -465,6 +473,23 @@ describe('api', () => {
           done()
         }
       }, 0)
+    })
+
+    it('can apply server data to a form and use foreign keys as ids', (done) => {
+      mockRequest(modelWithForeignKeyResponseWithNull, { url: `${modelUrl}1/` })
+      let state = store.getState()
+      api.selectors.entityManager.testModelWithForeignKey.getEntities(state).asyncGetById(1)
+        .then(model => {
+          store.dispatch(forms.actions.foreignKeyTestForm.applyServerData(model))
+          state = store.getState()
+          const form = forms.selectors.foreignKeyTestForm.getForm(state)
+          expect(form).toEqual({
+            // Without null
+            ...modelWithForeignKeyResponse,
+            notInArray: [1, 2, 3],
+          })
+          done()
+        })
     })
 
     const formNames = [

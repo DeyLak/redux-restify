@@ -69,6 +69,7 @@ describe('initRestify', () => {
       'testForm',
       'testRequestFormId',
       'testRequestFormOtherId',
+      'foreignKeyTestForm',
       'arrayTestForm',
     ])
   })
