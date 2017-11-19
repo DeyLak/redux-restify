@@ -127,6 +127,7 @@ export const formsDefinitions = {
     defaults: {
       test: undefined,
     },
+    mapServerDataToIds: true,
   },
   arrayTestForm: {
     model: 'testModel',

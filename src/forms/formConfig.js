@@ -60,6 +60,7 @@ export const DEFAULT_FORM_OBJECT = {
   validateAll: false, // Should all registered form fields be validated, despite their presense in form values
   validateOnSubmit: true, // Should form be validated before submitting
   allowSendInvalid: false, // Allow to send form with errors to server
+  mapServerDataToIds: false, // When mapping server data to form, it maps foreign keys to ids
 }
 
 export const getFormObjectConfig = (formType, name, config) => {

@@ -127,13 +127,16 @@ const globalActions = {
     if (currentFormConfig.model) {
       currentModel = RESTIFY_CONFIG.registeredModels[currentFormConfig.model]
     }
-    const keysToPass = Object.keys(currentModel.defaults).reduce((memo, key) => {
-      const currentField = currentModel.defaults[key]
-      if (currentField instanceof RestifyForeignKey || currentField instanceof RestifyForeignKeysArray) {
-        return memo.concat(currentField.getIdField(key))
-      }
-      return memo
-    }, [])
+    let keysToPass = []
+    if (currentFormConfig.mapServerDataToIds) {
+      keysToPass = Object.keys(currentModel.defaults).reduce((memo, key) => {
+        const currentField = currentModel.defaults[key]
+        if (currentField instanceof RestifyForeignKey || currentField instanceof RestifyForeignKeysArray) {
+          return memo.concat(currentField.getIdField(key))
+        }
+        return memo
+      }, [])
+    }
     const dataReduceFunc = (prevName) => (obj) => {
       if (typeof obj !== 'object' || obj === null) return obj
       if (Array.isArray(obj)) {
@@ -142,6 +145,12 @@ const globalActions = {
           return sortBy(obj, RESTIFY_CONFIG.options.orderableFormFieldName)
         }
         return obj
+      }
+      if (!currentFormConfig.mapServerDataToIds) {
+        return Object.keys(obj).reduce((memo, key) => ({
+          ...memo,
+          [key]: dataReduceFunc(prevName.concat(key))(obj[key]),
+        }), {})
       }
       return Object.keys(obj).reduce((memo, key) => {
         if (keysToPass.includes(key)) {
