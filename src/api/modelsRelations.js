@@ -45,18 +45,23 @@ export const mapDataToRestifyModel = (data, modelType) => {
         const mappedIds = []
 
         fieldsToMap.forEach(field => {
-          // Mapping connected model
-          const { model, normalized } = mapDataToRestifyModel(field, currentFieldDefault.modelType)
-          // Add connected model to normalized models
-          otherModels[currentFieldDefault.modelType].push(model)
-          // If connected model has own normalized models, add them to result
-          Object.keys(normalized).forEach(modelName => {
-            if (!otherModels[modelName]) {
-              otherModels[modelName] = []
-            }
-            otherModels[modelName] = otherModels[modelName].concat(normalized[modelName])
-          })
-          mappedIds.push(model.id)
+          // Reciewed id instead of model, just save it, later it will be handeled by getById
+          if (!isPureObject(field) && field !== null) {
+            mappedIds.push(field)
+          } else {
+            // Mapping connected model
+            const { model, normalized } = mapDataToRestifyModel(field, currentFieldDefault.modelType)
+            // Add connected model to normalized models
+            otherModels[currentFieldDefault.modelType].push(model)
+            // If connected model has own normalized models, add them to result
+            Object.keys(normalized).forEach(modelName => {
+              if (!otherModels[modelName]) {
+                otherModels[modelName] = []
+              }
+              otherModels[modelName] = otherModels[modelName].concat(normalized[modelName])
+            })
+            mappedIds.push(model.id)
+          }
         })
         // Setting fields of the restify model
         unset(resultModel, currentConfigPath)

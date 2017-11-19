@@ -26,3 +26,6 @@
 ### 9.11.2017
  1. Added opportunity to pass RegExp to `getForm`(and others) selectors. Returns object with matched form name keys
  2. Added opportunity to pass form names array to `getFormActions`. Returns object with form name keys
+
+### 19.11.2017
+ 1. Now `RestifyForeignKey` and `RestifyForeignKeysArray` can be set for plain id fields, or even for changing behaviour from model to id fields. They will return model by auto-request anyway

@@ -31,7 +31,6 @@ export const registerApi = (apiName, config) => {
   if (RESTIFY_CONFIG.registeredApies[apiName] !== undefined) {
     throw new Error(`You tried to register already existing api with name ${apiName}! Try other name.`)
   }
-
   RESTIFY_CONFIG.registeredApies[apiName] = new ApiXhrAdapter(config)
   invokeCallbacks(registerApiCallbacks, RESTIFY_CONFIG.registeredApies[apiName])
 }
@@ -79,6 +78,7 @@ export const initRestify = ({
   formsDefinitions = {},
   options = {},
 } = {}) => {
+  RESTIFY_CONFIG.store = undefined
   RESTIFY_CONFIG.registeredApies = {}
   RESTIFY_CONFIG.registeredModels = {}
   RESTIFY_CONFIG.registeredForms = {}

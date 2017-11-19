@@ -190,6 +190,11 @@ describe('api', () => {
       notInArray: testServerArrayResponse.results,
     }
 
+    const modelWithForeignKeyResponseId2 = {
+      ...modelWithForeignKeyResponse,
+      id: 2,
+    }
+
     const modelWithForeignKey2Response = {
       id: 1,
       foreignKeys: [
@@ -203,8 +208,17 @@ describe('api', () => {
         },
       ],
     }
+
+    const modelWithForeignKey2PrimitiveKeysResponse = {
+      id: 2,
+      foreignKeys: [1, 2],
+    }
     const modelWithForeignKeyRestifyModel = {
       ...modelWithForeignKeyResponse,
+      notInArrayIds: testServerArrayResponse.results.map(item => item.id),
+    }
+    const modelWithForeignKeyRestifyModelId2 = {
+      ...modelWithForeignKeyResponseId2,
       notInArrayIds: testServerArrayResponse.results.map(item => item.id),
     }
 
@@ -212,7 +226,6 @@ describe('api', () => {
       ...modelWithForeignKeyRestifyModel,
       test: false,
     }
-
     const configs = [
       {},
       { forceLoad: true },
@@ -330,6 +343,31 @@ describe('api', () => {
           }, 1)
         })
     })
+
+    // TODO by @deylak Fix this test
+    // This test somehow by setting interval mess up other tests, but works without them
+    // it('can get a model asynchronously with foreign keys as primitive ids and use them for auto-request', (done) => {
+    //   const idUrl = `${modelUrl}2/`
+    //   mockRequest(modelWithForeignKey2PrimitiveKeysResponse, { url: idUrl })
+    //   let state = store.getState()
+    //   api.selectors.entityManager.testModelWithForeignKey2.getEntities(state).asyncGetById(2)
+    //     .then(() => {
+    //       mockRequest(modelWithForeignKeyResponseId2, { url: idUrl })
+    //       const interval = setInterval(() => {
+    //         state = store.getState()
+    //         const currentModel = api.selectors.entityManager.testModelWithForeignKey2.getEntities(state).getById(2)
+    //         // expect(currentModel.foreignKeys.length).toBe(2)
+    //         const currentLazyEntity = currentModel.foreignKeys[1]
+    //         // console.log(currentModel.foreignKeys)
+
+    //         // if (!currentLazyEntity.$loading) {
+    //           clearInterval(interval)
+    //       //     expect(currentLazyEntity).toEqual(modelWithForeignKeyRestifyModelId2)
+    //           done()
+    //         // }
+    //       }, 0)
+    //     })
+    // })
 
     it('can get a default model with default fields for arrays, while loading it', () => {
       const state = store.getState()

@@ -138,26 +138,29 @@ class EntityList {
 
         if (linkedModel) {
           // Creating nested object from normalized data
-          let denormalized
-          if (currentField instanceof RestifyForeignKeysArray) {
-            normalizedIdField = normalizedIdField || []
-            denormalized = normalizedIdField.map(id => {
-              return linkedModel.getById(id, {
-                isNestedModel: true,
-                preventLoad: true,
-              })
-            })
-          } else {
-            normalizedIdField = normalizedIdField || undefined
-            denormalized = linkedModel.getById(normalizedIdField, {
-              isNestedModel: true,
-              preventLoad: true,
-            })
-          }
           mappedFields = {
-            [key]: denormalized,
             [modelIdField]: normalizedIdField,
           }
+          Object.defineProperty(mappedFields, key, {
+            enumerable: true,
+            get: () => {
+              let denormalized
+              if (currentField instanceof RestifyForeignKeysArray) {
+                normalizedIdField = normalizedIdField || []
+                denormalized = normalizedIdField.map(id => {
+                  return linkedModel.getById(id, {
+                    isNestedModel: true,
+                  })
+                })
+              } else {
+                normalizedIdField = normalizedIdField || undefined
+                denormalized = linkedModel.getById(normalizedIdField, {
+                  isNestedModel: true,
+                })
+              }
+              return denormalized
+            }
+          })
           modelKeys[key] = modelIdField
         } else {
           // Nested model calculation not allowed, so not include this field
@@ -202,7 +205,8 @@ class EntityList {
       }
     })
     Object.keys(this.modelConfig.defaults).forEach(key => {
-      if (!Object.prototype.hasOwnProperty.call(normalized, modelKeys[key] || key)) {
+      if (!Object.prototype.hasOwnProperty.call(normalized, modelKeys[key]) &&
+        !Object.prototype.hasOwnProperty.call(normalized, key)) {
         const defaultValue = result[key]
         const autoGetter = () => {
           if (isDefAndNotNull(result.id) &&
@@ -245,8 +249,8 @@ class EntityList {
     }
   }
 
-  // TODO by @deylak preventLoad is needed for entity normalization not tried to load entities,
-  // while store has not been updated yet. May be making more general actions will solve this
+  // TODO by @deylak preventLoad may be can be removed, due to denormalization fields changed to getters
+  // Should be tested
   getById(id, config = {}) {
     const {
       query,
