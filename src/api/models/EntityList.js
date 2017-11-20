@@ -161,7 +161,7 @@ class EntityList {
               return denormalized
             }
           })
-          modelKeys[key] = modelIdField
+          modelKeys[key] = modelIdField === null ? undefined : modelIdField
         } else {
           // Nested model calculation not allowed, so not include this field
           mappedFields = {}
