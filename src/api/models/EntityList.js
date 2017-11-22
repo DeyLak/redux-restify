@@ -278,7 +278,7 @@ class EntityList {
       return this.getRestifyModel(getOptimisticEntity(currentEntity), config)
     }
 
-    let shouldLoad = !preventLoad && !this.idLoaded[specialId]
+    let shouldLoad = !preventLoad && !this.idLoaded[specialId] && this.modelConfig.allowIdRequests
     if (!this.modelConfig.pagination) {
       shouldLoad = shouldLoad && !Object.keys(this.arrayLoaded).some(key => !!this.arrayLoaded[key])
     }
@@ -330,6 +330,16 @@ class EntityList {
     if (!isDefAndNotNull(specialId) || this.errors[specialId]) return Promise.resolve()
     if (!forceLoad && this.singles[specialId]) {
       return Promise.resolve(this.getRestifyModel(getOptimisticEntity(this.singles[specialId])))
+    }
+    if (!this.modelConfig.allowIdRequests) {
+      console.warn(`
+        Tried to async load ${this.modelName} by ${id}, but requests for this entity are disabled!
+        Returning default model.
+      `)
+      return Promise.resolve({
+        ...this.getDefaulObject(id),
+        $loading: true,
+      })
     }
     if (this.idLoaded[specialId]) return this.idLoaded[specialId]
     this.idLoaded[specialId] = this.dispatch(entityManager[this.modelType].loadById(id, {

@@ -8,6 +8,9 @@ export const DEFAULT_MODEL_OBJECT = {
   pageSize: undefined, // Default page size for model, default - undefined, due to fallback for api default page size
   parent: undefined, // Parent entity name, or names array for related entities like /parent-entity/{id}/child-entity
   endpoint: '', // Endpoint for accessing this entity(without parents and api prefixes)
+  // You can disable attempts to load entity by id, if you don't have an endpoint for it
+  // and use it only for inner model structure, or load entitis only via list request
+  allowIdRequests: true,
   defaults: {
     id: undefined, // This is Restify unique key field. It always should be presented in the model
   }, // Default values for entity from this endpoint(for components sync loading entities access)

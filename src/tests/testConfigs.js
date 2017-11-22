@@ -87,6 +87,15 @@ export const modelsDefinitions = {
       foreignKeys: new RestifyForeignKeysArray('testModelWithForeignKey'),
     },
   },
+  testModelWithoutRequests: {
+    apiName: 'testApi',
+    endpoint: TEST_MODEL_ENDPOINT,
+    allowIdRequests: false,
+    name: 'Test model with without requests',
+    defaults: {
+      test: undefined,
+    },
+  },
 }
 
 export const formsDefinitions = {

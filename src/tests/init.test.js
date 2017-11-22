@@ -63,6 +63,7 @@ describe('initRestify', () => {
       'testModelOtherId',
       'testModelWithForeignKey',
       'testModelWithForeignKey2',
+      'testModelWithoutRequests',
     ])
     expect(Object.keys(state.forms)).toEqual([
       '$configs',

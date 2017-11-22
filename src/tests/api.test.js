@@ -383,6 +383,18 @@ describe('api', () => {
       expect(currentEntity.foreignKeys).toEqual([])
     })
 
+    it('Prevent id requests for entities with allowIdRequest === true', (done) => {
+      spyOn(console, 'warn') // Test will produce warnin, but we don't wont to read it
+      const idUrl = `${modelUrl}1/`
+      mockRequest(modelResponse, { idUrl })
+      const state = store.getState()
+      api.selectors.entityManager.testModelWithoutRequests.getEntities(state).asyncGetById(1).then(() => {
+        const request = jasmine.Ajax.requests.mostRecent()
+        expect(request).toBe(undefined)
+        done()
+      })
+    })
+
     const customUrl = 'custom-url'
     const urls = [
       `${TEST_API_HOST}${TEST_API_PREFIX}${customUrl}/`,
