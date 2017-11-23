@@ -198,10 +198,10 @@ describe('api', () => {
       notInArray: testServerArrayResponse.results,
     }
 
-    const modelWithForeignKeyResponseId2 = {
-      ...modelWithForeignKeyResponse,
-      id: 2,
-    }
+    // const modelWithForeignKeyResponseId2 = {
+    //   ...modelWithForeignKeyResponse,
+    //   id: 2,
+    // }
 
     const modelWithForeignKey2Response = {
       id: 1,
@@ -217,18 +217,18 @@ describe('api', () => {
       ],
     }
 
-    const modelWithForeignKey2PrimitiveKeysResponse = {
-      id: 2,
-      foreignKeys: [1, 2],
-    }
+    // const modelWithForeignKey2PrimitiveKeysResponse = {
+    //   id: 2,
+    //   foreignKeys: [1, 2],
+    // }
     const modelWithForeignKeyRestifyModel = {
       ...modelWithForeignKeyResponse,
       notInArrayIds: testServerArrayResponse.results.map(item => item.id),
     }
-    const modelWithForeignKeyRestifyModelId2 = {
-      ...modelWithForeignKeyResponseId2,
-      notInArrayIds: testServerArrayResponse.results.map(item => item.id),
-    }
+    // const modelWithForeignKeyRestifyModelId2 = {
+    //   ...modelWithForeignKeyResponseId2,
+    //   notInArrayIds: testServerArrayResponse.results.map(item => item.id),
+    // }
 
     const modelWithForeignKeyResponse2 = {
       ...modelWithForeignKeyRestifyModel,

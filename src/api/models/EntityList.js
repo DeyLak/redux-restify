@@ -115,6 +115,8 @@ class EntityList {
   } = {}) {
     // Connected models keys, wich are not stored in store and can be misrecognized as missing keys
     const modelKeys = {}
+    // Id properties for connected models, so we don't assign them lazy getters
+    const modelKeysReverse = {}
 
     const mapDefaultKeysToModel = (configPath = [], defaults = this.modelConfig.defaults) => (memo, key) => {
       const currentConfigPath = configPath.concat(key)
@@ -138,30 +140,33 @@ class EntityList {
 
         if (linkedModel) {
           // Creating nested object from normalized data
+          if (currentField instanceof RestifyForeignKeysArray) {
+            normalizedIdField = normalizedIdField || []
+          } else {
+            normalizedIdField = normalizedIdField || undefined
+          }
           mappedFields = {
             [modelIdField]: normalizedIdField,
-          }
-          Object.defineProperty(mappedFields, key, {
-            enumerable: true,
-            get: () => {
+            [key]: () => {
               let denormalized
               if (currentField instanceof RestifyForeignKeysArray) {
-                normalizedIdField = normalizedIdField || []
                 denormalized = normalizedIdField.map(id => {
                   return linkedModel.getById(id, {
                     isNestedModel: true,
                   })
                 })
               } else {
-                normalizedIdField = normalizedIdField || undefined
                 denormalized = linkedModel.getById(normalizedIdField, {
                   isNestedModel: true,
                 })
               }
               return denormalized
-            }
-          })
+            },
+          }
           modelKeys[key] = modelIdField === null ? undefined : modelIdField
+          if (modelKeys[key]) {
+            modelKeysReverse[modelIdField] = key
+          }
         } else {
           // Nested model calculation not allowed, so not include this field
           mappedFields = {}
@@ -183,10 +188,20 @@ class EntityList {
           }),
         }
       }
-      return {
-        ...memo,
-        ...mappedFields,
-      }
+      // We should not use Object.assign so we can save our getters
+      Object.keys(mappedFields).forEach(fieldKey => {
+        if (typeof mappedFields[fieldKey] === 'function') {
+          Object.defineProperty(memo, fieldKey, {
+            configurable: true,
+            enumerable: true,
+            get: mappedFields[fieldKey],
+          })
+        } else {
+          // eslint-disable-next-line no-param-reassign
+          memo[fieldKey] = mappedFields[fieldKey]
+        }
+      })
+      return memo
     }
     const result = Object.keys(this.modelConfig.defaults).reduce(mapDefaultKeysToModel(), {})
     Object.keys(normalized).forEach(key => {
@@ -210,7 +225,7 @@ class EntityList {
         const defaultValue = result[key]
         const autoGetter = () => {
           if (isDefAndNotNull(result.id) &&
-            RESTIFY_CONFIG.options.autoPropertiesIdRequestd &&
+            RESTIFY_CONFIG.options.autoPropertiesIdRequests &&
             !this.idLoaded[result.id]
           ) {
             this.idLoaded[result.id] = this.asyncDispatch(entityManager[this.modelType]
@@ -226,27 +241,31 @@ class EntityList {
           }
           return defaultValue
         }
+        Object.defineProperty(result, key, {
+          enumerable: false,
+          configurable: true,
+          get: autoGetter,
+        })
         if (modelKeys[key]) {
           Object.defineProperty(result, modelKeys[key], {
             enumerable: false,
-            get: autoGetter,
+            configurable: true,
+            get: () => autoGetter().id,
           })
         }
-        Object.defineProperty(result, key, {
-          enumerable: false,
-          get: autoGetter,
-        })
       }
     })
     return result
   }
 
-  getDefaulObject(id) {
-    return {
-      ...this.getRestifyModel(this.defaultObject),
-      id,
-      $modelType: this.modelType,
-    }
+  getDefaulObject(id, fields = {}) {
+    const result = this.getRestifyModel(this.defaultObject)
+    result.id = id
+    result.$modelType = this.modelType
+    Object.keys(fields).forEach(key => {
+      result[key] = fields[key]
+    })
+    return result
   }
 
   // TODO by @deylak preventLoad may be can be removed, due to denormalization fields changed to getters
@@ -259,18 +278,16 @@ class EntityList {
     } = config
     const specialId = getSpecialIdWithQuery(id, query)
     if (!isDefAndNotNull(specialId)) {
-      return {
-        ...this.getDefaulObject(id),
+      return this.getDefaulObject(id, {
         $error: false,
         $loading: false,
-      }
+      })
     }
     if (!forceLoad && this.errors[specialId]) {
-      return {
-        ...this.getDefaulObject(id),
+      return this.getDefaulObject(id, {
         $error: true,
         $loading: false,
-      }
+      })
     }
 
     const currentEntity = this.singles[specialId]
@@ -293,10 +310,9 @@ class EntityList {
           return result
         })
     }
-    return {
-      ...this.getDefaulObject(id),
+    return this.getDefaulObject(id, {
       $loading: true,
-    }
+    })
   }
 
   /**
@@ -333,13 +349,12 @@ class EntityList {
     }
     if (!this.modelConfig.allowIdRequests) {
       console.warn(`
-        Tried to async load ${this.modelName} by ${id}, but requests for this entity are disabled!
+        Tried to async load missing ${this.modelName} by ${id}, but requests for this entity are disabled!
         Returning default model.
       `)
-      return Promise.resolve({
-        ...this.getDefaulObject(id),
+      return Promise.resolve(this.getDefaulObject(id, {
         $loading: true,
-      })
+      }))
     }
     if (this.idLoaded[specialId]) return this.idLoaded[specialId]
     this.idLoaded[specialId] = this.dispatch(entityManager[this.modelType].loadById(id, {
