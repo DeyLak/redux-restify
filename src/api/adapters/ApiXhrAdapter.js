@@ -58,15 +58,19 @@ class ApiXhrAdapter {
 
   callApi(baseUrl, argMethod, config) {
     const method = argMethod.toUpperCase()
-    return new Promise((res, rej) => {
+    return new Promise(async (res, rej) => {
       const api = new XMLHttpRequest()
-      const token = this.getToken()
+      let token = this.getToken()
+      if (token instanceof Promise) {
+        token = await token
+      }
       const isTokenRequired = !this.allowedNoTokenEndpoints.some(endpoint => {
         if (typeof endpoint === 'string') return endpoint === baseUrl
         if (endpoint instanceof RegExp) return endpoint.test(baseUrl)
         return false
       })
       if (!token && isTokenRequired) {
+        console.warn(`Called ${baseUrl} which requires token, but there was no token found!`)
         rej({ status: 401 })
         return
       }

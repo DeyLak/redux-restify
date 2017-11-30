@@ -33,3 +33,6 @@
 
 ### 23.11.2017
  1. Added `allowIdRequests` option to api model
+
+### 30.11.2017
+ 1. `getToken` can now return Promise
