@@ -97,7 +97,17 @@ export const getDefaultObject = (obj) => {
   if (DEFAULT_FIELD_FUNCTIONS[obj]) return DEFAULT_FIELD_FUNCTIONS_VALUES[obj]()
   if (Array.isArray(obj)) {
     if (obj[ARRAY_CONFIG_INDEX] === undefined) return []
-    return (new Array(obj[ARRAY_CONFIG_INDEX].count || 0)).fill(getDefaultObject(obj[ARRAY_DEFAULTS_INDEX]))
+    const array = (new Array(obj[ARRAY_CONFIG_INDEX].count || 0)).fill(getDefaultObject(obj[ARRAY_DEFAULTS_INDEX]))
+    return array.map((item, index) => {
+      const newItem = { ...item }
+      if (obj[ARRAY_CONFIG_INDEX].fakeId) {
+        newItem.id = uuidV4()
+      }
+      if (obj[ARRAY_CONFIG_INDEX].orderable) {
+        newItem[RESTIFY_CONFIG.options.orderableFormFieldName] = index
+      }
+      return newItem
+    })
   }
   if (isPureObject(obj)) {
     return Object.keys(obj).reduce((memo, key) => ({
