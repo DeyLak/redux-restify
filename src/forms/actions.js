@@ -164,9 +164,9 @@ const globalActions = {
         if (currentField &&
           (currentField instanceof RestifyForeignKey || currentField instanceof RestifyForeignKeysArray)) {
           if (currentField instanceof RestifyForeignKey) {
-            keyValue = obj[key].id
+            keyValue = obj[key] && obj[key].id
           } else {
-            keyValue = obj[key].map(item => item.id)
+            keyValue = obj[key] ? obj[key].map(item => item.id) : []
           }
         } else {
           keyValue = dataReduceFunc(prevName.concat(key))(obj[key])

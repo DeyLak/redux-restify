@@ -316,9 +316,7 @@ describe('api', () => {
 
           mockRequest(modelWithForeignKeyResponse, { url: idUrl })
           const nullFieldValue = currentEntity.singleForeignKey
-          expect(nullFieldValue.$loading).toBe(false)
-          expect(nullFieldValue.$error).toBe(false)
-          expect(nullFieldValue.id).toBe(undefined)
+          expect(nullFieldValue).toBe(null)
           setTimeout(() => {
             const newRequest = jasmine.Ajax.requests.mostRecent()
             expect(request).toBe(newRequest)
@@ -496,8 +494,9 @@ describe('api', () => {
           state = store.getState()
           const form = forms.selectors.foreignKeyTestForm.getForm(state)
           expect(form).toEqual({
-            // Without null
             ...modelWithForeignKeyResponse,
+            // Null is converted to undefined by getForm
+            singleForeignKey: undefined,
             notInArray: [1, 2, 3],
           })
           done()

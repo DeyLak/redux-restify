@@ -143,7 +143,7 @@ class EntityList {
           if (currentField instanceof RestifyForeignKeysArray) {
             normalizedIdField = normalizedIdField || []
           } else {
-            normalizedIdField = normalizedIdField || undefined
+            // normalizedIdField = normalizedIdField || undefined
           }
           mappedFields = {
             [modelIdField]: normalizedIdField,
@@ -152,14 +152,14 @@ class EntityList {
               if (currentField instanceof RestifyForeignKeysArray) {
                 denormalized = normalizedIdField.map(id => {
                   if (id === null) {
-                    return undefined
+                    return null
                   }
                   return linkedModel.getById(id, {
                     isNestedModel: true,
                   })
                 })
               } else if (normalizedIdField === null) {
-                denormalized = undefined
+                denormalized = null
               } else {
                 denormalized = linkedModel.getById(normalizedIdField, {
                   isNestedModel: true,
