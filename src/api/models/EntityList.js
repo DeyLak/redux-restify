@@ -151,10 +151,15 @@ class EntityList {
               let denormalized
               if (currentField instanceof RestifyForeignKeysArray) {
                 denormalized = normalizedIdField.map(id => {
+                  if (id === null) {
+                    return undefined
+                  }
                   return linkedModel.getById(id, {
                     isNestedModel: true,
                   })
                 })
+              } else if (normalizedIdField === null) {
+                denormalized = undefined
               } else {
                 denormalized = linkedModel.getById(normalizedIdField, {
                   isNestedModel: true,
