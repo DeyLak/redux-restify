@@ -124,13 +124,21 @@ class ApiXhrAdapter {
           filename,
         }
       }
+      const addLoadAct = method === 'GET' ? actions.addDownload : actions.addUpload
+      const removeLoadAct = method === 'GET' ? actions.removeDownload : actions.removeUpload
+      let firedMutex
+      const fireLoadActIfNotfiredMutex = () => {
+        if (!firedMutex) {
+          this.dispatch(addLoadAct(baseUrl, urlQuery))
+          firedMutex = true
+        }
+      }
       api.upload.onprogress = (e) => {
+        fireLoadActIfNotfiredMutex()
         const progress = (e.loaded / e.total) * 100
         this.dispatch(actions.setLoadingProgress(progress, baseUrl, urlQuery))
       }
-      const addLoadAct = method === 'GET' ? actions.addDownload : actions.addUpload
-      const removeLoadAct = method === 'GET' ? actions.removeDownload : actions.removeUpload
-      api.onloadstart = () => this.dispatch(addLoadAct(baseUrl, urlQuery))
+      api.onloadstart = fireLoadActIfNotfiredMutex
       api.onload = () => {
         this.dispatch(removeLoadAct(baseUrl, urlQuery))
         let currentCodes = this.httpCodesCallbacks
