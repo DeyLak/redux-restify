@@ -56,6 +56,19 @@ class ApiXhrAdapter {
     this.alertAction = alertAction
   }
 
+  httpCallBackInvoke(api) {
+    let currentCodes = this.httpCodesCallbacks
+    if (typeof this.httpCodesCallbacks === 'function') {
+      currentCodes = this.httpCodesCallbacks(api.status)
+    }
+
+    if (typeof currentCodes === 'function') {
+      this.dispatch(currentCodes())
+    } else if (typeof currentCodes === 'object' && currentCodes[api.status]) {
+      this.dispatch(currentCodes[api.status]())
+    }
+  }
+
   callApi(baseUrl, argMethod, config) {
     const method = argMethod.toUpperCase()
     return new Promise(async (res, rej) => {
@@ -141,16 +154,7 @@ class ApiXhrAdapter {
       api.onloadstart = fireLoadActIfNotfiredMutex
       api.onload = () => {
         this.dispatch(removeLoadAct(baseUrl, urlQuery))
-        let currentCodes = this.httpCodesCallbacks
-        if (typeof this.httpCodesCallbacks === 'function') {
-          currentCodes = this.httpCodesCallbacks(api.status)
-        }
-
-        if (typeof currentCodes === 'function') {
-          this.dispatch(currentCodes())
-        } else if (typeof currentCodes === 'object' && currentCodes[api.status]) {
-          this.dispatch(currentCodes[api.status]())
-        }
+        this.httpCallBackInvoke(api)
 
         res({
           status: api.status,
@@ -160,6 +164,7 @@ class ApiXhrAdapter {
       api.onerror = (e) => {
         this.dispatch(removeLoadAct(baseUrl, urlQuery))
         this.dispatch(actions.setLoadingError(e.error))
+        this.httpCallBackInvoke(api)
         rej({
           status: api.status,
           data: JSON.parse(api.responseText || '{}'),
