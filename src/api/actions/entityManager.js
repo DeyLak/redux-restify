@@ -1,24 +1,11 @@
 import * as selectors from '../selectors'
 import { ACTIONS_TYPES } from '../actionsTypes'
 import { DEFAULT_PAGE_SIZE, DEFAULT_API_NAME, getPagesConfigHash } from '../constants'
-import { mapDataToRestifyModel } from '../modelsRelations'
 import { RESTIFY_CONFIG } from '../../config'
 import { onInitRestify } from '../../init'
 import { ACTIONS_ALERTS, ACTION_DELETE } from '../../constants'
 import * as apiGeneralActions from './general'
 
-
-const updateNormalized = (normalized, dispatch) => {
-  Object.keys(normalized).forEach(modelName => {
-    normalized[modelName].forEach(normalizedModel => {
-      dispatch({
-        type: ACTIONS_TYPES[modelName].updateById,
-        id: normalizedModel.id,
-        data: normalizedModel,
-      })
-    })
-  })
-}
 
 const globalActions = {
   updateData: (modelType) => (
@@ -37,11 +24,7 @@ const globalActions = {
     }
     return dispatch({
       type: ACTIONS_TYPES[modelType].updateData,
-      data: data.map(item => {
-        const { model, normalized } = mapDataToRestifyModel(item, modelType)
-        updateNormalized(normalized, dispatch)
-        return model
-      }),
+      data,
       page,
       pageSize,
       count,
@@ -77,16 +60,22 @@ const globalActions = {
     type: ACTIONS_TYPES[modelType].clearPages,
   }),
 
-  updateById: (modelType) => (id, data, query, allowClearPages = true) => (dispatch) => {
-    const { model, normalized } = mapDataToRestifyModel(data, modelType)
-    updateNormalized(normalized, dispatch)
-    return dispatch({
+  /**
+   * Updates an object by id from raw server data
+   * @param {string|number} [id] - id of model to be updated
+   * @param {Object} [data] - raw server data
+   * @param {Object} [query] - query, used for this id, so we can store it separatlly from normal model
+   * @param {Boolean} [allowClearPages] - should we reset pages, after updating entity(usually for some sorting configs)
+   * @return {Object} Redux action to dispatch
+   */
+  updateById: (modelType) => (id, data, query, allowClearPages = true) => {
+    return {
       type: ACTIONS_TYPES[modelType].updateById,
       id,
-      data: model,
+      data,
       query,
       allowClearPages,
-    })
+    }
   },
 
   updateOptimisticById: (modelType) => (id, data, query) => ({
