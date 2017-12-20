@@ -36,3 +36,6 @@
 
 ### 30.11.2017
  1. `getToken` can now return Promise
+
+### 20.12.2017
+ 1. Now `getIsLoadingById` and `getIsLoadingArrray` returns true, if the url is not registered in `loadsManager`

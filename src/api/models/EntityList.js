@@ -334,7 +334,7 @@ class EntityList {
 
     const specialId = getSpecialIdWithQuery(id, query)
     const url = this.urls.find(u => u.key === `${this.modelConfig.endpoint}${specialId}`)
-    return !!url && url.downloading !== 0
+    return !url || url.downloading !== 0
   }
 
   async asyncGetById(id, config = {}) {
@@ -490,7 +490,7 @@ class EntityList {
   } = {}) {
     const currentConfig = getPagesConfigHash(filter, sort, parentEntities, specialConfig, pageSize)
     const url = this.urls.find(u => u.key === `${this.modelConfig.endpoint}${currentConfig}`)
-    return !!url && url.downloading !== 0
+    return !url || url.downloading !== 0
   }
 
   async asyncGetArray({
