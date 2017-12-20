@@ -464,10 +464,14 @@ class EntityList {
           parentEntities,
           specialConfig,
           urlHash: currentConfig,
-        })).then((result) => {
-          this.arrayLoaded[currentConfig] = false
-          return result
-        })
+        }))
+          .then((result) => {
+            this.arrayLoaded[currentConfig] = false
+            return result
+          })
+          .catch(() => {
+            this.arrayLoaded[currentConfig] = false
+          })
     }
     return []
   }
@@ -512,10 +516,14 @@ class EntityList {
       parentEntities,
       specialConfig,
       urlHash: currentConfig,
-    })).then(result => {
-      this.arrayLoaded[currentConfig] = false
-      return result
-    })
+    }))
+      .then(result => {
+        this.arrayLoaded[currentConfig] = false
+        return result
+      })
+      .catch(() => {
+        this.arrayLoaded[currentConfig] = false
+      })
     return this.arrayLoaded[currentConfig]
   }
 }
