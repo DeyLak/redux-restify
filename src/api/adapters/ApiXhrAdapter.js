@@ -165,9 +165,15 @@ class ApiXhrAdapter {
         this.dispatch(removeLoadAct(baseUrl, urlQuery))
         this.dispatch(actions.setLoadingError(e.error))
         this.httpCallBackInvoke(api)
+
+        let responseText = api.responseText
+        if (api.status < 100) {
+          responseText = ''
+        }
+
         rej({
           status: api.status,
-          data: JSON.parse(api.responseText || '{}'),
+          data: JSON.parse(responseText || '{}'),
         })
       }
       if (config.isBinary) {
