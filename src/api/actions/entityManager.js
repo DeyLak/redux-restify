@@ -169,6 +169,7 @@ const globalActions = {
         sort,
         parentEntities,
         specialConfig,
+        pageSize,
       })
     })
   },
