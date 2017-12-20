@@ -172,6 +172,7 @@ const globalActions = {
         pageSize,
       })
     })
+    .catch((e) => { throw e })
   },
 
   loadNextPage: (modelType) => (config = {}) => (dispatch, getState) => {
