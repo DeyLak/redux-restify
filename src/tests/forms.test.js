@@ -12,6 +12,8 @@ import {
   modelUrl,
 } from './testConfigs'
 
+import { ACTIONS_TYPES } from '../api/actionsTypes'
+
 
 const functionEquality = (first, second) => {
   if (typeof first === 'function' && typeof second === 'function') {
@@ -193,5 +195,42 @@ describe('forms', () => {
     store.dispatch(forms.actions.arrayTestForm.submit())
     const request = jasmine.Ajax.requests.mostRecent()
     expect(request.data()).toEqual(new Array(5).fill(0).map(() => ({ test: true })))
+  })
+
+  const testCreatedModel = { id: 1, test: true }
+  it('Clears pages after new entity added', (done) => {
+    jasmine.Ajax.stubRequest(modelUrl).andReturn({
+      status: 201,
+      responseText: JSON.stringify(testCreatedModel),
+      responseHeaders: [
+        {
+          name: 'Content-type',
+          value: 'application/json',
+        },
+      ],
+    })
+    store.dispatch({
+      type: ACTIONS_TYPES.testModel.updateData,
+      data: [{ id: 2, test: false }],
+      page: undefined,
+      pageSize: 10,
+      count: 1,
+      filter: undefined,
+      sort: undefined,
+      parentEntities: undefined,
+      specialConfig: undefined,
+    })
+    expect(store.getState().api.entityManager.testModel.pages).not.toEqual({})
+
+    store.dispatch(forms.actions.sendQuickForm({
+      model: 'testModel',
+      values: {
+        test: true,
+      },
+    })).then(({ data }) => {
+      expect(data).toEqual(testCreatedModel)
+      expect(store.getState().api.entityManager.testModel.pages).toEqual({})
+      done()
+    })
   })
 })

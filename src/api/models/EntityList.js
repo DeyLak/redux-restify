@@ -8,6 +8,7 @@ import { RESTIFY_CONFIG } from '../../config'
 import RestifyArray from './RestifyArray'
 import RestifyForeignKey from './RestifyForeignKey'
 import RestifyForeignKeysArray from './RestifyForeignKeysArray'
+import RestifyError from './RestifyError'
 
 import { isPureObject, isDefAndNotNull } from 'helpers/def'
 import { getNestedObjectField, mergeAndReplaceArrays } from 'helpers/nestedObjects'
@@ -469,8 +470,13 @@ class EntityList {
             this.arrayLoaded[currentConfig] = false
             return result
           })
-          .catch(() => {
+          .catch((e) => {
             this.arrayLoaded[currentConfig] = false
+            if (e instanceof RestifyError) {
+              throw e
+            } else {
+              console.error(e.message)
+            }
           })
     }
     return []
@@ -521,8 +527,13 @@ class EntityList {
         this.arrayLoaded[currentConfig] = false
         return result
       })
-      .catch(() => {
+      .catch((e) => {
         this.arrayLoaded[currentConfig] = false
+        if (e instanceof RestifyError) {
+          throw e
+        } else {
+          console.error(e.message)
+        }
       })
     return this.arrayLoaded[currentConfig]
   }

@@ -30,6 +30,18 @@ const mockGlobalReducer = (moduleName, submoduleName) => reducer => {
   })
 }
 
+export const actionsStack = []
+
+const actionsLogger = () => next => action => {
+  actionsStack.push(action.type)
+  return next(action)
+}
+
+const middlewareList = [
+  thunk,
+  actionsLogger,
+]
+
 export const createMockStore = (moduleName, submoduleName) => (reducer, init = {}) => {
   const mockReducer = mockGlobalReducer(moduleName, submoduleName)(reducer)
   return createStore(
@@ -37,7 +49,7 @@ export const createMockStore = (moduleName, submoduleName) => (reducer, init = {
     {
       [moduleName]: submoduleName ? { [submoduleName]: { ...init } } : { ...init },
     },
-    applyMiddleware(thunk),
+    applyMiddleware(...middlewareList),
   )
 }
 
@@ -48,6 +60,6 @@ export const createRestifyStore = (apiReducer, formsReducer) => {
       forms: formsReducer,
     })),
     {},
-    applyMiddleware(thunk),
+    applyMiddleware(...middlewareList),
   )
 }

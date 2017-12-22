@@ -5,6 +5,7 @@ import { RESTIFY_CONFIG } from '../../config'
 import { onInitRestify } from '../../init'
 import { ACTIONS_ALERTS, ACTION_DELETE } from '../../constants'
 import * as apiGeneralActions from './general'
+import RestifyError from '../models/RestifyError'
 
 
 const globalActions = {
@@ -19,7 +20,7 @@ const globalActions = {
     specialConfig,
   ) => (dispatch) => {
     if (!data || typeof data.map !== 'function') {
-      throw new Error(`Tried to update data for ${modelType}, but there is no map function on items!
+      throw new RestifyError(`Tried to update data for ${modelType}, but there is no map function on items!
         May be you should set pagination propery of the model?`)
     }
     return dispatch({

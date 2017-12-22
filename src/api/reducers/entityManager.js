@@ -35,6 +35,9 @@ const updateByIdInState = (state, id, data, allowClearPages = false) => {
       },
     }
   } else {
+    // First clear pages, if we don't have that id, than assign entity by id
+    // We are not clearing pages everytime here for smooth lists behavior for user
+    state.pages = allowClearPages && state.singleEntities[id] === undefined ? {} : state.pages
     state.singleEntities = {
       ...state.singleEntities,
       [id]: mergeAndReplaceArrays(
@@ -47,8 +50,6 @@ const updateByIdInState = (state, id, data, allowClearPages = false) => {
         makeEntityObject(data),
       ),
     }
-    // We are not clearing pages everytime here for smooth lists behavior for user
-    state.pages = allowClearPages && state.singleEntities[id] === undefined ? {} : state.pages
   }
   return state
 }
