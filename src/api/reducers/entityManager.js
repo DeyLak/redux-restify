@@ -109,10 +109,11 @@ const getEntityManagerReducer = (modelTypes = []) => {
               ...currentModelState.count,
               [currentConfigHash]: action.count,
             },
-            singleEntities: {
-              ...currentModelState.singleEntities,
-              ...(action.specialConfig ? {} : makeIdMap(normalizedData)),
-            },
+            singleEntities: mergeAndReplaceArrays(
+              {},
+              currentModelState.singleEntities,
+              (action.specialConfig ? {} : makeIdMap(normalizedData)),
+            ),
             pages: {
               ...currentModelState.pages,
               [currentConfigHash]: {
