@@ -178,8 +178,14 @@ class EntityList {
           mappedFields = {}
         }
       } else if (isPureObject(currentField) && !Array.isArray(currentField)) {
-        mappedFields = {
-          [key]: Object.keys(currentField).reduce(mapDefaultKeysToModel(currentConfigPath, currentField), {}),
+        if (normalizedField === null) {
+          mappedFields = {
+            [key]: null,
+          }
+        } else {
+          mappedFields = {
+            [key]: Object.keys(currentField).reduce(mapDefaultKeysToModel(currentConfigPath, currentField), {}),
+          }
         }
       } else if (currentField instanceof RestifyArray) {
         let currentArray = normalizedField
