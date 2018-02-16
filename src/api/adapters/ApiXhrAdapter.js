@@ -4,6 +4,7 @@ import { DEFAULT_PAGE_SIZE, DEFAULT_API_SORT_FIELD, DEFAULT_BACKEND_DATE_FORMAT,
 
 
 const CONTENT_TYPE_HEADER = 'Content-type'
+const ACCEPT_HEADER = 'Accept'
 const AUTH_HEADER = 'Authorization'
 
 const CONTENT_TYPE_JSON = 'application/json'
@@ -99,6 +100,9 @@ class ApiXhrAdapter {
       }
 
       api.open(method, fullUrl)
+      // TODO by @deylak add more thoughtful headers configuration,
+      // For now it's just a hack for some browsers sending wrong accept headers, causing DRF to return browsable api
+      api.setRequestHeader(ACCEPT_HEADER, '*/*')
       if (token) {
         api.setRequestHeader(AUTH_HEADER, `Token ${token}`)
       }
