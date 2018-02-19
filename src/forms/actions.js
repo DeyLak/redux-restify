@@ -550,10 +550,10 @@ const globalActions = {
 
       // Workaround for dispatching callbacks(behaves like thunk function)
       successCallbacks.push((res, status) => () => {
-        if (currentModel && currentForm.updateEntity) {
+        if (res && currentModel && currentForm.updateEntity) {
           dispatch(api.actions.entityManager[currentForm.model].updateById(res[idField], res))
         }
-        if (currentForm.model && res[idField]) {
+        if (res && currentForm.model && res[idField]) {
           state = getState()
           resolve({
             data: api.selectors.entityManager[currentForm.model].getEntities(state).getById(res[idField]),
