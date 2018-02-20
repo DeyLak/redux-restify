@@ -96,6 +96,26 @@ export const modelsDefinitions = {
       test: undefined,
     },
   },
+  recursiveModelFirst: {
+    apiName: 'testApi',
+    endpoint: TEST_MODEL_ENDPOINT,
+    name: 'Recursive foreign key test model first',
+    defaults: {
+      id: undefined,
+      foreignKey: new RestifyForeignKey('recursiveModelSecond'),
+    },
+  },
+  recursiveModelSecond: {
+    apiName: 'testApi',
+    endpoint: TEST_MODEL_ENDPOINT,
+    name: 'Recursive foreign key test model second',
+    defaults: {
+      id: undefined,
+      foreignKey: new RestifyForeignKey('recursiveModelFirst', {
+        allowNested: false,
+      }),
+    },
+  },
 }
 
 export const formsDefinitions = {

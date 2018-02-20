@@ -18,7 +18,7 @@ const getModelSelectorsFromDict = (selectorsDict) => (modelType) => {
     let currentConfigPath = configPath.concat(key)
     const currentField = getNestedObjectField(modelConfig, currentConfigPath)
     if (currentField instanceof RestifyLinkedModel) {
-      if (currentField.modelType === modelType) return memo
+      if (!currentField.allowNested || currentField.modelType === modelType) return memo
       return memo.concat(currentField.modelType)
     } else if (isPureObject(currentField) && !Array.isArray(currentField)) {
       return memo.concat(Object.keys(currentField).reduce(getLinkedModels(currentConfigPath), []))

@@ -39,3 +39,6 @@
 
 ### 20.12.2017
  1. Now `getIsLoadingById` and `getIsLoadingArrray` returns true, if the url is not registered in `loadsManager`
+
+### 20.02.2018
+ 1. Now `allowNested` param for foreign key respects all models, not only self-recursive
