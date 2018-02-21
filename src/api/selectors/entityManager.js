@@ -9,16 +9,17 @@ import { getNestedObjectField } from 'helpers/nestedObjects'
 import { getUrls } from './loadsManager'
 
 
+const entityManager = {}
 const entityLists = {}
 
-const getModelSelectorsFromDict = (selectorsDict) => (modelType) => {
+const getModelSelectorsFromDict = (selectorsDict) => (modelType, isNested) => {
   const modelConfig = RESTIFY_CONFIG.registeredModels[modelType].defaults
 
   const getLinkedModels = (configPath = []) => (memo, key) => {
     let currentConfigPath = configPath.concat(key)
     const currentField = getNestedObjectField(modelConfig, currentConfigPath)
     if (currentField instanceof RestifyLinkedModel) {
-      if (!currentField.allowNested || currentField.modelType === modelType) return memo
+      if (isNested && !currentField.allowNested || currentField.modelType === modelType) return memo
       return memo.concat(currentField.modelType)
     } else if (isPureObject(currentField) && !Array.isArray(currentField)) {
       return memo.concat(Object.keys(currentField).reduce(getLinkedModels(currentConfigPath), []))
@@ -57,7 +58,7 @@ const globalSelectors = {
       globalSelectors.getLoadErrors(modelType),
       globalSelectors.getCount(modelType),
       getUrls(RESTIFY_CONFIG.registeredModels[modelType].endpoint),
-      ...linkedModelsNames.map(modelName => getModelSelectorsFromDict(globalSelectors)(modelName).getEntities),
+      ...linkedModelsNames.map(modelName => getModelSelectorsFromDict(globalSelectors)(modelName, true).getEntities),
     ],
     (pages, singles, errors, count, urls, ...linkedModels) => {
       const source = entityLists[modelType] || modelType
@@ -75,8 +76,6 @@ const globalSelectors = {
 }
 
 const getModelSelectors = getModelSelectorsFromDict(globalSelectors)
-
-const entityManager = {}
 
 // This way we avoid recreating selectors(makes them useless),
 // opposite to using getModelSelectors function directly every time
