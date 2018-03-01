@@ -192,7 +192,8 @@ const globalActions = {
                        DEFAULT_PAGE_SIZE
     const nextPage = selectors.entityManager[modelType].getEntities(state).getNextPage(config)
     if (!nextPage) {
-      console.warn(`Tried to load next page for ${modelType}, but there is no next page found!`)
+      console.warn(`Tried to load next page for ${modelType}, but there is no next page found!
+        May be your didn't padss the api config to the loadNextPage action?`)
       return Promise.resolve()
     }
     return dispatch(globalActions.loadData(modelType)({
