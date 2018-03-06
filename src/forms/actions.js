@@ -1,4 +1,5 @@
 import uuidV4 from 'uuid/v4'
+import deepEqual from 'deep-equal'
 import sortBy from 'lodash/sortBy'
 import merge from 'lodash/merge'
 import { batchActions } from 'redux-batched-actions'
@@ -431,7 +432,9 @@ const globalActions = {
     calucalateCurrentLevelValidate(currentValues, currentForm.validate)
     const currentErrors = selectors.getErrors(formType)(state)
     const newErrors = merge({}, currentErrors, validationResult)
-    dispatch(globalActions.setErrors(formType)(newErrors))
+    if (deepEqual(currentErrors, newErrors)) {
+      dispatch(globalActions.setErrors(formType)(newErrors))
+    }
     return newErrors
   },
 
