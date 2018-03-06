@@ -55,6 +55,7 @@ export const modelsDefinitions = {
     },
   },
   testModelOtherId: {
+    clearDataOnRouteChange: true,
     apiName: 'testApi',
     endpoint: TEST_MODEL_ENDPOINT,
     name: 'Test model other id',

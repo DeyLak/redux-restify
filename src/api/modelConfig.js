@@ -21,6 +21,9 @@ export const DEFAULT_MODEL_OBJECT = {
   convertToCamelCase: true, // Should the fields names from back-end be converted to camelCase notation
   removeNulls: true, // Replace null values with undefined
   orderArrays: true, // Sort arrays, if they have order field
+  // By default, only pages are being cleared on route changes, so requests will be repeated, to get fresh data
+  // But sometimes, we want the entire data to be cleared and re-requested.
+  clearDataOnRouteChange: false,
   apiName: DEFAULT_API_NAME, // Api name, from registeres apies list
 }
 

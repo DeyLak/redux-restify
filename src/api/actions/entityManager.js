@@ -61,6 +61,10 @@ const globalActions = {
     type: ACTIONS_TYPES[modelType].clearPages,
   }),
 
+  clearData: (modelType) => () => ({
+    type: ACTIONS_TYPES[modelType].clearData,
+  }),
+
   /**
    * Updates an object by id from raw server data
    * @param {string|number} [id] - id of model to be updated

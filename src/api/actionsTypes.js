@@ -15,6 +15,7 @@ const actionsTypesLoadsManager = [
 
 const actionsTypesEntityManager = [
   'CLEAR_PAGES',
+  'CLEAR_DATA',
   'UPDATE_DATA',
   'UPDATE_BY_ID',
   'UPDATE_OPTIMISTIC_BY_ID',

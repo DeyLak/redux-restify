@@ -4,6 +4,7 @@ import { getPagesConfigHash, getSpecialIdWithQuery } from '../constants'
 import { ROUTER_LOCATION_CHANGE_ACTION } from '../../constants'
 import { mergeAndReplaceArrays } from 'helpers/nestedObjects'
 import { mapDataToRestifyModel } from '../modelsRelations'
+import { RESTIFY_CONFIG } from '../../config'
 
 
 const makeEntityObject = obj => ({
@@ -78,6 +79,10 @@ const getEntityManagerReducer = (modelTypes = []) => {
       const currentModelState = newModelStates[modelType]
       let newModelState = currentModelState
       switch (action.type) {
+        case ACTIONS_TYPES[modelType].clearData: {
+          newModelState = modelInitState
+          break
+        }
         case ACTIONS_TYPES[modelType].clearPages: {
           newModelState = {
             ...currentModelState,
@@ -169,9 +174,14 @@ const getEntityManagerReducer = (modelTypes = []) => {
         // cause this can lead to very large amount of requests from related entities
         case ROUTER_LOCATION_CHANGE_ACTION:
           if (action.payload.action !== 'REPLACE') {
-            newModelState = {
-              ...currentModelState,
-              pages: {},
+            const currentModel = RESTIFY_CONFIG.registeredModels[modelType]
+            if (currentModel.clearDataOnRouteChange) {
+              newModelState = modelInitState
+            } else {
+              newModelState = {
+                ...currentModelState,
+                pages: {},
+              }
             }
           }
           break

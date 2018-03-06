@@ -42,3 +42,7 @@
 
 ### 20.02.2018
  1. Now `allowNested` param for foreign key respects all models, not only self-recursive
+
+### 06.03.2018
+ 1. Added `clearData` action to entityManager, so we can clear all api data for model. Useful for cases, when we want to forget some corrupted entities loaded.
+ 2. Added `clearDataOnRouteChange` setting for model, so we can clear all model data on route changes

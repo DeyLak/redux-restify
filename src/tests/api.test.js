@@ -53,6 +53,31 @@ describe('api', () => {
     })
     state = store.getState()
     expect(state.api.entityManager.testModel.pages).toEqual({})
+    expect(state.api.entityManager.testModel.singleEntities).not.toEqual({})
+  })
+
+  it('clears all data after router location changes', () => {
+    const testData = [{ id: 1, test: true }, { id: 2, test: false }]
+    store.dispatch(api.actions.entityManager.testModelOtherId.updateData(
+      testData,
+      1,
+      10,
+      2,
+      {},
+      undefined,
+      {},
+      false,
+    ))
+    let state = store.getState()
+    store.dispatch({
+      type: ROUTER_LOCATION_CHANGE_ACTION,
+      payload: {
+        action: 'PUSH',
+      },
+    })
+    state = store.getState()
+    expect(state.api.entityManager.testModelOtherId.pages).toEqual({})
+    expect(state.api.entityManager.testModelOtherId.singleEntities).toEqual({})
   })
 
   it('returns endpoint', () => {
