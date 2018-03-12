@@ -238,7 +238,8 @@ class EntityList {
         const autoGetter = () => {
           if (isDefAndNotNull(result.id) &&
             RESTIFY_CONFIG.options.autoPropertiesIdRequests &&
-            !this.idLoaded[result.id]
+            !this.idLoaded[result.id] &&
+            this.modelConfig.allowIdRequests
           ) {
             this.idLoaded[result.id] = this.asyncDispatch(entityManager[this.modelType]
               .loadById(result.id)).then((res) => {
