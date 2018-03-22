@@ -1,5 +1,7 @@
 # redux-restify
 
+This is a redux based framework for managering api entities and application forms.
+
 ## Change log
 
 ### 04.10.2017
