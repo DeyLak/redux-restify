@@ -21,11 +21,11 @@ const convertToValidQueryParam = (key, value, { dateFormat = DEFAULT_BACKEND_DAT
 
   // eslint-disable-next-line no-underscore-dangle
   if (typeof value === 'object' && value !== null && value._isAMomentObject) {
-    result += value.format(dateFormat)
+    result += encodeURIComponent(value.format(dateFormat))
     return result
   }
 
-  result += value
+  result += encodeURIComponent(value)
   return result
 }
 
