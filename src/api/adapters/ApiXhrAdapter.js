@@ -116,7 +116,7 @@ class ApiXhrAdapter {
         api.setRequestHeader(AUTH_HEADER, `Token ${token}`)
       }
 
-      if (method.toUpperCase() !== 'GET' && CSRFToken) {
+      if (CSRFToken) {
         api.setRequestHeader(CSRF_HEADER, CSRFToken)
       }
 
