@@ -6,6 +6,7 @@ import { DEFAULT_PAGE_SIZE, DEFAULT_API_SORT_FIELD, DEFAULT_BACKEND_DATE_FORMAT,
 const CONTENT_TYPE_HEADER = 'Content-type'
 const ACCEPT_HEADER = 'Accept'
 const AUTH_HEADER = 'Authorization'
+const CSRF_HEADER = 'X-CSRF-Token'
 
 const CONTENT_TYPE_JSON = 'application/json'
 const CONTENT_TYPE_HTML = 'text/html'
@@ -33,6 +34,7 @@ const checkStatus = (api, config) => {
 class ApiXhrAdapter {
   constructor({
     getToken, // Function () => apiToken (string)
+    getCSRFToken, // Function () => CSRFToken (string)
     apiHost, // Host of current api
     apiPrefix, // Api url prefix for all api request, for ex: /api/v1.0
     dispatch, // redux dispatch for loadsManager and callbacks actions
@@ -46,6 +48,7 @@ class ApiXhrAdapter {
     alertAction, // TODO by @deylak need to move out some responisbilities
   }) {
     this.getToken = getToken
+    this.getCSRFToken = getCSRFToken
     this.apiHost = apiHost
     this.apiPrefix = apiPrefix
     this.dispatch = dispatch
@@ -74,6 +77,12 @@ class ApiXhrAdapter {
     const method = argMethod.toUpperCase()
     return new Promise(async (res, rej) => {
       const api = new XMLHttpRequest()
+      let CSRFToken
+
+      if (typeof this.getCSRFToken === 'function') {
+        CSRFToken = this.getCSRFToken()
+      }
+
       let token = this.getToken()
       if (token instanceof Promise) {
         token = await token
@@ -105,6 +114,10 @@ class ApiXhrAdapter {
       api.setRequestHeader(ACCEPT_HEADER, '*/*')
       if (token) {
         api.setRequestHeader(AUTH_HEADER, `Token ${token}`)
+      }
+
+      if (method.toUpperCase() !== 'GET' && CSRFToken) {
+        api.setRequestHeader(CSRF_HEADER, CSRFToken)
       }
 
       let form
