@@ -473,6 +473,7 @@ class EntityList {
         }))
           .then((result) => {
             this.arrayLoaded[currentConfig] = false
+            this.arrays[currentConfig] = result
             return result
           })
           .catch((e) => {
@@ -530,6 +531,7 @@ class EntityList {
     }))
       .then(result => {
         this.arrayLoaded[currentConfig] = false
+        this.arrays[currentConfig] = result
         return result
       })
       .catch((e) => {
