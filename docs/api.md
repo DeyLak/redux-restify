@@ -93,7 +93,7 @@ Models can be linked to each other. This is making use of data normalization for
 ### Available relation classes
 * **RestifyForeignKey** - simple model realtion, for example, user assigned to task
   usage: `new RestifyForeignKey('modelName')`
-* **ResifyForeignKeysArray** - array of related models, for example, tasks in task board
+* **RestifyForeignKeysArray** - array of related models, for example, tasks in task board
   usage: `new ResifyForeignKeysArray('modelName')`
 * **RestifyArray** - array of not-registered models with own nested structure for example, some wrapper entities with order and link to other entity
   usage:
