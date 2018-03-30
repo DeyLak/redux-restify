@@ -97,6 +97,7 @@ Models can be linked to each other. This is making use of data normalization for
   usage: `new ResifyForeignKeysArray('modelName')`
 * **RestifyArray** - array of not-registered models with own nested structure for example, some wrapper entities with order and link to other entity
   usage:
+
 ```javascript
 new RestifyArray({
   defaults: {
@@ -225,6 +226,7 @@ Array request pageSize
 
 ### Single entity config
 Single entity selector also accepts an optional config, like:
+
 ```
 {
   query: {

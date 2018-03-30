@@ -128,6 +128,7 @@ Form defaults configuration can look like this:
 }
 ```
 * Arrays have some special configurations, that can be passed in second element of array default like this:
+
 ```javascript
 {
   ...
@@ -155,6 +156,7 @@ Form is a pare of formType(string form name), a uique form id, that is used to a
 
 ### Boot-up time forms
 Forms can be registered in `initRestify` function call by passing `formsDefinitions` key in options dic. It should be a dict with form configs, like:
+
 ```javascript
 {
   myForm: {
@@ -181,6 +183,7 @@ To create a runtime form you should call an action `createForm`(see below).
 `forms.selectors` have same selectors structure for each registered form(for example: `forms.selectors.myForm.getForm(state)`). Also it has selector creators with same names, wich accept formType and return a selector(for example: `forms.selectors.getForm('myForm')(state)`). Only boot-up time forms have their selectors pre-created. Runtime forms should use selectors creators. If you want to create selectors for some formType, you can use `selectors.getFormSelectors(formType)`. Available selectors:
 * **getIsFormExist** - returnes true, if a runtime form with that name is registered
 * **getEndpoint** - returnes object, describing, wich endpoint is used to submit this form. Object structure is the following:
+
 ```javascript
 {
   apiHost: 'restifyApiHost',
