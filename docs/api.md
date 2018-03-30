@@ -2,7 +2,7 @@
 
 Api module is based on api entities configs. You can describe available fields for each entitiy, add relations between them etc.
 
-Module have the following structure:
+Module has the following structure:
 ```
 {
   selectors: {
@@ -167,7 +167,26 @@ If we get task restify model by id 1, we will get this object:
 
 ## Selectors
 
-`api.selectors` have same selectors structure for each registered model(for example: `api.selectors.myModel.getEntities(state)`):
+### LoadsManager
+`api.selectors.loadsManager` have the following selectors:
+* **getEndpoint** - get endpoint, used for this entity
+
+* **getIsUploading** - returnes true, if any write(POST, PATCH, DELETE) request is in progress, otherwise - false
+* **getIsDownloading** - returnes true, if any read(GET) request is in progress, otherwise - false
+* **getIsLoading** - returnes true, if any request is in progress, otherwise - false
+* **getDownloadsCount** - returnes number of read requests in progress
+* **getUploadsCount** - returnes number of write requests in progress
+* **getIsDownloadingUrl(url, queryObject)** - creates a selector, that returnes true, if a read request for this url is in progress, if `queryObject` param is passed, url will be checked with query params, otherwise - only main part
+* **getIsUploadingUrl(url, queryObject)** - same as `getIsDownloadingUrl`, but for write requests
+* **getIsLoadingUrl(url, queryObject)** - same as `getIsDownloadingUrl`, but for all requests. **Warning:** do not use this method for getting info about restify entities loading. Use `getIsLoadingArray` and `getIsLoadingById` methods(see below).
+* **getLoadingProgress(url, queryObject)** - creates a selector, that returnes XHR loading progress for this url and queryObject
+* **getUploadingUrlCount(url, queryObject)** - creates a selector, that returnes number of write requests in proigress for this url
+* **getDownloadingUrlCount(url, queryObject)** - creates a selector, that returnes number of read requests in proigress for this url
+* **getUrlLoadsCount(url, queryObject)** - creates a selector, that returnes number of all requests in proigress for this url
+
+### EntityManager
+
+`api.selectors.entityManager` have same selectors structure for each registered model(for example: `api.selectors.entityManager.myModel.getEntities(state)`):
 * **getEndpoint** - get endpoint, used for this entity
 * **getEntities** - get `EntityList` object, wich incapsulates all entity logic, such as relations, getting arrays, filtering etc.
 

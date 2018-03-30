@@ -54,7 +54,7 @@ export const DEFAULT_FORM_OBJECT = {
   // Form validation definition.
   // Can be object with keys with same path, as in forms,
   // preset, or function of (currentLevelValue, formValues) => bool.
-  // Of object is used, every node is following the same rules, as top-level preset or function
+  // If object is used, every node is following the same rules, as top-level preset or function
   validate: undefined,
   validateOnFieldChange: true, // Should form be validated after every field change
   validateAll: false, // Should all registered form fields be validated, despite their presense in form values

@@ -384,12 +384,14 @@ class EntityList {
   getByUrl(url, config = {}) {
     return this.getById(url, {
       ...config,
+      useModelEndpoint: false,
     })
   }
 
   async asyncGetByUrl(url, config = {}) {
     return this.asyncGetById(url, {
       ...config,
+      useModelEndpoint: false,
     })
   }
 
