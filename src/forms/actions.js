@@ -283,9 +283,21 @@ const globalActions = {
   replaceInArray: (formType) => (arrayName, value, index) => (dispatch, getState) => {
     const state = getState()
     const currentFormConfig = selectors.getFormConfig(formType)(state)
-    const newValue = updateDefaultValue(
+    const configArrayName = !Array.isArray(arrayName) ? arrayName : arrayName.map(name => {
+      return typeof name === 'string' ? name : 0
+    })
+    const arrayConfig = getNestedObjectField(currentFormConfig.defaults, configArrayName)[ARRAY_CONFIG_INDEX]
+    // fakeId plugin
+    let newValue = value
+    if (arrayConfig && arrayConfig.fakeId) {
+      newValue = {
+        ...newValue,
+        id: uuidV4(),
+      }
+    }
+    newValue = updateDefaultValue(
       getFormDefaultValue(formType, [].concat(arrayName, 0), currentFormConfig),
-      value,
+      newValue,
     )
     const newArray = selectors.getField(formType)(arrayName)(state).slice()
     newArray.splice(index, 1, newValue)
