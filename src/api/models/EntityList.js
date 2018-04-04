@@ -157,6 +157,7 @@ class EntityList {
                   }
                   return linkedModel.getById(id, {
                     isNestedModel: true,
+                    ...currentField.entityConfig,
                   })
                 })
               } else if (normalizedIdField === null) {
@@ -164,6 +165,7 @@ class EntityList {
               } else {
                 denormalized = linkedModel.getById(normalizedIdField, {
                   isNestedModel: true,
+                  ...currentField.entityConfig,
                 })
               }
               return denormalized
