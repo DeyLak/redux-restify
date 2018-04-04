@@ -92,9 +92,9 @@ Models can be linked to each other. This is making use of data normalization for
 
 ### Available relation classes
 * **RestifyForeignKey** - simple model realtion, for example, user assigned to task
-  usage: `new RestifyForeignKey('modelName')`
+  usage: `new RestifyForeignKey('modelName', linkedModelConfig)`
 * **RestifyForeignKeysArray** - array of related models, for example, tasks in task board
-  usage: `new ResifyForeignKeysArray('modelName')`
+  usage: `new ResifyForeignKeysArray('modelName', linkedModelConfig)`  
 * **RestifyArray** - array of not-registered models with own nested structure for example, some wrapper entities with order and link to other entity
   usage:
 
@@ -105,6 +105,21 @@ new RestifyArray({
     linkedModel: new RestifyForeignKey('modelName'),
   },
 })
+```
+
+### linkedModelConfig
+```javascript
+{
+  idField, // Postfix to model name, to store it's id in normalized form
+  allowNested = true, // Allowing calculate this entity in other linked models
+  fetchConfig = { // Config for linkedModel.getById(<ID>, fetchConfig)
+    query: {
+      someQueryParam: 'test',
+    },
+    preventLoad: false,
+    forceLoad: true,
+  },
+}
 ```
 
 ### Example
