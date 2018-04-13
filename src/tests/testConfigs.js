@@ -15,9 +15,12 @@ export const TEST_API_HOST = 'http://test.com/'
 export const TEST_TOKEN = 'test-token'
 export const TEST_API_PREFIX = 'test-api/v1.0/'
 export const OTHER_TEST_API_PREFIX = 'other-test-api/v2.0/'
+export const CUSTOM_TEST_API_PREFIX = 'custom-test-api/data/'
 export const TEST_MODEL_ENDPOINT = 'test-model/'
 
 export const modelUrl = `${TEST_API_HOST}${TEST_API_PREFIX}${TEST_MODEL_ENDPOINT}`
+export const customModelBulkUrl = `${TEST_API_HOST}${CUSTOM_TEST_API_PREFIX}bulk/${TEST_MODEL_ENDPOINT}`
+export const customModelSingleUrl = `${TEST_API_HOST}${CUSTOM_TEST_API_PREFIX}single/${TEST_MODEL_ENDPOINT}`
 
 export const responseHeaders = [
   {
@@ -40,6 +43,32 @@ export const apiDefinitions = {
     apiPrefix: OTHER_TEST_API_PREFIX,
     allowedNoTokenEndpoints: [],
     httpCodesCallbacks: () => {},
+  },
+  customTestApi: {
+    getToken: () => TEST_TOKEN,
+    apiHost: TEST_API_HOST,
+    apiPrefix: CUSTOM_TEST_API_PREFIX,
+    allowedNoTokenEndpoints: [],
+    httpCodesCallbacks: () => {},
+  },
+  customTestApiConfigured: {
+    getToken: () => TEST_TOKEN,
+    apiHost: TEST_API_HOST,
+    apiPrefix: CUSTOM_TEST_API_PREFIX,
+    allowedNoTokenEndpoints: [],
+    httpCodesCallbacks: () => {},
+    transformArrayResponse: (response) => ({
+      data: response.data,
+      count: response.data.length,
+    }),
+    getEntityUrl: ({
+      apiHost,
+      apiPrefix,
+      modelEndpoint,
+      entityId,
+    }) => {
+      return `${apiHost}${apiPrefix}${entityId ? 'single' : 'bulk'}/${modelEndpoint}${entityId || ''}`
+    }
   },
 }
 
@@ -115,6 +144,38 @@ export const modelsDefinitions = {
       foreignKey: new RestifyForeignKey('recursiveModelFirst', {
         allowNested: false,
       }),
+    },
+  },
+  customModel: {
+    apiName: 'customTestApi',
+    endpoint: TEST_MODEL_ENDPOINT,
+    name: 'Custom api model',
+    defaults: {
+      id: undefined,
+      name: undefined,
+    },
+    pagination: false,
+    getEntityUrl: ({
+      apiHost,
+      apiPrefix,
+      modelEndpoint,
+      entityId,
+    }) => {
+      return `${apiHost}${apiPrefix}${entityId ? 'single' : 'bulk'}/${modelEndpoint}${entityId || ''}`
+    },
+    transformArrayResponse: response => ({
+      data: response.data,
+      count: response.data.length,
+    }),
+  },
+  customModelConfigured: {
+    apiName: 'customTestApiConfigured',
+    endpoint: TEST_MODEL_ENDPOINT,
+    name: 'Custom api model',
+    pagination: false,
+    defaults: {
+      id: undefined,
+      name: undefined,
     },
   },
 }

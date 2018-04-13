@@ -59,6 +59,15 @@ Simple entity config is a javascript object like
   By default, only pages are being cleared on route changes, so requests will be repeated, to get fresh data. But sometimes, we want the entire data to be cleared and re-requested.
 * **apiName** (default: 'default')
   Api name, from registeres apies list(see global restify options)
+* **transformArrayResponse**
+  Function to get restify array info from server response `(response, pagination) => ({ data: [], count: 1, page: 1})`
+  * _response_ is a pure server response(only converted to camelCase, if this option is defined)
+  * _pagination_ is user-defined propery of model, that describes, if model has pagination
+  * _data_ should be an array of model objects
+  * _count_ should represent all objects count, that are available on server (if api provides such field)
+  * _page_ is number of page in server pagination(if api provides such field)
+* **getEntityUrl**
+  Function to get custom url for manipulating entity CRUD like: `({apiHost, apiPrefix, modelEndpoint, entityId}) => 'url'`
 
 ## Registering an entity
 All entities should be registered in `initRestify` function call by passing `modelsDefinitions` key in options dic. It should be a dict with model configs, like:
@@ -94,7 +103,7 @@ Models can be linked to each other. This is making use of data normalization for
 * **RestifyForeignKey** - simple model realtion, for example, user assigned to task
   usage: `new RestifyForeignKey('modelName', linkedModelConfig)`
 * **RestifyForeignKeysArray** - array of related models, for example, tasks in task board
-  usage: `new ResifyForeignKeysArray('modelName', linkedModelConfig)`  
+  usage: `new ResifyForeignKeysArray('modelName', linkedModelConfig)`
 * **RestifyArray** - array of not-registered models with own nested structure for example, some wrapper entities with order and link to other entity
   usage:
 

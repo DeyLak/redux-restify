@@ -8,6 +8,25 @@ import * as apiGeneralActions from './general'
 import RestifyError from '../models/RestifyError'
 
 
+const defaultTransformArrayResponse = (response, pagination) => {
+  let data
+  let count
+  let page
+  if (!pagination) {
+    data = response
+    count = response.length
+  } else {
+    data = response.items || response.results
+    count = response.count || response.totalItems
+    page = response.page
+  }
+  return {
+    data,
+    count,
+    page,
+  }
+}
+
 const globalActions = {
   updateData: (modelType) => (
     data,
@@ -21,7 +40,7 @@ const globalActions = {
   ) => (dispatch) => {
     if (!data || typeof data.map !== 'function') {
       throw new RestifyError(`Tried to update data for ${modelType}, but there is no map function on items!
-        May be you should set pagination propery of the model?`)
+        May be you should set pagination propery, or transformArrayResponse of the model?`)
     }
     return dispatch({
       type: ACTIONS_TYPES[modelType].updateData,
@@ -34,19 +53,6 @@ const globalActions = {
       parentEntities,
       specialConfig,
     })
-  },
-
-  updateDataNoPage: (modelType) => (data, pageSize, filter, sort, parentEntities, specialConfig) => {
-    return globalActions.updateData(modelType)(
-      data,
-      undefined,
-      pageSize,
-      undefined,
-      filter,
-      sort,
-      parentEntities,
-      specialConfig,
-    )
   },
 
   showEntityAlert: (modelType) => (actionType) => (dispatch) => {
@@ -118,31 +124,34 @@ const globalActions = {
 
     const query = {
       ...filter,
-      [currentApi.defaultSortField]: sort,
+    }
+    if (sort) {
+      query[currentApi.defaultSortField] = sort
     }
 
     const pageSize = config.pageSize ||
                        currentModel && currentModel.pageSize ||
                        currentApi && currentApi.defaultPageSize ||
                        DEFAULT_PAGE_SIZE
+
+    const transformArrayResponse = config.transformArrayResponse ||
+                                    currentModel && currentModel.transformArrayResponse ||
+                                    currentApi && currentApi.transformArrayResponse ||
+                                    defaultTransformArrayResponse
+
     let onSuccess
     if (currentModel.pagination) {
       query.page = page
       query.pageSize = pageSize
-      onSuccess = (data) => globalActions.updateData(modelType)(
-        data.items || data.results,
-        data.page || page,
+    }
+
+    onSuccess = (data) => {
+      const transformedData = transformArrayResponse(data, currentModel.pagination)
+      return globalActions.updateData(modelType)(
+        transformedData.data,
+        transformedData.page || page,
         pageSize,
-        data.count || data.totalItems,
-        filter,
-        sort,
-        parentEntities,
-        specialConfig,
-      )
-    } else {
-      onSuccess = (data) => globalActions.updateDataNoPage(modelType)(
-        data,
-        pageSize,
+        transformedData.count,
         filter,
         sort,
         parentEntities,
@@ -162,6 +171,7 @@ const globalActions = {
 
     return dispatch(apiGeneralActions.callGet({
       apiName: currentModel.apiName,
+      getEntityUrl: currentModel.getEntityUrl,
       url,
       onSuccess,
       query,
@@ -214,11 +224,7 @@ const globalActions = {
       useModelEndpoint = true,
     } = config
     const currentModel = RESTIFY_CONFIG.registeredModels[modelType]
-    let slash = ''
-    if (id && (typeof id !== 'string' || !id.endsWith('/'))) {
-      slash = '/'
-    }
-    const urlToLoad = `${useModelEndpoint ? currentModel.endpoint : ''}${id}${slash}`
+    const urlToLoad = useModelEndpoint ? currentModel.endpoint : ''
     return dispatch(apiGeneralActions.callGet({
       apiName: config.apiName || currentModel.apiName,
       url: urlToLoad,
@@ -226,6 +232,8 @@ const globalActions = {
       onError: globalActions.setLoadErrorForId(modelType)(id, true, query),
       query,
       urlHash,
+      id,
+      getEntityUrl: currentModel.getEntityUrl,
     }))
     .then(() => {
       const state = getState()
@@ -245,6 +253,8 @@ const globalActions = {
     return dispatch(apiGeneralActions.callDel({
       apiName: currentModel.apiName,
       url: urlToLoad,
+      getEntityUrl: currentModel.getEntityUrl,
+      id,
       onSuccess: [
         () => globalActions.updateById(modelType)(id, { $deleted: true }),
         () => globalActions.showEntityAlert(modelType)(ACTION_DELETE),

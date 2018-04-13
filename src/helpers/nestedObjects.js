@@ -98,6 +98,8 @@ export const removePrivateFields = reduceObject(key => key[0] === '$')
 
 export const removeUndefinedKeys = reduceObject((key, value) => value === undefined)
 
+export const removeFunctionsKeys = reduceObject((key, value) => typeof value === 'function')
+
 export const updateUuuids = mutateObject(
   key => key === 'uuid',
   uuidV4,

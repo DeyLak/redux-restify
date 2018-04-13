@@ -31,6 +31,17 @@ const checkStatus = (api, config) => {
   return undefined
 }
 
+const defaultGetEntityUrl = ({
+  apiHost,
+  apiPrefix,
+  modelEndpoint,
+  entityId,
+}) => {
+  const baseUrl = `${modelEndpoint}${entityId || ''}`
+  const slash = baseUrl.endsWith('/') || baseUrl.includes('?') ? '' : '/'
+  return `${apiHost}${apiPrefix}${baseUrl}${slash}`
+}
+
 class ApiXhrAdapter {
   constructor({
     getToken, // Function () => apiToken (string)
@@ -45,7 +56,20 @@ class ApiXhrAdapter {
     defaultPageSize = DEFAULT_PAGE_SIZE, // Default page size for lists requests
     deafultDateFormat = DEFAULT_BACKEND_DATE_FORMAT, // Default date format for formatting moment objects
     defaultSortField = DEFAULT_API_SORT_FIELD, // Default query param name for sorting option
-    alertAction, // TODO by @deylak need to move out some responisbilities
+     // Transform array server response into restify array info(elements, count etc)
+     // (response, pagination) => ({ data: [], count: 1, page: 1})
+     // pagination is user-defined propery of model, that describes, if model has pagination
+     // response is a pure server response(only converted to camelCase)
+     // data should be an array of model objects
+     // count should represent all objects count, that are available on server (if api provides such field)
+     // page is number of page in server pagination(if api provides such field)
+    transformArrayResponse,
+    // Get custom url for manipulating entity CRUD
+    // ({apiHost, apiPrefix, modelEndpoint, entityId}) => 'url'
+    getEntityUrl = defaultGetEntityUrl,
+
+    // @deprecated this api is very poor constructed and should not be used
+    alertAction, // TODO by @deylak need to think of entities CRUD callback api
   }) {
     this.getToken = getToken
     this.getCSRFToken = getCSRFToken
@@ -57,6 +81,9 @@ class ApiXhrAdapter {
     this.defaultPageSize = defaultPageSize
     this.deafultDateFormat = deafultDateFormat
     this.defaultSortField = defaultSortField
+    this.transformArrayResponse = transformArrayResponse
+    this.getEntityUrl = getEntityUrl
+
     this.alertAction = alertAction
   }
 
@@ -82,6 +109,9 @@ class ApiXhrAdapter {
       if (typeof this.getCSRFToken === 'function') {
         CSRFToken = this.getCSRFToken()
       }
+      if (CSRFToken instanceof Promise) {
+        CSRFToken = await CSRFToken
+      }
 
       let token = this.getToken()
       if (token instanceof Promise) {
@@ -97,18 +127,16 @@ class ApiXhrAdapter {
         rej({ status: 401 })
         return
       }
-      let url = baseUrl
-      if (config.query) {
+      let url = (config.getEntityUrl || this.getEntityUrl)({
+        apiHost: this.apiHost,
+        apiPrefix: config.withoutPrefix ? '/' : this.apiPrefix,
+        modelEndpoint: baseUrl,
+        entityId: config.id,
+      })
+      if (config.query && Object.keys(config.query).length) {
         url += `?${queryFormat(config.query, { dateFormat: this.deafultDateFormat })}`
       }
-      const slash = url.endsWith('/') || url.includes('?') ? '' : '/'
-
-      let fullUrl = `${this.apiHost}${this.apiPrefix}${url}${slash}`
-      if (config.withoutPrefix) {
-        fullUrl = fullUrl.replace(this.apiPrefix, '/')
-      }
-
-      api.open(method, fullUrl)
+      api.open(method, url)
       // TODO by @deylak add more thoughtful headers configuration,
       // For now it's just a hack for some browsers sending wrong accept headers, causing DRF to return browsable api
       api.setRequestHeader(ACCEPT_HEADER, '*/*')
@@ -172,7 +200,6 @@ class ApiXhrAdapter {
       api.onload = () => {
         this.dispatch(removeLoadAct(baseUrl, urlQuery))
         this.httpCallBackInvoke(api)
-
         res({
           status: api.status,
           data: checkStatus(api, config),

@@ -58,22 +58,7 @@ describe('initRestify', () => {
 
   it('provides api and forms reducers for each registered entitiy', () => {
     const state = store.getState()
-    expect(Object.keys(state.api.entityManager)).toEqual([
-      'testModel',
-      'testModelOtherId',
-      'testModelWithForeignKey',
-      'testModelWithForeignKey2',
-      'testModelWithoutRequests',
-      'recursiveModelFirst',
-      'recursiveModelSecond',
-    ])
-    expect(Object.keys(state.forms)).toEqual([
-      '$configs',
-      'testForm',
-      'testRequestFormId',
-      'testRequestFormOtherId',
-      'foreignKeyTestForm',
-      'arrayTestForm',
-    ])
+    expect(Object.keys(state.api.entityManager)).toEqual(Object.keys(modelsDefinitions))
+    expect(Object.keys(state.forms)).toEqual(['$configs'].concat(Object.keys(formsDefinitions)))
   })
 })

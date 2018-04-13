@@ -18,6 +18,8 @@ import {
   responseHeaders,
 
   modelUrl,
+  customModelBulkUrl,
+  customModelSingleUrl,
 } from './testConfigs'
 
 
@@ -600,6 +602,79 @@ describe('api', () => {
             done()
           })
         })
+      })
+    })
+  })
+  const customTestServerArrayResponse = {
+    status: 'ok',
+    data: [
+      {
+        id: 1,
+        name: '1',
+      },
+      {
+        id: 2,
+        name: '2',
+      },
+      {
+        id: 3,
+        name: '3',
+      },
+    ],
+  }
+  const customTestServerSingleResponse = {
+    id: 1,
+    name: '1',
+  }
+  const customDefaultUrl = `${customModelBulkUrl}`
+  const customMockArrayRequest = (response = customTestServerArrayResponse, {
+    url = customDefaultUrl,
+  } = {}) => {
+    jasmine.Ajax.stubRequest(url).andReturn({
+      status: 200,
+      responseText: JSON.stringify(response),
+      responseHeaders,
+    })
+  }
+  const customMockSingleRequest = (response = customTestServerSingleResponse, {
+    url = `${customModelSingleUrl}1`,
+  } = {}) => {
+    jasmine.Ajax.stubRequest(url).andReturn({
+      status: 200,
+      responseText: JSON.stringify(response),
+      responseHeaders,
+    })
+  }
+
+  describe('Custom server interactions', () => {
+    beforeEach(() => {
+      jasmine.Ajax.install()
+    })
+
+    afterEach(() => {
+      jasmine.Ajax.uninstall()
+    })
+
+    const modelsWithTransform = ['customModel', 'customModelConfigured']
+    modelsWithTransform.forEach((model) => {
+      it('can get a custom model array', (done) => {
+        customMockArrayRequest()
+        const state = store.getState()
+        api.selectors.entityManager[model].getEntities(state).asyncGetArray()
+          .then(array => {
+            expect(array).toEqual(customTestServerArrayResponse.data)
+            done()
+          })
+      })
+
+      it('can get a custom model by id', (done) => {
+        customMockSingleRequest()
+        const state = store.getState()
+        api.selectors.entityManager[model].getEntities(state).asyncGetById(1)
+          .then(model => {
+            expect(model).toEqual(customTestServerSingleResponse)
+            done()
+          })
       })
     })
   })

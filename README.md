@@ -48,6 +48,9 @@ This is a redux based framework for managering api entities and application form
 ### 06.03.2018
  1. Added `clearData` action to entityManager, so we can clear all api data for model. Useful for cases, when we want to forget some corrupted entities loaded.
  2. Added `clearDataOnRouteChange` setting for model, so we can clear all model data on route changes
- 
+
 ### 04.04.2018
  1. Added `fetchConfig` to RestifyLinkedModel. This config will be applied in linkedModel.getById(<PK>, fetchConfig)
+
+### 13.04.2018
+ 1. Added `transformArrayResponse` and `getEntityUrl` to api and model configs
