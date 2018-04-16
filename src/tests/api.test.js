@@ -490,6 +490,20 @@ describe('api', () => {
         })
     })
 
+    it('can delete a model by id', (done) => {
+      jasmine.Ajax.stubRequest(`${modelUrl}1/`).andReturn({
+        status: 200,
+        responseText: '',
+        responseHeaders,
+      })
+      const state = store.getState()
+      store.dispatch(api.actions.entityManager.testModel.deleteById(1))
+        .then(res => {
+          expect(res.status).toBe(200)
+          done()
+        })
+    })
+
     const specialModelResponse = {
       special_id: 999,
       test: true,
@@ -673,6 +687,20 @@ describe('api', () => {
         api.selectors.entityManager[model].getEntities(state).asyncGetById(1)
           .then(model => {
             expect(model).toEqual(customTestServerSingleResponse)
+            done()
+          })
+      })
+
+      it('can delete custom model by id', (done) => {
+        jasmine.Ajax.stubRequest(`${customModelSingleUrl}1`).andReturn({
+          status: 200,
+          responseText: '',
+          responseHeaders,
+        })
+        const state = store.getState()
+        store.dispatch(api.actions.entityManager[model].deleteById(1))
+          .then(res => {
+            expect(res.status).toBe(200)
             done()
           })
       })

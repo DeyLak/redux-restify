@@ -247,7 +247,7 @@ const globalActions = {
 
   deleteById: (modelType) => (id) => (dispatch) => {
     const currentModel = RESTIFY_CONFIG.registeredModels[modelType]
-    const urlToLoad = `${currentModel.endpoint}${id}`
+    const urlToLoad = currentModel.endpoint
     dispatch(globalActions.updateOptimisticById(modelType)(id, { $deleted: true }))
 
     return dispatch(apiGeneralActions.callDel({
