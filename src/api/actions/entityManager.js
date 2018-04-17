@@ -104,7 +104,6 @@ const globalActions = {
   updateFromRawData: (modelType) => (id, data, query, allowClearPages = true) => {
     const currentModel = RESTIFY_CONFIG.registeredModels[modelType]
     const currentApi = RESTIFY_CONFIG.registeredApies[currentModel.apiName]
-    const idField = currentModel.idField
     const transformEntityResponse = currentModel && currentModel.transformEntityResponse ||
                                     currentApi && currentApi.transformEntityResponse ||
                                     defaulTransformEntityResponse
@@ -162,13 +161,12 @@ const globalActions = {
                                     currentApi && currentApi.transformArrayResponse ||
                                     defaultTransformArrayResponse
 
-    let onSuccess
     if (currentModel.pagination) {
       query.page = page
       query.pageSize = pageSize
     }
 
-    onSuccess = (data) => {
+    const onSuccess = (data) => {
       const transformedData = transformArrayResponse(data, currentModel.pagination)
       return globalActions.updateData(modelType)(
         transformedData.data,

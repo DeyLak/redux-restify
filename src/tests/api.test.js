@@ -13,7 +13,6 @@ import {
   TEST_API_HOST,
   TEST_API_PREFIX,
   TEST_MODEL_ENDPOINT,
-  OTHER_TEST_API_PREFIX,
   modelsDefinitions,
   responseHeaders,
 
@@ -496,7 +495,6 @@ describe('api', () => {
         responseText: '',
         responseHeaders,
       })
-      const state = store.getState()
       store.dispatch(api.actions.entityManager.testModel.deleteById(1))
         .then(res => {
           expect(res.status).toBe(200)
@@ -731,8 +729,8 @@ describe('api', () => {
         customMockSingleRequest()
         const state = store.getState()
         api.selectors.entityManager[model].getEntities(state).asyncGetById(1)
-          .then(model => {
-            expect(model).toEqual(customTestServerSingleResponse)
+          .then(entity => {
+            expect(entity).toEqual(customTestServerSingleResponse)
             done()
           })
       })
@@ -743,7 +741,6 @@ describe('api', () => {
           responseText: '',
           responseHeaders,
         })
-        const state = store.getState()
         store.dispatch(api.actions.entityManager[model].deleteById(1))
           .then(res => {
             expect(res.status).toBe(200)

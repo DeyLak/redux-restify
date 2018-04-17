@@ -567,16 +567,16 @@ const globalActions = {
         const transformEntityResponse = currentModel && currentModel.transformEntityResponse ||
                                         currentApi && currentApi.transformEntityResponse ||
                                         defaulTransformEntityResponse
-        const transformedResponse = transformEntityResponse(res).data
-        if (transformedResponse && currentModel && currentForm.updateEntity) {
+        const transformed = transformEntityResponse(res).data
+        if (transformed && currentModel && currentForm.updateEntity) {
           dispatch(
-            api.actions.entityManager[currentForm.model].updateById(transformedResponse[idField], transformedResponse),
+            api.actions.entityManager[currentForm.model].updateById(transformed[idField], transformed),
           )
         }
-        if (transformedResponse && currentForm.model && transformedResponse[idField]) {
+        if (transformed && currentForm.model && transformed[idField]) {
           state = getState()
           resolve({
-            data: api.selectors.entityManager[currentForm.model].getEntities(state).getById(transformedResponse[idField]),
+            data: api.selectors.entityManager[currentForm.model].getEntities(state).getById(transformed[idField]),
             status,
           })
         } else {

@@ -44,10 +44,10 @@ const customGetEntityUrl = ({
 }
 const customGetEntityUrlWithMethod = (options) => {
   const url = customGetEntityUrl(options)
-  if (crudAction === CRUD_ACTIONS.read || crudAction === CRUD_ACTIONS.delete) return url
   const {
     crudAction,
   } = options
+  if (crudAction === CRUD_ACTIONS.read || crudAction === CRUD_ACTIONS.delete) return url
   return {
     url,
     method: crudAction === CRUD_ACTIONS.update ? 'post' : 'put',

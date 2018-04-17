@@ -92,6 +92,7 @@ class ApiXhrAdapter {
     this.deafultDateFormat = deafultDateFormat
     this.defaultSortField = defaultSortField
     this.transformArrayResponse = transformArrayResponse
+    this.transformEntityResponse = transformEntityResponse
     this.getEntityUrl = getEntityUrl
 
     this.alertAction = alertAction
