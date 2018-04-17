@@ -67,8 +67,18 @@ Simple entity config is a javascript object like
   * _count_ should represent all objects count, that are available on server (if api provides such field)
   * _page_ is number of page in server pagination(if api provides such field)
 * **getEntityUrl**
-  Function to get custom url for manipulating entity CRUD like: `({apiHost, apiPrefix, modelEndpoint, entityId}) => 'url'`
-
+  Function to get custom url for manipulating entity CRUD like:
+```javascript
+({
+  apiHost, // Defined in config api host
+  apiPrefix, // Defined in config api prefix
+  modelEndpoint, // Actual endpoint, that is going to be loaded
+  entityId, // Entity id, that is participating in the request
+  crudAction, // CRUD action
+  specialAction, // specialAction from form config. Can be added to url in some way.
+}) => 'url'
+```
+  Can return either string url to load, or object `{ url: 'url', method: 'post' }`, also defining method of the request
 ## Registering an entity
 All entities should be registered in `initRestify` function call by passing `modelsDefinitions` key in options dic. It should be a dict with model configs, like:
 ```javascript

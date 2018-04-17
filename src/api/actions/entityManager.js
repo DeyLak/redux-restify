@@ -1,6 +1,6 @@
 import * as selectors from '../selectors'
 import { ACTIONS_TYPES } from '../actionsTypes'
-import { DEFAULT_PAGE_SIZE, DEFAULT_API_NAME, getPagesConfigHash } from '../constants'
+import { DEFAULT_PAGE_SIZE, DEFAULT_API_NAME, getPagesConfigHash, CRUD_ACTIONS } from '../constants'
 import { RESTIFY_CONFIG } from '../../config'
 import { onInitRestify } from '../../init'
 import { ACTIONS_ALERTS, ACTION_DELETE } from '../../constants'
@@ -176,6 +176,7 @@ const globalActions = {
       onSuccess,
       query,
       urlHash,
+      crudAction: CRUD_ACTIONS.read,
     }))
     .then(() => {
       state = getState()
@@ -233,6 +234,7 @@ const globalActions = {
       query,
       urlHash,
       id,
+      crudAction: CRUD_ACTIONS.read,
       getEntityUrl: currentModel.getEntityUrl,
     }))
     .then(() => {
@@ -255,6 +257,7 @@ const globalActions = {
       url: urlToLoad,
       getEntityUrl: currentModel.getEntityUrl,
       id,
+      crudAction: CRUD_ACTIONS.delete,
       onSuccess: [
         () => globalActions.updateById(modelType)(id, { $deleted: true }),
         () => globalActions.showEntityAlert(modelType)(ACTION_DELETE),

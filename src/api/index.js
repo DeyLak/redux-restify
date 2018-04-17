@@ -7,6 +7,8 @@ import * as selectors from './selectors'
 
 export * from './models'
 
+export { CRUD_ACTIONS } from './constants'
+
 export default {
   actions,
   constants: {

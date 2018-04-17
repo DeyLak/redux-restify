@@ -1,6 +1,11 @@
 import { objectToCamel } from 'helpers/namingNotation'
 import * as actions from '../actions/loadsManager'
-import { DEFAULT_PAGE_SIZE, DEFAULT_API_SORT_FIELD, DEFAULT_BACKEND_DATE_FORMAT, queryFormat } from '../constants'
+import {
+  DEFAULT_PAGE_SIZE,
+  DEFAULT_API_SORT_FIELD,
+  DEFAULT_BACKEND_DATE_FORMAT,
+  queryFormat,
+} from '../constants'
 
 
 const CONTENT_TYPE_HEADER = 'Content-type'
@@ -36,8 +41,9 @@ const defaultGetEntityUrl = ({
   apiPrefix,
   modelEndpoint,
   entityId,
+  specialAction,
 }) => {
-  const baseUrl = `${modelEndpoint}${entityId || ''}`
+  const baseUrl = `${modelEndpoint}${entityId || ''}${entityId ? '/' : ''}${specialAction || ''}`
   const slash = baseUrl.endsWith('/') || baseUrl.includes('?') ? '' : '/'
   return `${apiHost}${apiPrefix}${baseUrl}${slash}`
 }
@@ -65,7 +71,7 @@ class ApiXhrAdapter {
      // page is number of page in server pagination(if api provides such field)
     transformArrayResponse,
     // Get custom url for manipulating entity CRUD
-    // ({apiHost, apiPrefix, modelEndpoint, entityId}) => 'url'
+    // ({apiHost, apiPrefix, modelEndpoint, entityId, crudAction, specialAction}) => 'url'
     getEntityUrl = defaultGetEntityUrl,
 
     // @deprecated this api is very poor constructed and should not be used
@@ -132,11 +138,18 @@ class ApiXhrAdapter {
         apiPrefix: config.withoutPrefix ? '/' : this.apiPrefix,
         modelEndpoint: baseUrl,
         entityId: config.id,
+        crudAction: config.crudAction,
+        specialAction: config.specialAction,
       })
+      let methodToUse = method
+      if (typeof url === 'object') {
+        methodToUse = url.method
+        url = url.url
+      }
       if (config.query && Object.keys(config.query).length) {
         url += `?${queryFormat(config.query, { dateFormat: this.deafultDateFormat })}`
       }
-      api.open(method, url)
+      api.open((config.forceMethod || methodToUse).toLowerCase(), url)
       // TODO by @deylak add more thoughtful headers configuration,
       // For now it's just a hack for some browsers sending wrong accept headers, causing DRF to return browsable api
       api.setRequestHeader(ACCEPT_HEADER, '*/*')

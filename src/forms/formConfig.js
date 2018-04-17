@@ -3,7 +3,7 @@ import uuidV4 from 'uuid/v4'
 import { RESTIFY_CONFIG } from '../config'
 import { mergeAndReplaceArrays } from 'helpers/nestedObjects'
 import { isDefAndNotNull, isPureObject } from 'helpers/def'
-
+import { CRUD_ACTIONS } from '../api'
 
 const UUID_FUNC = '$uuid'
 
@@ -45,6 +45,7 @@ export const DEFAULT_FORM_OBJECT = {
   resultOrderArrays: true, // Should arrays be ordered by order filed
   // Action object, action type or callback, dispatched on successfull submit. Warning, that callbacks only can be use
   // with static form type, or in nested configs, cause of dynamic forms are serialized into redux store
+  // @deprecated use Promises instead
   onSuccess: undefined,
   // Fields that can by synced with query params.
   // If value id false - field just syncs, if true, query will reset all other fields even uset one's.
@@ -61,6 +62,9 @@ export const DEFAULT_FORM_OBJECT = {
   validateOnSubmit: true, // Should form be validated before submitting
   allowSendInvalid: false, // Allow to send form with errors to server
   mapServerDataToIds: false, // When mapping server data to form, it maps foreign keys to ids
+  // Passed to model getEntityUrl function and used for defining some urls
+  // Can be detected automatically between create and update, based on id field
+  crudAction: undefined,
 }
 
 export const getFormObjectConfig = (formType, name, config) => {

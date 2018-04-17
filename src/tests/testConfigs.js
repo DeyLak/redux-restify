@@ -3,7 +3,7 @@ import {
   setRestifyStore,
 } from '../init'
 
-import api from '../api'
+import api, { CRUD_ACTIONS } from '../api'
 import RestifyForeignKeysArray from '../api/models/RestifyForeignKeysArray'
 import RestifyForeignKey from '../api/models/RestifyForeignKey'
 import forms from '../forms'
@@ -28,6 +28,36 @@ export const responseHeaders = [
     value: 'application/json',
   },
 ]
+
+const customGetEntityUrl = ({
+  apiHost,
+  apiPrefix,
+  modelEndpoint,
+  entityId,
+  crudAction,
+}) => {
+  let requestType = entityId ? 'single' : 'bulk'
+  if (crudAction !== CRUD_ACTIONS.read) {
+    requestType = 'single'
+  }
+  return `${apiHost}${apiPrefix}${requestType}/${modelEndpoint}${entityId || ''}`
+}
+const customGetEntityUrlWithMethod = (options) => {
+  const url = customGetEntityUrl(options)
+  if (crudAction === CRUD_ACTIONS.read || crudAction === CRUD_ACTIONS.delete) return url
+  const {
+    crudAction,
+  } = options
+  return {
+    url,
+    method: crudAction === CRUD_ACTIONS.update ? 'post' : 'put',
+  }
+}
+
+const customTransformArrayResponse = (response) => ({
+  data: response.data,
+  count: response.data.length,
+})
 
 export const apiDefinitions = {
   testApi: {
@@ -57,18 +87,8 @@ export const apiDefinitions = {
     apiPrefix: CUSTOM_TEST_API_PREFIX,
     allowedNoTokenEndpoints: [],
     httpCodesCallbacks: () => {},
-    transformArrayResponse: (response) => ({
-      data: response.data,
-      count: response.data.length,
-    }),
-    getEntityUrl: ({
-      apiHost,
-      apiPrefix,
-      modelEndpoint,
-      entityId,
-    }) => {
-      return `${apiHost}${apiPrefix}${entityId ? 'single' : 'bulk'}/${modelEndpoint}${entityId || ''}`
-    }
+    transformArrayResponse: customTransformArrayResponse,
+    getEntityUrl: customGetEntityUrlWithMethod,
   },
 }
 
@@ -152,21 +172,11 @@ export const modelsDefinitions = {
     name: 'Custom api model',
     defaults: {
       id: undefined,
-      name: undefined,
+      test: undefined,
     },
     pagination: false,
-    getEntityUrl: ({
-      apiHost,
-      apiPrefix,
-      modelEndpoint,
-      entityId,
-    }) => {
-      return `${apiHost}${apiPrefix}${entityId ? 'single' : 'bulk'}/${modelEndpoint}${entityId || ''}`
-    },
-    transformArrayResponse: response => ({
-      data: response.data,
-      count: response.data.length,
-    }),
+    getEntityUrl: customGetEntityUrl,
+    transformArrayResponse: customTransformArrayResponse,
   },
   customModelConfigured: {
     apiName: 'customTestApiConfigured',
@@ -175,7 +185,7 @@ export const modelsDefinitions = {
     pagination: false,
     defaults: {
       id: undefined,
-      name: undefined,
+      test: undefined,
     },
   },
 }
@@ -234,6 +244,18 @@ export const formsDefinitions = {
     },
     transformBeforeSubmit: (data) => {
       return data.arrayField
+    },
+  },
+  requestCustomFormId: {
+    model: 'customModel',
+    defaults: {
+      test: undefined,
+    },
+  },
+  requestCustomFormIdConfigured: {
+    model: 'customModelConfigured',
+    defaults: {
+      test: undefined,
     },
   },
 }

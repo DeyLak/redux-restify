@@ -547,10 +547,14 @@ describe('api', () => {
     const formNames = [
       'testRequestFormId',
       'testRequestFormOtherId',
+      'requestCustomFormId',
+      'requestCustomFormIdConfigured',
     ]
     const modelNames = [
       'testModel',
       'testModelOtherId',
+      'customModel',
+      'customModelConfigured',
     ]
     const idsObjects = [
       {
@@ -559,12 +563,87 @@ describe('api', () => {
       {
         specialId: 'special',
       },
+      {
+        id: 1,
+      },
+      {
+        id: 1,
+      },
+    ]
+    const customTestServerArrayResponse = {
+      status: 'ok',
+      data: [
+        {
+          id: 1,
+          test: '1',
+        },
+        {
+          id: 2,
+          test: '2',
+        },
+        {
+          id: 3,
+          test: '3',
+        },
+      ],
+    }
+    const customTestServerSingleResponse = {
+      id: 1,
+      test: '1',
+    }
+    const customDefaultUrl = `${customModelBulkUrl}`
+    const customMockArrayRequest = (response = customTestServerArrayResponse, {
+      url = customDefaultUrl,
+    } = {}) => {
+      jasmine.Ajax.stubRequest(url).andReturn({
+        status: 200,
+        responseText: JSON.stringify(response),
+        responseHeaders,
+      })
+    }
+    const customMockSingleRequest = (response = customTestServerSingleResponse, {
+      url = `${customModelSingleUrl}1`,
+    } = {}) => {
+      jasmine.Ajax.stubRequest(url).andReturn({
+        status: 200,
+        responseText: JSON.stringify(response),
+        responseHeaders,
+      })
+    }
+
+    const createUrls = [
+      modelUrl,
+      modelUrl,
+      customModelSingleUrl,
+      customModelSingleUrl,
+    ]
+    const updateUrls = [
+      `${modelUrl}1/`,
+      `${modelUrl}special/`,
+      `${customModelSingleUrl}1`,
+      `${customModelSingleUrl}1`,
+    ]
+    const createMethods = [
+      'post',
+      'post',
+      'post',
+      'put',
+    ]
+    const updateMethods = [
+      'patch',
+      'patch',
+      'patch',
+      'post',
     ]
     formNames.forEach((formName, index) => {
-      it('Can update an entity by id, after form submitting: post and then patch', (done) => {
+      it('Can update an entity by id, after form submitting: create and then update. Also for custom urls.', (done) => {
         const idsObj = idsObjects[index]
+        const createUrl = createUrls[index]
+        const updateUrl = updateUrls[index]
+        const createMethod = createMethods[index]
+        const updateMethod = updateMethods[index]
         // Test post
-        jasmine.Ajax.stubRequest(modelUrl).andReturn({
+        jasmine.Ajax.stubRequest(createUrl).andReturn({
           status: 201,
           responseText: JSON.stringify({
             test: true,
@@ -584,6 +663,7 @@ describe('api', () => {
           let currentForm = forms.selectors[formName].getForm(state)
 
           expect(request.data().test).toEqual(currentForm.test)
+          expect(request.method).toBe(createMethod)
           let recievedEntity = api.selectors.entityManager[modelName].getEntities(state).getById(idsObj[idField])
           let checkEntity = {
             ...idsObj,
@@ -593,7 +673,7 @@ describe('api', () => {
 
           // Test patch
           store.dispatch(forms.actions[formName].changeField('test', false))
-          jasmine.Ajax.stubRequest(`${modelUrl}${idsObj[idField]}/`).andReturn({
+          jasmine.Ajax.stubRequest(updateUrl).andReturn({
             status: 200,
             responseText: JSON.stringify({
               test: false,
@@ -607,6 +687,7 @@ describe('api', () => {
             currentForm = forms.selectors[formName].getForm(state)
 
             expect(request.data().test).toEqual(currentForm.test)
+            expect(request.method).toBe(updateMethod)
             recievedEntity = api.selectors.entityManager[modelName].getEntities(state).getById(idsObj[idField])
             checkEntity = {
               ...currentForm,
@@ -617,56 +698,6 @@ describe('api', () => {
           })
         })
       })
-    })
-  })
-  const customTestServerArrayResponse = {
-    status: 'ok',
-    data: [
-      {
-        id: 1,
-        name: '1',
-      },
-      {
-        id: 2,
-        name: '2',
-      },
-      {
-        id: 3,
-        name: '3',
-      },
-    ],
-  }
-  const customTestServerSingleResponse = {
-    id: 1,
-    name: '1',
-  }
-  const customDefaultUrl = `${customModelBulkUrl}`
-  const customMockArrayRequest = (response = customTestServerArrayResponse, {
-    url = customDefaultUrl,
-  } = {}) => {
-    jasmine.Ajax.stubRequest(url).andReturn({
-      status: 200,
-      responseText: JSON.stringify(response),
-      responseHeaders,
-    })
-  }
-  const customMockSingleRequest = (response = customTestServerSingleResponse, {
-    url = `${customModelSingleUrl}1`,
-  } = {}) => {
-    jasmine.Ajax.stubRequest(url).andReturn({
-      status: 200,
-      responseText: JSON.stringify(response),
-      responseHeaders,
-    })
-  }
-
-  describe('Custom server interactions', () => {
-    beforeEach(() => {
-      jasmine.Ajax.install()
-    })
-
-    afterEach(() => {
-      jasmine.Ajax.uninstall()
     })
 
     const modelsWithTransform = ['customModel', 'customModelConfigured']

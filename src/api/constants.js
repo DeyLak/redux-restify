@@ -62,3 +62,15 @@ export const getSpecialIdWithQuery = (id, query) => {
   if (!query) return id
   return `${id}/?${queryFormat(query)}`
 }
+
+export const CRUD_ACTION_CREATE = 'create'
+export const CRUD_ACTION_UPDATE = 'update'
+export const CRUD_ACTION_DELETE = 'delete'
+export const CRUD_ACTION_READ = 'read'
+
+export const CRUD_ACTIONS = {
+  [CRUD_ACTION_CREATE]: CRUD_ACTION_CREATE,
+  [CRUD_ACTION_UPDATE]: CRUD_ACTION_UPDATE,
+  [CRUD_ACTION_DELETE]: CRUD_ACTION_DELETE,
+  [CRUD_ACTION_READ]: CRUD_ACTION_READ,
+}

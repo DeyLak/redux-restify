@@ -197,6 +197,33 @@ describe('forms', () => {
     expect(request.data()).toEqual(new Array(5).fill(0).map(() => ({ test: true })))
   })
 
+  const testSpecialResponse = {
+    id: 1,
+    true: true,
+  }
+
+  it('Can send array, by using transform function', () => {
+    jasmine.Ajax.stubRequest(`${modelUrl}special`).andReturn({
+      status: 200,
+      responseText: JSON.stringify(testSpecialResponse),
+      responseHeaders: [
+        {
+          name: 'Content-type',
+          value: 'application/json',
+        },
+      ],
+    })
+    store.dispatch(forms.actions.sendQuickForm({
+      model: 'testModel',
+      specialAction: 'special',
+      values: {
+        test: true,
+      },
+    })).then((model) => {
+      expect(model).toEqual(testSpecialResponse)
+    })
+  })
+
   const testCreatedModel = { id: 1, test: true }
   it('Clears pages after new entity added', (done) => {
     jasmine.Ajax.stubRequest(modelUrl).andReturn({

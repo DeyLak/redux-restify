@@ -23,7 +23,7 @@ import { objectToLowerSnake } from 'helpers/namingNotation'
 import { isPureObject } from 'helpers/def'
 import { mutateObject, getRecursiveObjectReplacement, getNestedObjectField } from 'helpers/nestedObjects'
 
-import api, { RestifyForeignKey, RestifyForeignKeysArray } from '../api'
+import api, { RestifyForeignKey, RestifyForeignKeysArray, CRUD_ACTIONS } from '../api'
 import { RESTIFY_CONFIG } from '../config'
 import { onInitRestify } from '../init'
 import { ACTION_UPDATE, ACTION_CREATE } from '../constants'
@@ -579,9 +579,16 @@ const globalActions = {
       errorCallbacks.push(globalActions.setErrors(formType))
 
       const defaultMethod = currentId ? 'patch' : 'post'
-      dispatch(api.actions.callApi(currentForm.method ? currentForm.method.toLowerCase() : defaultMethod)({
+      const currentCrudAction = currentId ? CRUD_ACTIONS.update : CRUD_ACTIONS.create
+      dispatch(api.actions.callApi(defaultMethod)({
         apiName: currentApiName,
-        url: currentId ? `${url}${currentId}/${currentForm.specialAction}` : `${url}${currentForm.specialAction}`,
+        id: currentId,
+        crudAction: currentForm.crudAction || currentCrudAction,
+        url,
+        specialAction: currentForm.specialAction,
+        getEntityUrl: currentModel && currentModel.getEntityUrl,
+        forceMethod: currentForm.method,
+
         onError: errorCallbacks,
         onSuccess: successCallbacks,
         data: currentForm.convertToSnakeCaseBeforeSend ? objectToLowerSnake(data) : data,
