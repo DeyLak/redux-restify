@@ -24,6 +24,7 @@ import { isPureObject } from 'helpers/def'
 import { mutateObject, getRecursiveObjectReplacement, getNestedObjectField } from 'helpers/nestedObjects'
 
 import api, { RestifyForeignKey, RestifyForeignKeysArray, CRUD_ACTIONS } from '../api'
+import { defaulTransformEntityResponse } from '../api/actions/entityManager'
 import { RESTIFY_CONFIG } from '../config'
 import { onInitRestify } from '../init'
 import { ACTION_UPDATE, ACTION_CREATE } from '../constants'
@@ -471,8 +472,10 @@ const globalActions = {
       currentModel = RESTIFY_CONFIG.registeredModels[currentForm.model]
     }
     let idField = 'id'
+    let currentApi
     if (currentModel) {
       idField = currentModel.idField
+      currentApi = RESTIFY_CONFIG.registeredApies[currentModel.apiName]
     }
     if (currentForm.validate && currentForm.validateOnSubmit) {
       const errors = dispatch(globalActions.validate(formType)())
@@ -561,13 +564,19 @@ const globalActions = {
 
       // Workaround for dispatching callbacks(behaves like thunk function)
       successCallbacks.push((res, status) => () => {
-        if (res && currentModel && currentForm.updateEntity) {
-          dispatch(api.actions.entityManager[currentForm.model].updateById(res[idField], res))
+        const transformEntityResponse = currentModel && currentModel.transformEntityResponse ||
+                                        currentApi && currentApi.transformEntityResponse ||
+                                        defaulTransformEntityResponse
+        const transformedResponse = transformEntityResponse(res).data
+        if (transformedResponse && currentModel && currentForm.updateEntity) {
+          dispatch(
+            api.actions.entityManager[currentForm.model].updateById(transformedResponse[idField], transformedResponse),
+          )
         }
-        if (res && currentForm.model && res[idField]) {
+        if (transformedResponse && currentForm.model && transformedResponse[idField]) {
           state = getState()
           resolve({
-            data: api.selectors.entityManager[currentForm.model].getEntities(state).getById(res[idField]),
+            data: api.selectors.entityManager[currentForm.model].getEntities(state).getById(transformedResponse[idField]),
             status,
           })
         } else {

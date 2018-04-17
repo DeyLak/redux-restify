@@ -591,6 +591,10 @@ describe('api', () => {
       id: 1,
       test: '1',
     }
+    const customEntityResponse = {
+      status: 'ok',
+      data: customTestServerSingleResponse,
+    }
     const customDefaultUrl = `${customModelBulkUrl}`
     const customMockArrayRequest = (response = customTestServerArrayResponse, {
       url = customDefaultUrl,
@@ -701,6 +705,17 @@ describe('api', () => {
     })
 
     const modelsWithTransform = ['customModel', 'customModelConfigured']
+
+    it('can get a model with custom entity response', (done) => {
+      customMockSingleRequest(customEntityResponse)
+      const state = store.getState()
+      api.selectors.entityManager.customModelSingleEntityResponse.getEntities(state).asyncGetById(1)
+        .then(model => {
+          expect(model).toEqual(customTestServerSingleResponse)
+          done()
+        })
+    })
+
     modelsWithTransform.forEach((model) => {
       it('can get a custom model array', (done) => {
         customMockArrayRequest()

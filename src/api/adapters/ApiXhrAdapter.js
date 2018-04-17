@@ -73,6 +73,10 @@ class ApiXhrAdapter {
     // Get custom url for manipulating entity CRUD
     // ({apiHost, apiPrefix, modelEndpoint, entityId, crudAction, specialAction}) => 'url'
     getEntityUrl = defaultGetEntityUrl,
+    // Transform single entity server response into restify model info(model data from server)
+    // (response) => ({ data: {} })
+    // should return an object with data field, that can be mapped into restify entity
+    transformEntityResponse,
 
     // @deprecated this api is very poor constructed and should not be used
     alertAction, // TODO by @deylak need to think of entities CRUD callback api
@@ -156,7 +160,6 @@ class ApiXhrAdapter {
       if (token) {
         api.setRequestHeader(AUTH_HEADER, `Token ${token}`)
       }
-
       if (CSRFToken) {
         api.setRequestHeader(CSRF_HEADER, CSRFToken)
       }

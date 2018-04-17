@@ -27,6 +27,10 @@ const defaultTransformArrayResponse = (response, pagination) => {
   }
 }
 
+export const defaulTransformEntityResponse = (response) => ({
+  data: response,
+})
+
 const globalActions = {
   updateData: (modelType) => (
     data,
@@ -72,7 +76,7 @@ const globalActions = {
   }),
 
   /**
-   * Updates an object by id from raw server data
+   * Updates an object by id from raw data
    * @param {string|number} [id] - id of model to be updated
    * @param {Object} [data] - raw server data
    * @param {Object} [query] - query, used for this id, so we can store it separatlly from normal model
@@ -87,6 +91,25 @@ const globalActions = {
       query,
       allowClearPages,
     }
+  },
+
+  /**
+   * Updates an object from raw server response
+   * @param {string|number} [id] - id of model to be updated
+   * @param {Object} [data] - raw server response
+   * @param {Object} [query] - query, used for this id, so we can store it separatlly from normal model
+   * @param {Boolean} [allowClearPages] - should we reset pages, after updating entity(usually for some sorting configs)
+   * @return {Object} Redux action to dispatch
+   */
+  updateFromRawData: (modelType) => (id, data, query, allowClearPages = true) => {
+    const currentModel = RESTIFY_CONFIG.registeredModels[modelType]
+    const currentApi = RESTIFY_CONFIG.registeredApies[currentModel.apiName]
+    const idField = currentModel.idField
+    const transformEntityResponse = currentModel && currentModel.transformEntityResponse ||
+                                    currentApi && currentApi.transformEntityResponse ||
+                                    defaulTransformEntityResponse
+    const transformedData = transformEntityResponse(data).data
+    return globalActions.updateById(modelType)(id, transformedData, query, allowClearPages)
   },
 
   updateOptimisticById: (modelType) => (id, data, query) => ({
@@ -229,7 +252,7 @@ const globalActions = {
     return dispatch(apiGeneralActions.callGet({
       apiName: config.apiName || currentModel.apiName,
       url: urlToLoad,
-      onSuccess: (data) => () => dispatch(globalActions.updateById(modelType)(id, data, query)),
+      onSuccess: (data) => () => dispatch(globalActions.updateFromRawData(modelType)(id, data, query)),
       onError: globalActions.setLoadErrorForId(modelType)(id, true, query),
       query,
       urlHash,

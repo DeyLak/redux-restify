@@ -66,6 +66,9 @@ Simple entity config is a javascript object like
   * _data_ should be an array of model objects
   * _count_ should represent all objects count, that are available on server (if api provides such field)
   * _page_ is number of page in server pagination(if api provides such field)
+* **transformEntityResponse**
+  Function to get restify entity info from server response `(response) => ({ data: {} })`
+  Should return an object with data field, that can be mapped into restify entity
 * **getEntityUrl**
   Function to get custom url for manipulating entity CRUD like:
 ```javascript

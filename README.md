@@ -54,3 +54,7 @@ This is a redux based framework for managering api entities and application form
 
 ### 13.04.2018
  1. Added `transformArrayResponse` and `getEntityUrl` to api and model configs
+
+### 17.04.2018
+ 1. Added `crudAction` and `specialAction` to `getEntityUrl`, now `getEntityUrl` can return an object with utl and method
+ 2. Added `transformEntityResponse` to api and model configs

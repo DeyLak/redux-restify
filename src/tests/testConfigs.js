@@ -178,6 +178,20 @@ export const modelsDefinitions = {
     getEntityUrl: customGetEntityUrl,
     transformArrayResponse: customTransformArrayResponse,
   },
+  customModelSingleEntityResponse: {
+    apiName: 'customTestApi',
+    endpoint: TEST_MODEL_ENDPOINT,
+    name: 'Custom api model with configured single entity response',
+    defaults: {
+      id: undefined,
+      test: undefined,
+    },
+    pagination: false,
+    getEntityUrl: customGetEntityUrl,
+    transformEntityResponse: (response) => ({
+      data: response.data,
+    }),
+  },
   customModelConfigured: {
     apiName: 'customTestApiConfigured',
     endpoint: TEST_MODEL_ENDPOINT,
