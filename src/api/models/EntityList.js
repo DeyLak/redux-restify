@@ -217,7 +217,9 @@ class EntityList {
       })
       return memo
     }
-    const result = Object.keys(this.modelConfig.defaults).reduce(mapDefaultKeysToModel(), {})
+    const result = Object.keys(this.modelConfig.defaults).reduce(mapDefaultKeysToModel(), {
+      $modelType: this.modelType,
+    })
     Object.keys(normalized).forEach(key => {
       if (!Object.prototype.hasOwnProperty.call(result, key)) {
         Object.defineProperty(result, key, {

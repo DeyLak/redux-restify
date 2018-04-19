@@ -194,12 +194,15 @@ If we get task restify model by id 1, we will get this object:
     id: 7,
     firstName: 'Ivan',
     lastName: 'Ivanov',
+    $modelType: 'user',
   },
   boardId: 2,
   board: { // This is lazy getter, it will make a request to taskBoard endpoint and return entity fields as soon, as they are ready
     id: 2,
     title: 'Test board',
+    $modelType: 'taskBoard',
   },
+  $modelType: 'task',
 }
 ```
 
@@ -282,7 +285,7 @@ Single entity selector also accepts an optional config, like:
 Restify default model object contains all fields, that we used in model config, so we can use it in render functions and do not check every field availability(for examples, arrays will be returned as `[]`, not as `undefine`, so we can safely use `map` functions). Also, default model object contains some special fields:
 * **$error** - shows, if this id was requested and returned error(for example, 404)
 * **$loading** - shows, if this id is being loaded now
-* **$modelType** - string model name, useful for creating some universal componens for managering default objects(for example, CheckEntityLoaded component, that shows loading indicator, instead of children, if the model passed to it is being loaded). We can use `modelType`for displaying a message, like, ``${modelType} is loading...``
+* **$modelType** - string model name, useful for creating some universal componens for managering default objects(for example, CheckEntityLoaded component, that shows loading indicator, instead of children, if the model passed to it is being loaded). We can use `modelType` for displaying a message, like, ``${modelType} is loading...``
 
 ### Single entities methods
 

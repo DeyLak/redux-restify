@@ -224,7 +224,7 @@ describe('forms', () => {
     })
   })
 
-  const testCreatedModel = { id: 1, test: true }
+  const testCreatedModel = { id: 1, test: true, $modelType: 'testModel' }
   it('Clears pages after new entity added', (done) => {
     jasmine.Ajax.stubRequest(modelUrl).andReturn({
       status: 201,

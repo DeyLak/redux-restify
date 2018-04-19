@@ -109,6 +109,11 @@ describe('api', () => {
       },
     ],
   }
+
+  const testServerArrayRestifyModels = testServerArrayResponse.results.map(item => ({
+    ...item,
+    $modelType: 'testModel',
+  }))
   const defaultUrl = `${modelUrl}?page=1&page_size=10`
   const mockRequest = (response = testServerArrayResponse, {
     url = defaultUrl,
@@ -137,7 +142,7 @@ describe('api', () => {
         currentArray = api.selectors.entityManager.testModel.getEntities(state).getArray()
         if (currentArray.length > 0) {
           clearInterval(interval)
-          expect(currentArray).toEqual(testServerArrayResponse.results)
+          expect(currentArray).toEqual(testServerArrayRestifyModels)
           done()
         } else {
           expect(currentArray).toEqual([])
@@ -160,7 +165,7 @@ describe('api', () => {
     //     expect(request.status).toEqual(404)
     //     if (currentArray.length > 0) {
     //       clearInterval(interval)
-    //       expect(currentArray).toEqual(testServerArrayResponse.results)
+    //       expect(currentArray).toEqual(testServerArrayRestifyModels)
     //       done()
     //     } else {
     //       expect(currentArray).toEqual([])
@@ -173,7 +178,7 @@ describe('api', () => {
       const state = store.getState()
       api.selectors.entityManager.testModel.getEntities(state).asyncGetArray()
         .then(array => {
-          expect(array).toEqual(testServerArrayResponse.results)
+          expect(array).toEqual(testServerArrayRestifyModels)
           done()
         })
     })
@@ -249,6 +254,10 @@ describe('api', () => {
     // }
     const modelWithForeignKeyRestifyModel = {
       ...modelWithForeignKeyResponse,
+      notInArray: modelWithForeignKeyResponse.notInArray.map(item => ({
+        ...item,
+        $modelType: 'testModel',
+      })),
       notInArrayIds: testServerArrayResponse.results.map(item => item.id),
     }
     // const modelWithForeignKeyRestifyModelId2 = {
@@ -270,13 +279,19 @@ describe('api', () => {
         let state = store.getState()
         api.selectors.entityManager.testModelWithForeignKey.getEntities(state).asyncGetById(1, config)
           .then(model => {
-            expect(model).toEqual(modelWithForeignKeyRestifyModel)
+            expect(model).toEqual({
+              ...modelWithForeignKeyRestifyModel,
+              $modelType: 'testModelWithForeignKey',
+            })
             mockRequest([modelWithForeignKeyResponse])
             state = store.getState()
             api.selectors.entityManager.testModelWithForeignKey.getEntities(state).asyncGetArray().then(() => {
               state = store.getState()
               const currentEntity = api.selectors.entityManager.testModelWithForeignKey.getEntities(state).getById(1)
-              expect(currentEntity).toEqual(modelWithForeignKeyRestifyModel)
+              expect(currentEntity).toEqual({
+                ...modelWithForeignKeyRestifyModel,
+                $modelType: 'testModelWithForeignKey',
+              })
             })
             done()
           })
@@ -289,14 +304,24 @@ describe('api', () => {
       let state = store.getState()
       api.selectors.entityManager.testModelWithForeignKey.getEntities(state).asyncGetById(1)
         .then(model => {
-          expect(model).toEqual(modelWithForeignKeyRestifyModel)
+          expect(model).toEqual({
+            ...modelWithForeignKeyRestifyModel,
+            $modelType: 'testModelWithForeignKey',
+          })
           mockRequest(modelWithForeignKey2Response, { url: idUrl })
           api.selectors.entityManager.testModelWithForeignKey2.getEntities(state).asyncGetById(1)
             .then((newModel) => {
-              expect(newModel.foreignKeys[0]).toEqual(modelWithForeignKeyResponse2)
+              expect(newModel.foreignKeys[0]).toEqual({
+                ...modelWithForeignKeyResponse2,
+                // This is foreign key
+                $modelType: 'testModelWithForeignKey',
+              })
               state = store.getState()
               const currentEntity = api.selectors.entityManager.testModelWithForeignKey.getEntities(state).getById(1)
-              expect(currentEntity).toEqual(modelWithForeignKeyResponse2)
+              expect(currentEntity).toEqual({
+                ...modelWithForeignKeyResponse2,
+                $modelType: 'testModelWithForeignKey',
+              })
               expect(currentEntity.notInForeignKey).toBe(true)
               done()
             })
@@ -313,6 +338,7 @@ describe('api', () => {
           let currentEntity = api.selectors.entityManager.testModelWithForeignKey.getEntities(state).getById(1)
           expect(currentEntity).toEqual({
             ...modelWithForeignKey2Response.foreignKeys[0],
+            $modelType: 'testModelWithForeignKey',
           })
 
           mockRequest(modelWithForeignKeyResponse, { url: idUrl })
@@ -321,9 +347,13 @@ describe('api', () => {
             currentEntity = api.selectors.entityManager.testModelWithForeignKey.getEntities(state).getById(1)
             if (currentEntity.notInArray.length > 0) {
               clearInterval(interval)
-              expect(currentEntity).toEqual(modelWithForeignKeyRestifyModel)
+              expect(currentEntity).toEqual({
+                ...modelWithForeignKeyRestifyModel,
+                $modelType: 'testModelWithForeignKey',
+              })
               done()
             } else {
+              console.log(currentEntity.notInArray)
               expect(currentEntity.notInArray).toEqual([])
             }
           }, 0)
@@ -363,6 +393,7 @@ describe('api', () => {
           expect(currentEntity).toEqual({
             ...modelResponseWithNull,
             notInForeignKey: undefined,
+            $modelType: 'testModelWithForeignKey',
           })
 
           mockRequest(modelWithForeignKeyResponse, { url: idUrl })
@@ -452,7 +483,10 @@ describe('api', () => {
         const state = store.getState()
         currentModel = api.selectors.entityManager.testModel.getEntities(state).getById('')
         if (currentModel.test === modelResponse.test) {
-          expect(currentModel).toEqual(modelResponse)
+          expect(currentModel).toEqual({
+            ...modelResponse,
+            $modelType: 'testModel',
+          })
           clearInterval(interval)
           done()
         }
@@ -670,6 +704,7 @@ describe('api', () => {
           let checkEntity = {
             ...idsObj,
             ...currentForm,
+            $modelType: modelName,
           }
           expect(recievedEntity).toEqual(checkEntity)
 
@@ -694,6 +729,7 @@ describe('api', () => {
             checkEntity = {
               ...currentForm,
               ...idsObj,
+              $modelType: modelName,
             }
             expect(recievedEntity).toEqual(checkEntity)
             done()
@@ -709,7 +745,10 @@ describe('api', () => {
       const state = store.getState()
       api.selectors.entityManager.customModelSingleEntityResponse.getEntities(state).asyncGetById(1)
         .then(model => {
-          expect(model).toEqual(customTestServerSingleResponse)
+          expect(model).toEqual({
+            ...customTestServerSingleResponse,
+            $modelType: 'customModelSingleEntityResponse',
+          })
           done()
         })
     })
@@ -720,7 +759,10 @@ describe('api', () => {
         const state = store.getState()
         api.selectors.entityManager[model].getEntities(state).asyncGetArray()
           .then(array => {
-            expect(array).toEqual(customTestServerArrayResponse.data)
+            expect(array).toEqual(customTestServerArrayResponse.data.map(item => ({
+              ...item,
+              $modelType: model,
+            })))
             done()
           })
       })
@@ -730,7 +772,10 @@ describe('api', () => {
         const state = store.getState()
         api.selectors.entityManager[model].getEntities(state).asyncGetById(1)
           .then(entity => {
-            expect(entity).toEqual(customTestServerSingleResponse)
+            expect(entity).toEqual({
+              ...customTestServerSingleResponse,
+              $modelType: model,
+            })
             done()
           })
       })
