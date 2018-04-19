@@ -154,7 +154,7 @@ class ApiXhrAdapter {
       if (config.query && Object.keys(config.query).length) {
         url += `?${queryFormat(config.query, { dateFormat: this.deafultDateFormat })}`
       }
-      api.open((config.forceMethod || methodToUse).toLowerCase(), url)
+      api.open((config.forceMethod || methodToUse).toUpperCase(), url)
       // TODO by @deylak add more thoughtful headers configuration,
       // For now it's just a hack for some browsers sending wrong accept headers, causing DRF to return browsable api
       api.setRequestHeader(ACCEPT_HEADER, '*/*')

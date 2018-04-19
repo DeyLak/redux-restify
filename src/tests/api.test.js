@@ -660,16 +660,16 @@ describe('api', () => {
       `${customModelSingleUrl}1`,
     ]
     const createMethods = [
-      'post',
-      'post',
-      'post',
-      'put',
+      'POST',
+      'POST',
+      'POST',
+      'PUT',
     ]
     const updateMethods = [
-      'patch',
-      'patch',
-      'patch',
-      'post',
+      'PATCH',
+      'PATCH',
+      'PATCH',
+      'POST',
     ]
     formNames.forEach((formName, index) => {
       it('Can update an entity by id, after form submitting: create and then update. Also for custom urls.', (done) => {
