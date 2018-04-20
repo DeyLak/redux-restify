@@ -25,7 +25,7 @@ const convertToValidQueryParam = (key, value, { dateFormat = DEFAULT_BACKEND_DAT
     return result
   }
 
-  result += encodeURIComponent(value)
+  result += value
   return result
 }
 
