@@ -177,7 +177,7 @@ const getEntityManagerReducer = (modelTypes = []) => {
             const currentModel = RESTIFY_CONFIG.registeredModels[modelType]
             if (currentModel.clearDataOnRouteChange) {
               newModelState = modelInitState
-            } else {
+            } else if (currentModel.clearPagesOnRouteChange) {
               newModelState = {
                 ...currentModelState,
                 pages: {},

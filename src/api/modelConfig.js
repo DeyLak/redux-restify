@@ -23,6 +23,7 @@ export const DEFAULT_MODEL_OBJECT = {
   orderArrays: true, // Sort arrays, if they have order field
   // By default, only pages are being cleared on route changes, so requests will be repeated, to get fresh data
   // But sometimes, we want the entire data to be cleared and re-requested.
+  clearPagesOnRouteChange: true,
   clearDataOnRouteChange: false,
   apiName: DEFAULT_API_NAME, // Api name, from registeres apies list
   transformArrayResponse: undefined, // Same, as in api config, but for one model

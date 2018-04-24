@@ -353,7 +353,6 @@ describe('api', () => {
               })
               done()
             } else {
-              console.log(currentEntity.notInArray)
               expect(currentEntity.notInArray).toEqual([])
             }
           }, 0)
