@@ -13,6 +13,7 @@ import {
   TEST_API_HOST,
   TEST_API_PREFIX,
   TEST_MODEL_ENDPOINT,
+  OTHER_TEST_API_PREFIX,
   modelsDefinitions,
   responseHeaders,
 
@@ -449,31 +450,42 @@ describe('api', () => {
       })
     })
 
-    // const customUrl = 'custom-url'
-    // const urls = [
-    //   `${TEST_API_HOST}${TEST_API_PREFIX}${customUrl}/`,
-    //   `${TEST_API_HOST}${OTHER_TEST_API_PREFIX}${customUrl}/`,
-    // ]
-    // const apiNames = [
-    //   'testApi',
-    //   'otherTestApi',
-    // ]
-    // urls.forEach((url, index) => {
-    //   it('can get a model by special url and custom api name', (done) => {
-    //     mockRequest(modelResponse, { url })
-    //     let state = store.getState()
-    //     api.selectors.entityManager.testModel.getEntities(state)
-    //       .asyncGetByUrl(customUrl, { apiName: apiNames[index] })
-    //       .then((object) => {
-    //         expect(object).toEqual(modelResponse)
-    //         state = store.getState()
-    //         const recievedObject = api.selectors.entityManager.testModel.getEntities(state)
-    //           .getByUrl(customUrl, { apiName: apiNames[index] })
-    //         expect(recievedObject).toEqual(modelResponse)
-    //         done()
-    //       })
-    //   })
-    // })
+    const customUrls = [
+      'custom-url',
+      'custom-url/',
+    ]
+    const urls = [
+      `${TEST_API_HOST}${TEST_API_PREFIX}${customUrls[0]}/`,
+      `${TEST_API_HOST}${OTHER_TEST_API_PREFIX}${customUrls[0]}/`,
+    ]
+    const apiNames = [
+      'testApi',
+      'otherTestApi',
+    ]
+    customUrls.forEach(customUrl => {
+      urls.forEach((url, index) => {
+        it('can get a model by special url and custom api name', (done) => {
+          mockRequest(modelResponse, { url })
+          let state = store.getState()
+          api.selectors.entityManager.testModel.getEntities(state)
+            .asyncGetByUrl(customUrl, { apiName: apiNames[index] })
+            .then((object) => {
+              expect(object).toEqual({
+                ...modelResponse,
+                $modelType: 'testModel',
+              })
+              state = store.getState()
+              const recievedObject = api.selectors.entityManager.testModel.getEntities(state)
+                .getByUrl(customUrl, { apiName: apiNames[index] })
+              expect(recievedObject).toEqual({
+                ...modelResponse,
+                $modelType: 'testModel',
+              })
+              done()
+            })
+        })
+      })
+    })
 
     it('can get a special model by empty id', (done) => {
       mockRequest(modelResponse, { url: modelUrl })
