@@ -121,6 +121,7 @@ const globalActions = {
   discardOptimisticUpdateById: (modelType) => (id) => ({
     type: ACTIONS_TYPES[modelType].updateOptimisticById,
     id,
+    addOptimisticCount: -1,
     data: {},
   }),
 
