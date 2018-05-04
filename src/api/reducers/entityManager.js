@@ -144,6 +144,7 @@ const getEntityManagerReducer = (modelTypes = []) => {
         case ACTIONS_TYPES[modelType].updateOptimisticById: {
           const specialId = getSpecialIdWithQuery(action.id, action.query)
           const currentEntity = currentModelState.singleEntities[specialId]
+          const addOptimisticCount = action.addOptimisticCount || 1
           newModelState = {
             ...currentModelState,
             singleEntities: {
@@ -151,7 +152,7 @@ const getEntityManagerReducer = (modelTypes = []) => {
               [specialId]: {
                 actual: (currentEntity && currentEntity.actual) || {},
                 optimistic: action.data,
-                $optimisticCount: (currentEntity && currentEntity.$optimisticCount + 1) || 1,
+                $optimisticCount: (currentEntity && currentEntity.$optimisticCount || 0) + addOptimisticCount,
               },
             },
           }
