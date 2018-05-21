@@ -64,3 +64,6 @@ This is a redux based framework for managering api entities and application form
 
 ### 24.04.2018
  1. Added `clearPagesOnRouteChange` setting for model, so we can config default clearing pages on route changes
+
+### 21.05.2018
+ 1. Added `modelConfig` setting for `getArray` and other array getters, allowing to tweak model config for given request

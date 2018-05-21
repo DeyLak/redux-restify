@@ -253,7 +253,8 @@ Value of sort query param(see global restify options)
 If entity has a parent, this should be a dic of model names and their ids, for example `{ parentModel: 1}`
 * **specialConfig** (default: false)
 Do not save entities from this request as single source of truth, keep them inside the array, so they don't mess up loaded data. Can be useful sometimes, if some entity request is returning not default format
-* **pageSize** (default: model pageSize)
+* **modelConfig** (default: {})
+Allows to tweak model config for this array configuration(accepts any modelConfig options, that can be used in array request). For example: change page size, define custom endpoint to recieve models etc.
 Array request pageSize
 
 ### Array methods

@@ -42,8 +42,8 @@ export const queryFormat = (query, config = {}) => {
   return formatedQuery.slice(1)
 }
 
-export const getPagesConfigHash = (filter, sort, parentEntities, specialConfig, pageSize) => {
-  return hash({ filter, sort, parentEntities, specialConfig, pageSize })
+export const getPagesConfigHash = (filter, sort, parentEntities, specialConfig, pageSize, modelConfig) => {
+  return hash({ filter, sort, parentEntities, specialConfig, pageSize, modelConfig })
 }
 
 export const getQueryHash = (query) => {

@@ -43,6 +43,7 @@ describe('api', () => {
       undefined,
       {},
       false,
+      {}
     ))
     let state = store.getState()
     const testArray = api.selectors.entityManager.testModel.getEntities(state).getArray()
@@ -178,6 +179,24 @@ describe('api', () => {
       mockRequest()
       const state = store.getState()
       api.selectors.entityManager.testModel.getEntities(state).asyncGetArray()
+        .then(array => {
+          expect(array).toEqual(testServerArrayRestifyModels)
+          done()
+        })
+    })
+
+    it('can get a model array with custom model config', (done) => {
+      const customEndpoint = 'absolutely-custom/'
+      mockRequest(testServerArrayResponse.results, {
+        url: `${TEST_API_HOST}${TEST_API_PREFIX}${customEndpoint}`,
+      })
+      const state = store.getState()
+      api.selectors.entityManager.testModel.getEntities(state).asyncGetArray({
+        modelConfig: {
+          endpoint: customEndpoint,
+          pagination: false,
+        },
+      })
         .then(array => {
           expect(array).toEqual(testServerArrayRestifyModels)
           done()

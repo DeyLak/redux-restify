@@ -41,6 +41,7 @@ const globalActions = {
     sort,
     parentEntities,
     specialConfig,
+    modelConfig,
   ) => (dispatch) => {
     if (!data || typeof data.map !== 'function') {
       throw new RestifyError(`Tried to update data for ${modelType}, but there is no map function on items!
@@ -56,6 +57,7 @@ const globalActions = {
       sort,
       parentEntities,
       specialConfig,
+      modelConfig,
     })
   },
 
@@ -139,10 +141,14 @@ const globalActions = {
       sort,
       parentEntities = {},
       specialConfig = false,
+      modelConfig = {},
       urlHash,
     } = config
     let state = getState()
-    const currentModel = RESTIFY_CONFIG.registeredModels[modelType]
+    const currentModel = {
+      ...RESTIFY_CONFIG.registeredModels[modelType],
+      ...modelConfig,
+    }
     const currentApi = RESTIFY_CONFIG.registeredApies[currentModel.apiName]
 
     const query = {
@@ -152,12 +158,13 @@ const globalActions = {
       query[currentApi.defaultSortField] = sort
     }
 
-    const pageSize = config.pageSize ||
+    // TODO remove pageSize prop from top-level config
+    const pageSize = modelConfig.pageSize || config.pageSize ||
                        currentModel && currentModel.pageSize ||
                        currentApi && currentApi.defaultPageSize ||
                        DEFAULT_PAGE_SIZE
 
-    const transformArrayResponse = config.transformArrayResponse ||
+    const transformArrayResponse = modelConfig.transformArrayResponse ||
                                     currentModel && currentModel.transformArrayResponse ||
                                     currentApi && currentApi.transformArrayResponse ||
                                     defaultTransformArrayResponse
@@ -178,6 +185,7 @@ const globalActions = {
         sort,
         parentEntities,
         specialConfig,
+        modelConfig,
       )
     }
 
@@ -190,7 +198,6 @@ const globalActions = {
         return currentParent.endpoint + currentId + url
       }, url)
     }
-
     return dispatch(apiGeneralActions.callGet({
       apiName: currentModel.apiName,
       getEntityUrl: currentModel.getEntityUrl,
@@ -208,6 +215,7 @@ const globalActions = {
         parentEntities,
         specialConfig,
         pageSize,
+        modelConfig,
       })
     })
     .catch((e) => { throw e })

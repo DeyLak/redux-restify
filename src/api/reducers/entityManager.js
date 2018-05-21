@@ -97,6 +97,7 @@ const getEntityManagerReducer = (modelTypes = []) => {
             action.parentEntities,
             action.specialConfig,
             action.pageSize,
+            action.modelConfig,
           )
           const normalizedData = action.data.map(item => {
             const { model, normalized } = mapDataToRestifyModel(item, modelType)
