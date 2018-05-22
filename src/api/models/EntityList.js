@@ -520,7 +520,7 @@ class EntityList {
     modelConfig = {},
   } = {}) {
     const currentConfig = getPagesConfigHash(filter, sort, parentEntities, specialConfig, pageSize, modelConfig)
-    const url = this.urls.find(u => u.key === `${this.modelConfig.endpoint}${currentConfig}`)
+    const url = this.urls.find(u => u.key === `${modelConfig.endpoint || this.modelConfig.endpoint}${currentConfig}`)
     return !url || url.downloading !== 0
   }
 
