@@ -431,7 +431,7 @@ const globalActions = {
       if (validationField instanceof ValidationPreset) {
         addToValidationResult(validationField.validate(currentLevelValues, currentValues), currentPath)
       } else if (typeof validationField === 'function') {
-        addToValidationResult(validationField(currentLevelValues, currentValues), currentPath)
+        addToValidationResult(validationField(currentLevelValues, currentValues, getState), currentPath)
       } else if (validationField !== null && typeof validationField === 'object') {
         Object.keys(validationField).forEach(key => {
           addToValidationResult(calucalateCurrentLevelValidate(
