@@ -559,9 +559,10 @@ const globalActions = {
           errorCallbacks.push(api.actions.entityManager[currentForm.model].discardOptimisticUpdateById(currentId))
         }
         const actionType = currentId ? ACTION_UPDATE : ACTION_CREATE
-        // TODO by @deylak rework this api
-        if (Object.prototype.hasOwnProperty.call(currentForm, 'SECRET_SHOW_ALERTS') && currentForm.SECRET_SHOW_ALERTS) {
-          successCallbacks.push(() => api.actions.entityManager[currentForm.model].showEntityAlert(actionType))
+        successCallbacks.push(() => api.actions.entityManager[currentForm.model].showEntityAlert(actionType))
+        // TODO by @deylak rework alerts api, so we don't need this hacks
+        if (Object.prototype.hasOwnProperty.call(currentForm, 'SECRET_SHOW_ALERTS') && !currentForm.SECRET_SHOW_ALERTS) {
+          successCallbacks.pop()
         }
       }
 
