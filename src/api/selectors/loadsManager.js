@@ -10,19 +10,21 @@ import GroupedValue, { groupObjects, flushGroupedValues } from 'helpers/GroupedV
 
 export const getLoadsManager = state => state.api.loadsManager
 
-export const getUrls = (url, query) => state => {
-  const loadsManager = getLoadsManager(state)
-  if (query !== undefined) {
-    const currentUrl = state.api.loadsManager[url + getQueryHash(query)] || {}
-    return [currentUrl]
+export const getUrls = (url, query) => createSelector(
+  getLoadsManager,
+  (loadsManager) => {
+    if (query !== undefined) {
+      const currentUrl = loadsManager[url + getQueryHash(query)] || {}
+      return [currentUrl]
+    }
+    const baseUrl = (url || '').split('?')[0]
+    return Object.keys(loadsManager).filter(key => key.includes(baseUrl))
+                                                    .map(key => ({
+                                                      ...loadsManager[key],
+                                                      key,
+                                                    }))
   }
-  const baseUrl = (url || '').split('?')[0]
-  return Object.keys(loadsManager).filter(key => key.includes(baseUrl))
-                                                  .map(key => ({
-                                                    ...loadsManager[key],
-                                                    key,
-                                                  }))
-}
+)
 
 export const getUrl = (url, query) => state => {
   const urls = getUrls(url, query)(state)
