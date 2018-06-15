@@ -445,7 +445,7 @@ const globalActions = {
     calucalateCurrentLevelValidate(currentValues, currentForm.validate)
     const currentErrors = selectors.getErrors(formType)(state)
     const newErrors = merge({}, currentErrors, validationResult)
-    if (deepEqual(currentErrors, newErrors)) {
+    if (!deepEqual(currentErrors, newErrors)) {
       dispatch(globalActions.setErrors(formType)(newErrors))
     }
     return newErrors
