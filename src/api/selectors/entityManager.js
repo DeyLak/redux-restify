@@ -5,6 +5,7 @@ import { RESTIFY_CONFIG } from '../../config'
 import { onInitRestify } from '../../init'
 import { isPureObject } from 'helpers/def'
 import { getNestedObjectField } from 'helpers/nestedObjects'
+import RestifyError from '../models/RestifyError'
 
 import { getUrls } from './loadsManager'
 
@@ -13,7 +14,12 @@ const entityManager = {}
 const entityLists = {}
 
 const getModelSelectorsFromDict = (selectorsDict) => (modelType, isNested) => {
-  const modelConfig = RESTIFY_CONFIG.registeredModels[modelType].defaults
+  const currentModel = RESTIFY_CONFIG.registeredModels[modelType]
+  if (!currentModel) {
+    throw new RestifyError(`Tried to get ${modelType} model config, bu got undefined.
+      May be you used wrong foreign key?`)
+  }
+  const modelConfig = currentModel.defaults
 
   const getLinkedModels = (configPath = []) => (memo, key) => {
     let currentConfigPath = configPath.concat(key)

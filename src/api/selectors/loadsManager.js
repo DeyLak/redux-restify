@@ -23,7 +23,7 @@ export const getUrls = (url, query) => createSelector(
                                                       ...loadsManager[key],
                                                       key,
                                                     }))
-  }
+  },
 )
 
 export const getUrl = (url, query) => state => {

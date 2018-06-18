@@ -561,7 +561,10 @@ const globalActions = {
         const actionType = currentId ? ACTION_UPDATE : ACTION_CREATE
         successCallbacks.push(() => api.actions.entityManager[currentForm.model].showEntityAlert(actionType))
         // TODO by @deylak rework alerts api, so we don't need this hacks
-        if (Object.prototype.hasOwnProperty.call(currentForm, 'SECRET_SHOW_ALERTS') && !currentForm.SECRET_SHOW_ALERTS) {
+        if (
+          Object.prototype.hasOwnProperty.call(currentForm, 'SECRET_SHOW_ALERTS') &&
+          !currentForm.SECRET_SHOW_ALERTS
+        ) {
           successCallbacks.pop()
         }
       }

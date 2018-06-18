@@ -43,7 +43,7 @@ describe('api', () => {
       undefined,
       {},
       false,
-      {}
+      {},
     ))
     let state = store.getState()
     const testArray = api.selectors.entityManager.testModel.getEntities(state).getArray()
