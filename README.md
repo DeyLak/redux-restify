@@ -67,3 +67,6 @@ This is a redux based framework for managering api entities and application form
 
 ### 21.05.2018
  1. Added `modelConfig` setting for `getArray` and other array getters, allowing to tweak model config for given request
+
+### 19.06.2018
+ 1. Added `RestifyField` base field class. Does not have any functionality yet, but can be used to give a field a verbose name

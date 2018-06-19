@@ -14,6 +14,7 @@ export {
   RestifyForeignKey,
   RestifyForeignKeysArray,
   RestifyArray,
+  RestifyField,
   CRUD_ACTIONS,
 } from './api'
 

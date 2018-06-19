@@ -1,9 +1,9 @@
-class RestifyArray {
-  constructor({
-    defaults = {},
-  } = {}) {
+import RestifyField from './RestifyField'
+
+class RestifyArray extends RestifyField {
+  constructor(config = {}) {
+    super(config)
     this.$isRestifyArray = true
-    this.defaults = defaults
   }
 }
 

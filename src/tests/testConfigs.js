@@ -6,6 +6,7 @@ import {
 import api, { CRUD_ACTIONS } from '../api'
 import RestifyForeignKeysArray from '../api/models/RestifyForeignKeysArray'
 import RestifyForeignKey from '../api/models/RestifyForeignKey'
+import RestifyField from '../api/models/RestifyField'
 import forms from '../forms'
 
 import { createRestifyStore } from 'helpers/tests'
@@ -99,7 +100,7 @@ export const modelsDefinitions = {
     name: 'Test model',
     defaults: {
       id: undefined,
-      test: undefined,
+      test: new RestifyField({ verboseName: 'Test' }),
       notInForeignKey: undefined,
     },
   },
@@ -143,7 +144,7 @@ export const modelsDefinitions = {
     allowIdRequests: false,
     name: 'Test model with without requests',
     defaults: {
-      test: undefined,
+      test: new RestifyField({ verboseName: 'One more test field' }),
     },
   },
   recursiveModelFirst: {
@@ -184,7 +185,7 @@ export const modelsDefinitions = {
     name: 'Custom api model with configured single entity response',
     defaults: {
       id: undefined,
-      test: undefined,
+      test: new RestifyField({ verboseName: 'Test field' }),
     },
     pagination: false,
     getEntityUrl: customGetEntityUrl,
