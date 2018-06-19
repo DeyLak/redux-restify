@@ -230,7 +230,7 @@ class EntityList {
       if (!Object.prototype.hasOwnProperty.call(result, key)) {
         Object.defineProperty(result, key, {
           get: () => {
-            if (key !== 'id' && !key.startsWith('$')) {
+            if (this.modelConfig.warnAboutUnregisteredFields && key !== 'id' && !key.startsWith('$')) {
               console.warn(`
                 Call to ${key} property of ${this.modelType},
                 which is presented at back-end, but unregistered in model config!
