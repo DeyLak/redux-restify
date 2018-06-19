@@ -104,6 +104,20 @@ export const modelsDefinitions = {
       notInForeignKey: undefined,
     },
   },
+  testModelNested: {
+    apiName: 'testApi',
+    endpoint: TEST_MODEL_ENDPOINT,
+    name: 'Test model nested',
+    defaults: {
+      id: undefined,
+      test: new RestifyField({
+        defaults: {
+          nested: new RestifyField({ verboseName: 'Nested' }),
+        },
+        verboseName: 'Parent of the nested field',
+      }),
+    },
+  },
   testModelOtherId: {
     clearDataOnRouteChange: true,
     apiName: 'testApi',

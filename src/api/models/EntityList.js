@@ -6,6 +6,7 @@ import {
 } from '../constants'
 import { RESTIFY_CONFIG } from '../../config'
 import RestifyArray from './RestifyArray'
+import RestifyField from './RestifyField'
 import RestifyForeignKey from './RestifyForeignKey'
 import RestifyForeignKeysArray from './RestifyForeignKeysArray'
 import RestifyError from './RestifyError'
@@ -123,9 +124,8 @@ class EntityList {
       const currentConfigPath = configPath.concat(key)
       const currentField = defaults[key]
       const normalizedField = getNestedObjectField(normalized, currentConfigPath)
-      let mappedFields = {
-        [key]: normalizedField === undefined ? currentField : normalizedField,
-      }
+      // Fields of the mapped model, corresponding to current config field
+      let mappedFields
       if (currentField instanceof RestifyForeignKey || currentField instanceof RestifyForeignKeysArray) {
         const modelIdField = currentField.getIdField(key)
         let normalizedIdField = getNestedObjectField(normalized, configPath.concat(modelIdField))
@@ -179,16 +179,6 @@ class EntityList {
           // Nested model calculation not allowed, so not include this field
           mappedFields = {}
         }
-      } else if (isPureObject(currentField) && !Array.isArray(currentField)) {
-        if (normalizedField === null) {
-          mappedFields = {
-            [key]: null,
-          }
-        } else {
-          mappedFields = {
-            [key]: Object.keys(currentField).reduce(mapDefaultKeysToModel(currentConfigPath, currentField), {}),
-          }
-        }
       } else if (currentField instanceof RestifyArray) {
         let currentArray = normalizedField
         if (currentArray instanceof RestifyArray || !currentArray) {
@@ -200,6 +190,22 @@ class EntityList {
               mapDefaultKeysToModel(currentConfigPath.concat(index), currentField.defaults),
             {})
           }),
+        }
+      } else {
+        const currentDefaults = currentField instanceof RestifyField ? currentField.defaults : currentField
+        mappedFields = {
+          [key]: normalizedField === undefined ? currentDefaults : normalizedField,
+        }
+        if (isPureObject(currentDefaults) && !Array.isArray(currentDefaults)) {
+          if (normalizedField === null) {
+            mappedFields = {
+              [key]: null,
+            }
+          } else {
+            mappedFields = {
+              [key]: Object.keys(currentDefaults).reduce(mapDefaultKeysToModel(currentConfigPath, currentDefaults), {}),
+            }
+          }
         }
       }
       // We should not use Object.assign so we can save our getters

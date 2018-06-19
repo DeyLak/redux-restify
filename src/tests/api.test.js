@@ -32,6 +32,37 @@ describe('api', () => {
     expect(testEntities).toEqual(jasmine.any(EntityList))
   })
 
+  it('can nest RestifyFields configs with defaults option', () => {
+    const testData = [
+      { id: 1, test: { nested: true } },
+      { id: 2, test: { nested: false } },
+    ]
+    store.dispatch(api.actions.entityManager.testModelNested.updateData(
+      testData,
+      1,
+      10,
+      2,
+      {},
+      undefined,
+      {},
+      false,
+      {},
+    ))
+    let state = store.getState()
+    const testEntities = api.selectors.entityManager.testModelNested.getEntities(state)
+    const testArray = testEntities.getArray()
+    expect(removePrivateFields(testArray)).toEqual(testData)
+    const defaultObj = testEntities.getById(3)
+    expect(defaultObj).toEqual({
+      id: 3,
+      $modelType: 'testModelNested',
+      $loading: true,
+      test: {
+        nested: undefined,
+      },
+    })
+  })
+
   it('clears pages after router location changes', () => {
     const testData = [{ id: 1, test: true }, { id: 2, test: false }]
     store.dispatch(api.actions.entityManager.testModel.updateData(
