@@ -27,6 +27,7 @@ const prefixName = `${MODULE_NAME}/${NAME}`
 export const ACTIONS_TYPES = {
   // TODO by @deylak: Add private field here, so it doesn't conflict with models
   loadsManager: makeActionsBundle(prefixName, 'loadsManager', actionsTypesLoadsManager),
+  entityManager: makeActionsBundle(prefixName, 'entityManager', actionsTypesEntityManager),
 }
 
 onInitRestify(() => {

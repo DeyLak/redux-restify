@@ -16,7 +16,7 @@ const entityLists = {}
 const getModelSelectorsFromDict = (selectorsDict) => (modelType, isNested) => {
   const currentModel = RESTIFY_CONFIG.registeredModels[modelType]
   if (!currentModel) {
-    throw new RestifyError(`Tried to get ${modelType} model config, bu got undefined.
+    throw new RestifyError(`Tried to get ${modelType} model config, but got undefined.
       May be you used wrong foreign key?`)
   }
   const modelConfig = currentModel.defaults

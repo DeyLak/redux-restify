@@ -74,6 +74,9 @@ const getEntityManagerReducer = (modelTypes = []) => {
       memo[type] = newState[type]
       return memo
     }, {})
+    if (action.type === ACTIONS_TYPES.clearData) {
+      return initState
+    }
     for (let i = 0; i < modelTypes.length; i += 1) {
       const modelType = modelTypes[i]
       const currentModelState = newModelStates[modelType]
