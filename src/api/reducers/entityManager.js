@@ -67,14 +67,18 @@ const getEntityManagerReducer = (modelTypes = []) => {
     ...memo,
     [modelType]: { ...modelInitState },
   }), {})
+  if (process.env.TEST) {
+    // Ensure, that we don't apply any mutations in our updateByIdIsState function
+    Object.freeze(initState)
+  }
 
   return (state = initState, action) => {
-    const newState = state
+    const newState = { ...state }
     const newModelStates = modelTypes.reduce((memo, type) => {
-      memo[type] = newState[type]
+      memo[type] = { ...newState[type] }
       return memo
     }, {})
-    if (action.type === ACTIONS_TYPES.clearData) {
+    if (action.type === ACTIONS_TYPES.entityManager.clearData) {
       return initState
     }
     for (let i = 0; i < modelTypes.length; i += 1) {
