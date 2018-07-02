@@ -2,6 +2,8 @@
 
 This is a redux based framework for managering api entities and application forms.
 
+Check out the [docs](./docs) for more info.
+
 ## Change log
 
 ### 04.10.2017
