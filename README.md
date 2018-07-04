@@ -73,3 +73,6 @@ Check out the [docs](./docs) for more info.
 ### 19.06.2018
  1. Added `RestifyField` base field class. Does not have any functionality yet, but can be used to give a field a verbose name and default values
  2. Added `warnAboutUnregisteredFields` option to model config
+
+### 04.07.2018
+ 1. Added `onXhrReady` callback for api calls

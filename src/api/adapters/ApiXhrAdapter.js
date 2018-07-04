@@ -245,6 +245,9 @@ class ApiXhrAdapter {
         api.responseType = 'arraybuffer'
       }
       api.send(form)
+      if (typeof config.onXhrReady === 'function') {
+        config.onXhrReady(api)
+      }
     })
   }
 
