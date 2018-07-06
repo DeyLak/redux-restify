@@ -88,6 +88,7 @@ class EntityList {
       this.arrayLoaded = {}
       this.idLoaded = {}
     }
+    this.precalculatedSingles = {}
   }
 
   // loadsManager sets downloading url synchronously and causes rerender
@@ -312,10 +313,12 @@ class EntityList {
         $loading: false,
       })
     }
-
+    if (this.precalculatedSingles[specialId]) return this.precalculatedSingles[specialId]
     const currentEntity = this.singles[specialId]
     if (!forceLoad && currentEntity) {
-      return this.getRestifyModel(getOptimisticEntity(currentEntity), config)
+      const result = this.getRestifyModel(getOptimisticEntity(currentEntity), config)
+      this.precalculatedSingles[specialId] = result
+      return result
     }
 
     let shouldLoad = !preventLoad && !this.idLoaded[specialId] && this.modelConfig.allowIdRequests
@@ -330,6 +333,7 @@ class EntityList {
           urlHash: specialId,
         })).then((result) => {
           this.idLoaded[specialId] = false
+          this.precalculatedSingles[specialId]
           return result
         })
     }
@@ -367,8 +371,11 @@ class EntityList {
     }
     const specialId = getSpecialIdWithQuery(id, query)
     if (!isDefAndNotNull(specialId) || this.errors[specialId]) return Promise.resolve()
+    if (this.precalculatedSingles[specialId]) return this.precalculatedSingles[specialId]
     if (!forceLoad && this.singles[specialId]) {
-      return Promise.resolve(this.getRestifyModel(getOptimisticEntity(this.singles[specialId])))
+      const result = this.getRestifyModel(getOptimisticEntity(this.singles[specialId]))
+      this.precalculatedSingles[specialId] = result
+      return Promise.resolve(result)
     }
     if (!this.modelConfig.allowIdRequests) {
       console.warn(`
@@ -386,6 +393,7 @@ class EntityList {
       urlHash: specialId,
     })).then(result => {
       this.idLoaded[specialId] = false
+      this.precalculatedSingles[specialId] = result
       return result
     })
     return this.idLoaded[specialId]
