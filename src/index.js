@@ -16,6 +16,7 @@ export {
   RestifyArray,
   RestifyField,
   CRUD_ACTIONS,
+  EntityList,
 } from './api'
 
 export {
