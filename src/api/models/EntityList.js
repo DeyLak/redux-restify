@@ -313,7 +313,7 @@ class EntityList {
         $loading: false,
       })
     }
-    if (this.precalculatedSingles[specialId]) return this.precalculatedSingles[specialId]
+    if (!forceLoad && this.precalculatedSingles[specialId]) return this.precalculatedSingles[specialId]
     const currentEntity = this.singles[specialId]
     if (!forceLoad && currentEntity) {
       const result = this.getRestifyModel(getOptimisticEntity(currentEntity), config)
@@ -371,7 +371,7 @@ class EntityList {
     }
     const specialId = getSpecialIdWithQuery(id, query)
     if (!isDefAndNotNull(specialId) || this.errors[specialId]) return Promise.resolve()
-    if (this.precalculatedSingles[specialId]) return this.precalculatedSingles[specialId]
+    if (!forceLoad && this.precalculatedSingles[specialId]) return this.precalculatedSingles[specialId]
     if (!forceLoad && this.singles[specialId]) {
       const result = this.getRestifyModel(getOptimisticEntity(this.singles[specialId]))
       this.precalculatedSingles[specialId] = result
