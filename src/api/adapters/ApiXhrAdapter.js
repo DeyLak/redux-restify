@@ -52,6 +52,16 @@ const defaultGetEntityUrl = ({
   return `${apiHost}${apiPrefix}${baseUrl}${slash}`
 }
 
+const defaultGetGenericModel = (fieldValue) => ({
+  modelType: fieldValue._object,
+  model: fieldValue,
+})
+
+const defaultGetGenericFormField = (model) => ({
+  _object: model.$modelType,
+  id: model.id,
+})
+
 class ApiXhrAdapter {
   constructor({
     getToken, // Function () => apiToken (string)
@@ -81,6 +91,12 @@ class ApiXhrAdapter {
     // (response) => ({ data: {} })
     // should return an object with data field, that can be mapped into restify entity
     transformEntityResponse,
+    // Get generic model representation for RestifyGenericForeignKey
+    // (genericFieldRawValue) => ({ modelType: 'model', model: {} })
+    getGenericModel = defaultGetGenericModel,
+    // Get form field value for applyFormData with mapServerDataToIds: true
+    // (model) => model.id
+    getGenericFormField = defaultGetGenericFormField,
 
     // @deprecated this api is very poor constructed and should not be used
     alertAction, // TODO by @deylak need to think of entities CRUD callback api
@@ -98,6 +114,8 @@ class ApiXhrAdapter {
     this.transformArrayResponse = transformArrayResponse
     this.transformEntityResponse = transformEntityResponse
     this.getEntityUrl = getEntityUrl
+    this.getGenericModel = getGenericModel
+    this.getGenericFormField = getGenericFormField
 
     this.alertAction = alertAction
   }

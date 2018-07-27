@@ -7,6 +7,8 @@ import {
 import { RESTIFY_CONFIG } from '../../config'
 import RestifyArray from './RestifyArray'
 import RestifyField from './RestifyField'
+import RestifyLinkedModel from './RestifyLinkedModel'
+import RestifyGenericForeignKey from './RestifyGenericForeignKey'
 import RestifyForeignKey from './RestifyForeignKey'
 import RestifyForeignKeysArray from './RestifyForeignKeysArray'
 import RestifyError from './RestifyError'
@@ -127,15 +129,24 @@ class EntityList {
       const normalizedField = getNestedObjectField(normalized, currentConfigPath)
       // Fields of the mapped model, corresponding to current config field
       let mappedFields
-      if (currentField instanceof RestifyForeignKey || currentField instanceof RestifyForeignKeysArray) {
+      if (currentField instanceof RestifyLinkedModel) {
         const modelIdField = currentField.getIdField(key)
         let normalizedIdField = getNestedObjectField(normalized, configPath.concat(modelIdField))
+
+        let modelTypeField
+        let normalizedTypeField
+        if (currentField instanceof RestifyGenericForeignKey) {
+          modelTypeField = currentField.getTypeField(key)
+          normalizedTypeField = getNestedObjectField(normalized, configPath.concat(modelTypeField))
+        }
         // Getting linked model, or using same model for in-model references
         let linkedModel
         if (currentField.modelType === this.modelType) {
           if (!isNestedModel || currentField.allowNested) {
             linkedModel = this
           }
+        } else if (currentField instanceof RestifyGenericForeignKey) {
+          linkedModel = this.linkedModelsDict[normalizedTypeField]
         } else {
           linkedModel = this.linkedModelsDict[currentField.modelType]
         }
@@ -171,6 +182,9 @@ class EntityList {
               }
               return denormalized
             },
+          }
+          if (normalizedTypeField) {
+            mappedFields[modelTypeField] = normalizedTypeField
           }
           modelKeys[key] = modelIdField === null ? undefined : modelIdField
           if (modelKeys[key]) {

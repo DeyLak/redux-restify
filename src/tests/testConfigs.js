@@ -6,6 +6,7 @@ import {
 import api, { CRUD_ACTIONS } from '../api'
 import RestifyForeignKeysArray from '../api/models/RestifyForeignKeysArray'
 import RestifyForeignKey from '../api/models/RestifyForeignKey'
+import RestifyGenericForeignKey from '../api/models/RestifyGenericForeignKey'
 import RestifyField from '../api/models/RestifyField'
 import forms from '../forms'
 
@@ -217,6 +218,14 @@ export const modelsDefinitions = {
       test: undefined,
     },
   },
+  genericModel: {
+    apiName: 'testApi',
+    endpoint: TEST_MODEL_ENDPOINT,
+    name: 'Test model with generic foreign key',
+    defaults: {
+      genericField: new RestifyGenericForeignKey(['testModel', 'testModelNested']),
+    },
+  },
 }
 
 export const formsDefinitions = {
@@ -286,6 +295,14 @@ export const formsDefinitions = {
     defaults: {
       test: undefined,
     },
+  },
+  genericTestForm: {
+    model: 'genericModel',
+    defaults: {
+      id: undefined,
+      genericField: undefined,
+    },
+    mapServerDataToIds: true,
   },
 }
 

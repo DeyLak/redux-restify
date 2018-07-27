@@ -115,6 +115,9 @@ Models can be linked to each other. This is making use of data normalization for
 ### Available relation classes
 * **RestifyForeignKey** - simple model realtion, for example, user assigned to task
   usage: `new RestifyForeignKey('modelName', linkedModelConfig)`
+* **RestifyGenericForeignKey** - generic model relation, can store different object types inside one field.
+  You can specify `getGenericModel` and `getGenericFormField` in api config, to define, how generic relations are handled in your api.
+  usage: `new RestifyForeignKey(['modelName1', 'modelName2'], linkedModelConfig)`
 * **RestifyForeignKeysArray** - array of related models, for example, tasks in task board
   usage: `new ResifyForeignKeysArray('modelName', linkedModelConfig)`
 * **RestifyArray** - array of not-registered models with own nested structure for example, some wrapper entities with order and link to other entity
@@ -296,7 +299,9 @@ Restify default model object contains all fields, that we used in model config, 
 
 ## Actions
 
-`api.actions` have same actions structure for each registered model(for example: `api.actions.myModel.deleteById(1)`):
+### EntityManager
+
+`api.actions.entityManager` have same actions structure for each registered model(for example: `api.actions.entityManager.myModel.deleteById(1)`):
 
 * **clearPages()** - removes saved pages from store(only page ordering, not single entities). Usefull for making render functions, that are using array selectors, to re-request arrays
 * **clearData()** - same, as `clearPages`, but also removes singleEntitis from store. **Warning:** you should prefer to use clearPages, cause removing single entities can cause many id requests, if some other entities are relying on that one.

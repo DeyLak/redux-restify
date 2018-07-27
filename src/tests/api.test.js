@@ -143,10 +143,49 @@ describe('api', () => {
     ],
   }
 
+  const testGenericServerArrayResponse = {
+    count: 2,
+    next: null,
+    previous: null,
+    results: [
+      {
+        id: 1,
+        genericField: {
+          _object: 'testModel',
+          id: 1,
+          test: true,
+        },
+      },
+      {
+        id: 2,
+        genericField: {
+          _object: 'testModelNested',
+          id: 1,
+          test: {
+            nested: true,
+          },
+        },
+      },
+    ],
+  }
+
   const testServerArrayRestifyModels = testServerArrayResponse.results.map(item => ({
     ...item,
     $modelType: 'testModel',
   }))
+
+  const testGenericServerArrayRestifyModels = testGenericServerArrayResponse.results.map(item => ({
+    ...item,
+    genericFieldId: item.genericField.id,
+    genericFieldType: item.genericField._object,
+    genericField: {
+      id: item.genericField.id,
+      test: item.genericField.test,
+      $modelType: item.genericField._object,
+    },
+    $modelType: 'genericModel',
+  }))
+
   const defaultUrl = `${modelUrl}?page=1&page_size=10`
   const mockRequest = (response = testServerArrayResponse, {
     url = defaultUrl,
@@ -216,6 +255,16 @@ describe('api', () => {
         })
     })
 
+    it('can store generic relations', (done) => {
+      mockRequest(testGenericServerArrayResponse)
+      const state = store.getState()
+      api.selectors.entityManager.genericModel.getEntities(state).asyncGetArray()
+        .then(array => {
+          expect(array).toEqual(testGenericServerArrayRestifyModels)
+          done()
+        })
+    })
+
     it('can get a model array with custom model config', (done) => {
       const customEndpoint = 'absolutely-custom/'
       mockRequest(testServerArrayResponse.results, {
@@ -278,6 +327,16 @@ describe('api', () => {
       notInForeignKey: true,
       singleForeignKey: null,
       notInArray: testServerArrayResponse.results,
+    }
+
+    const modelGenericResponse = {
+      id: 1,
+      genericField: {
+        _object: 'testModel',
+        id: 1,
+        test: true,
+        notInForeignKey: false,
+      },
     }
 
     // const modelWithForeignKeyResponseId2 = {
@@ -632,6 +691,25 @@ describe('api', () => {
             // Null is converted to undefined by getForm
             singleForeignKey: undefined,
             notInArray: [1, 2, 3],
+          })
+          done()
+        })
+    })
+
+    it('can apply server data to a form with generic key', (done) => {
+      mockRequest(modelGenericResponse, { url: `${modelUrl}1/` })
+      let state = store.getState()
+      api.selectors.entityManager.genericModel.getEntities(state).asyncGetById(1)
+        .then(model => {
+          store.dispatch(forms.actions.genericTestForm.applyServerData(model))
+          state = store.getState()
+          const form = forms.selectors.genericTestForm.getForm(state)
+          expect(form).toEqual({
+            ...modelGenericResponse,
+            genericField: {
+              _object: modelGenericResponse.genericField._object,
+              id: modelGenericResponse.genericField.id,
+            },
           })
           done()
         })

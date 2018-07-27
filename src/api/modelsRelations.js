@@ -3,7 +3,9 @@ import unset from 'lodash/unset'
 
 import {
   RestifyArray,
+  RestifyLinkedModel,
   RestifyForeignKey,
+  RestifyGenericForeignKey,
   RestifyForeignKeysArray,
 } from './models'
 
@@ -18,6 +20,7 @@ import { getNestedObjectField } from 'helpers/nestedObjects'
 // This includes normalizing entities, converting to camelCase and other restify features
 export const mapDataToRestifyModel = (data, modelType) => {
   const currentModel = RESTIFY_CONFIG.registeredModels[modelType]
+  const currentApi = RESTIFY_CONFIG.registeredApies[currentModel.apiName]
 
   let resultModel = { ...data }
   if (currentModel.convertToCamelCase) {
@@ -34,25 +37,43 @@ export const mapDataToRestifyModel = (data, modelType) => {
     const currentConfigPath = configPath.concat(key)
     const currentFieldDefault = defaults[key]
     const currentField = getNestedObjectField(resultModel, currentConfigPath)
-    if (currentFieldDefault instanceof RestifyForeignKey || currentFieldDefault instanceof RestifyForeignKeysArray) {
-      if (!otherModels[currentFieldDefault.modelType]) {
-        otherModels[currentFieldDefault.modelType] = []
-      }
+    if (currentFieldDefault instanceof RestifyLinkedModel) {
+      const modelTypes = (
+        Array.isArray(currentFieldDefault.modelType) ? currentFieldDefault.modelType : [currentFieldDefault.modelType]
+      )
+      modelTypes.forEach(type => {
+        if (!otherModels[type]) {
+          otherModels[type] = []
+        }
+      })
       const modelIdField = currentFieldDefault.getIdField(key)
       const modelIdPath = configPath.concat(modelIdField)
+
+      let modelTypeField
+      let modelTypeFieldPath
+      if (currentFieldDefault instanceof RestifyGenericForeignKey) {
+        modelTypeField = currentFieldDefault.getTypeField(key)
+        modelTypeFieldPath = configPath.concat(modelTypeField)
+      }
       if (currentField) {
         const fieldsToMap = currentFieldDefault instanceof RestifyForeignKeysArray ? currentField : [currentField]
         const mappedIds = []
+        const mappedTypes = []
 
         fieldsToMap.forEach(field => {
-          // Reciewed id instead of model, just save it, later it will be handeled by getById
+          // Reciewed raw id instead of model, just save it, later it will be handeled by getById
           if (!isPureObject(field) && field !== null) {
             mappedIds.push(field)
           } else {
+            let rawModel = field
+            let currentModelType = currentFieldDefault.modelType
+            if (currentFieldDefault instanceof RestifyGenericForeignKey) {
+              ({ modelType: currentModelType, model: rawModel } = currentApi.getGenericModel(field))
+            }
             // Mapping connected model
-            const { model, normalized } = mapDataToRestifyModel(field, currentFieldDefault.modelType)
+            const { model, normalized } = mapDataToRestifyModel(rawModel, currentModelType)
             // Add connected model to normalized models
-            otherModels[currentFieldDefault.modelType].push(model)
+            otherModels[currentModelType].push(model)
             // If connected model has own normalized models, add them to result
             Object.keys(normalized).forEach(modelName => {
               if (!otherModels[modelName]) {
@@ -61,6 +82,7 @@ export const mapDataToRestifyModel = (data, modelType) => {
               otherModels[modelName] = otherModels[modelName].concat(normalized[modelName])
             })
             mappedIds.push(model.id)
+            mappedTypes.push(currentModelType)
           }
         })
         // Setting fields of the restify model
@@ -69,6 +91,9 @@ export const mapDataToRestifyModel = (data, modelType) => {
           set(resultModel, modelIdPath, mappedIds)
         } else {
           set(resultModel, modelIdPath, mappedIds[0])
+          if (currentFieldDefault instanceof RestifyGenericForeignKey) {
+            set(resultModel, modelTypeFieldPath, mappedTypes[0])
+          }
         }
       } else {
         unset(resultModel, currentConfigPath)
@@ -99,7 +124,6 @@ export const mapDataToRestifyModel = (data, modelType) => {
     newId = currentModel.idField(resultModel)
   }
   resultModel.id = newId
-
   return {
     model: resultModel,
     normalized: otherModels,

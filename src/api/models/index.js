@@ -1,5 +1,6 @@
 export EntityList from './EntityList'
 export RestifyForeignKey from './RestifyForeignKey'
+export RestifyGenericForeignKey from './RestifyGenericForeignKey'
 export RestifyForeignKeysArray from './RestifyForeignKeysArray'
 export RestifyArray from './RestifyArray'
 export RestifyLinkedModel from './RestifyLinkedModel'

@@ -23,7 +23,13 @@ import { objectToLowerSnake } from 'helpers/namingNotation'
 import { isPureObject } from 'helpers/def'
 import { mutateObject, getRecursiveObjectReplacement, getNestedObjectField } from 'helpers/nestedObjects'
 
-import api, { RestifyForeignKey, RestifyForeignKeysArray, CRUD_ACTIONS } from '../api'
+import api, {
+  RestifyLinkedModel,
+  RestifyGenericForeignKey,
+  RestifyForeignKey,
+  RestifyForeignKeysArray,
+  CRUD_ACTIONS,
+} from '../api'
 import { defaulTransformEntityResponse } from '../api/actions/entityManager'
 import { RESTIFY_CONFIG } from '../config'
 import { onInitRestify } from '../init'
@@ -129,12 +135,17 @@ const globalActions = {
     if (currentFormConfig.model) {
       currentModel = RESTIFY_CONFIG.registeredModels[currentFormConfig.model]
     }
+    // Technical fields, that should not be included in form, cause they are used only for restify models
     let keysToPass = []
     if (currentFormConfig.mapServerDataToIds) {
       keysToPass = Object.keys(currentModel.defaults).reduce((memo, key) => {
         const currentField = currentModel.defaults[key]
-        if (currentField instanceof RestifyForeignKey || currentField instanceof RestifyForeignKeysArray) {
-          return memo.concat(currentField.getIdField(key))
+        if (currentField instanceof RestifyLinkedModel) {
+          let result = memo.concat(currentField.getIdField(key))
+          if (currentField instanceof RestifyGenericForeignKey) {
+            result = result.concat(currentField.getTypeField(key))
+          }
+          return result
         }
         return memo
       }, [])
@@ -164,8 +175,14 @@ const globalActions = {
           currentField = currentModel.defaults[key]
         }
         if (currentField &&
-          (currentField instanceof RestifyForeignKey || currentField instanceof RestifyForeignKeysArray)) {
-          keyValue = obj[currentField.getIdField(key)]
+          (currentField instanceof RestifyLinkedModel)) {
+          if (currentField instanceof RestifyGenericForeignKey) {
+            const currentFieldModel = RESTIFY_CONFIG.registeredModels[obj[currentField.getTypeField(key)]]
+            const currentApi = RESTIFY_CONFIG.registeredApies[currentFieldModel.apiName]
+            keyValue = currentApi.getGenericFormField(obj[key])
+          } else {
+            keyValue = obj[currentField.getIdField(key)]
+          }
         } else {
           keyValue = dataReduceFunc(prevName.concat(key))(obj[key])
         }

@@ -76,3 +76,6 @@ Check out the [docs](./docs) for more info.
 
 ### 04.07.2018
  1. Added `onXhrReady` callback for api calls
+
+### 27.07.2018
+ 1. Added `RestifyGenericForeignKey` for gereric relations
