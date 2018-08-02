@@ -13,19 +13,38 @@ import { getUrls } from './loadsManager'
 const entityManager = {}
 const entityLists = {}
 
-const getModelSelectorsFromDict = (selectorsDict) => (modelType, isNested) => {
+const maxRecursion = 10
+
+const getModelSelectorsFromDict = (selectorsDict) => (modelType, excludeModels = {}) => {
   const currentModel = RESTIFY_CONFIG.registeredModels[modelType]
   if (!currentModel) {
     throw new RestifyError(`Tried to get ${modelType} model config, but got undefined.
       May be you used wrong foreign key?`)
   }
   const modelConfig = currentModel.defaults
+  let newExcludeModels = { ...excludeModels }
 
   const getLinkedModels = (configPath = []) => (memo, key) => {
     let currentConfigPath = configPath.concat(key)
     const currentField = getNestedObjectField(modelConfig, currentConfigPath)
+    if (newExcludeModels[modelType] >= maxRecursion) return memo
     if (currentField instanceof RestifyLinkedModel) {
-      if (isNested && !currentField.allowNested || currentField.modelType === modelType) return memo
+      const arrayModelType = Array.isArray(currentField.modelType) ? currentField.modelType : [currentField.modelType]
+      // Stop recursion for foreign keys to restricted models
+      // console.log(modelType, newExcludeModels, arrayModelType)
+      if (currentField.modelType === modelType) return memo
+
+      arrayModelType.forEach(model => {
+        newExcludeModels[model] = newExcludeModels[model] || 0
+        if (!currentField.allowNested) {
+          newExcludeModels[model] = maxRecursion
+        } else {
+          newExcludeModels[model] += 1
+        }
+      })
+      // Stop getting nested selectors for current model type
+      // console.log(modelType, newExcludeModels)
+      // if (nestLevel > maxNestLevel && !currentField.allowNested || currentField.modelType === modelType) return memo
       return memo.concat(currentField.modelType)
     } else if (isPureObject(currentField) && !Array.isArray(currentField)) {
       return memo.concat(Object.keys(currentField).reduce(getLinkedModels(currentConfigPath), []))
@@ -38,7 +57,7 @@ const getModelSelectorsFromDict = (selectorsDict) => (modelType, isNested) => {
   const linkedModelsNames = Object.keys(modelConfig).reduce(getLinkedModels(), [])
   return Object.keys(selectorsDict).reduce((memo, key) => ({
     ...memo,
-    [key]: selectorsDict[key](modelType, linkedModelsNames),
+    [key]: selectorsDict[key](modelType, linkedModelsNames, newExcludeModels),
   }), {})
 }
 
@@ -57,14 +76,16 @@ const globalSelectors = {
     }
   },
 
-  getEntities: (modelType, linkedModelsNames) => createSelector(
+  getEntities: (modelType, linkedModelsNames, excludeModels) => createSelector(
     [
       globalSelectors.getPages(modelType),
       globalSelectors.getSingles(modelType),
       globalSelectors.getLoadErrors(modelType),
       globalSelectors.getCount(modelType),
       getUrls(RESTIFY_CONFIG.registeredModels[modelType].endpoint),
-      ...linkedModelsNames.map(modelName => getModelSelectorsFromDict(globalSelectors)(modelName, true).getEntities),
+      ...linkedModelsNames.map(modelName => {
+        return getModelSelectorsFromDict(globalSelectors)(modelName, excludeModels).getEntities
+      }),
     ],
     (pages, singles, errors, count, urls, ...linkedModels) => {
       const source = entityLists[modelType] || modelType

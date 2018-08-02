@@ -192,7 +192,14 @@ class EntityList {
           }
         } else {
           // Nested model calculation not allowed, so not include this field
-          mappedFields = {}
+          mappedFields = {
+            [modelIdField]: normalizedIdField,
+            // TODO by @deylak remove hack, we shouldn't have any value here
+            [key]: {},
+          }
+          if (normalizedTypeField) {
+            mappedFields[modelTypeField] = normalizedTypeField
+          }
         }
       } else if (currentField instanceof RestifyArray) {
         let currentArray = normalizedField
@@ -223,6 +230,9 @@ class EntityList {
           }
         }
       }
+      // TODO by @deylak add debug env
+      // mappedFields.$$models = Object.keys(this.linkedModelsDict)
+
       // We should not use Object.assign so we can save our getters
       Object.keys(mappedFields).forEach(fieldKey => {
         if (typeof mappedFields[fieldKey] === 'function') {

@@ -20,6 +20,12 @@ import { getNestedObjectField } from 'helpers/nestedObjects'
 // This includes normalizing entities, converting to camelCase and other restify features
 export const mapDataToRestifyModel = (data, modelType) => {
   const currentModel = RESTIFY_CONFIG.registeredModels[modelType]
+  if (!currentModel) {
+    throw new Error(`
+      Attempted to map server data to ${modelType} model type, but no such model registered!
+      Check, if you properly defined getGenericModel property for your apies.
+    `.trim())
+  }
   const currentApi = RESTIFY_CONFIG.registeredApies[currentModel.apiName]
 
   let resultModel = { ...data }
