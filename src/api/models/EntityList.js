@@ -506,9 +506,10 @@ class EntityList {
     // @deprecated use modelConfig to change model settings for request
     pageSize = this.pageSize,
     modelConfig = {},
+    forceLoad = false,
   } = {}) {
     const currentConfig = getPagesConfigHash(filter, sort, parentEntities, specialConfig, pageSize, modelConfig)
-    if (this.arrays[currentConfig]) {
+    if (!forceLoad && this.arrays[currentConfig]) {
       return this.arrays[currentConfig]
     }
     if (!this.arrayLoaded[currentConfig]) {
@@ -570,9 +571,10 @@ class EntityList {
     // @deprecated use modelConfig to change model settings for request
     pageSize = this.pageSize,
     modelConfig = {},
+    forceLoad = false,
   } = {}) {
     const currentConfig = getPagesConfigHash(filter, sort, parentEntities, specialConfig, pageSize, modelConfig)
-    if (this.arrays[currentConfig]) {
+    if (!forceLoad && this.arrays[currentConfig]) {
       return this.arrays[currentConfig]
     }
     if (this.arrayLoaded[currentConfig]) return this.arrayLoaded[currentConfig]

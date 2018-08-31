@@ -79,3 +79,6 @@ Check out the [docs](./docs) for more info.
 
 ### 27.07.2018
  1. Added `RestifyGenericForeignKey` for gereric relations
+
+### 31.08.2018
+ 1. Added `forceLoad` option for arrays
