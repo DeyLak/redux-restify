@@ -61,7 +61,7 @@ export const mapDataToRestifyModel = (data, modelType) => {
         modelTypeField = currentFieldDefault.getTypeField(key)
         modelTypeFieldPath = configPath.concat(modelTypeField)
       }
-      if (currentField) {
+      if (currentField !== null && currentField !== undefined) {
         const fieldsToMap = currentFieldDefault instanceof RestifyForeignKeysArray ? currentField : [currentField]
         const mappedIds = []
         const mappedTypes = []
