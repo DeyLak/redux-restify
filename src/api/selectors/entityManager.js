@@ -22,7 +22,7 @@ const getModelSelectorsFromDict = (selectorsDict) => (modelType, excludeModels =
       May be you used wrong foreign key?`)
   }
   const modelConfig = currentModel.defaults
-  let newExcludeModels = { ...excludeModels }
+  const newExcludeModels = { ...excludeModels }
 
   const getLinkedModels = (configPath = []) => (memo, key) => {
     let currentConfigPath = configPath.concat(key)

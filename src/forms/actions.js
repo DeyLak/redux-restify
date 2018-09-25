@@ -2,6 +2,7 @@ import uuidV4 from 'uuid/v4'
 import deepEqual from 'deep-equal'
 import sortBy from 'lodash/sortBy'
 import merge from 'lodash/merge'
+import mergeWith from 'lodash/mergeWith'
 import { batchActions } from 'redux-batched-actions'
 
 import {
@@ -26,8 +27,6 @@ import { mutateObject, getRecursiveObjectReplacement, getNestedObjectField } fro
 import api, {
   RestifyLinkedModel,
   RestifyGenericForeignKey,
-  RestifyForeignKey,
-  RestifyForeignKeysArray,
   CRUD_ACTIONS,
 } from '../api'
 import { defaulTransformEntityResponse } from '../api/actions/entityManager'
@@ -35,6 +34,14 @@ import { RESTIFY_CONFIG } from '../config'
 import { onInitRestify } from '../init'
 import { ACTION_UPDATE, ACTION_CREATE } from '../constants'
 
+
+// Used for merging error objects, if object has number indecies, it doesn't merge it, just replaces with new one
+const arrayIndeciesCustomizer = (objValue, srcValue, key, sorceObj, srcObj) => {
+  if (!Object.keys(srcObj).some(srcKey => Number.isNaN(+srcKey))) {
+    return merge({}, srcObj)
+  }
+  return undefined
+}
 
 const generalActions = {
   deleteForm: (formType) => ({
@@ -461,7 +468,7 @@ const globalActions = {
     }
     calucalateCurrentLevelValidate(currentValues, currentForm.validate)
     const currentErrors = selectors.getErrors(formType)(state)
-    const newErrors = merge({}, currentErrors, validationResult)
+    const newErrors = mergeWith({}, currentErrors, validationResult, arrayIndeciesCustomizer)
     if (!deepEqual(currentErrors, newErrors)) {
       dispatch(globalActions.setErrors(formType)(newErrors))
     }

@@ -53,6 +53,7 @@ const defaultGetEntityUrl = ({
 }
 
 const defaultGetGenericModel = (fieldValue) => ({
+  // eslint-disable-next-line no-underscore-dangle
   modelType: fieldValue._object,
   model: fieldValue,
 })

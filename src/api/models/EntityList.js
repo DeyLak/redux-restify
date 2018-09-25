@@ -9,7 +9,6 @@ import RestifyArray from './RestifyArray'
 import RestifyField from './RestifyField'
 import RestifyLinkedModel from './RestifyLinkedModel'
 import RestifyGenericForeignKey from './RestifyGenericForeignKey'
-import RestifyForeignKey from './RestifyForeignKey'
 import RestifyForeignKeysArray from './RestifyForeignKeysArray'
 import RestifyError from './RestifyError'
 
@@ -350,14 +349,16 @@ class EntityList {
       shouldLoad = shouldLoad && !Object.keys(this.arrayLoaded).some(key => !!this.arrayLoaded[key])
     }
     if (shouldLoad) {
-      this.idLoaded[specialId] = this.asyncDispatch(entityManager[this.modelType]
+      this.idLoaded[specialId] = this
+        .asyncDispatch(entityManager[this.modelType]
         .loadById(id, {
           ...config,
           query,
           urlHash: specialId,
-        })).then((result) => {
+        }))
+        .then((result) => {
           this.idLoaded[specialId] = false
-          this.precalculatedSingles[specialId]
+          this.precalculatedSingles[specialId] = result
           return result
         })
     }

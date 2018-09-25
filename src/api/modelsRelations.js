@@ -4,7 +4,6 @@ import unset from 'lodash/unset'
 import {
   RestifyArray,
   RestifyLinkedModel,
-  RestifyForeignKey,
   RestifyGenericForeignKey,
   RestifyForeignKeysArray,
 } from './models'
@@ -67,7 +66,7 @@ export const mapDataToRestifyModel = (data, modelType) => {
         const mappedTypes = []
 
         fieldsToMap.forEach(field => {
-          // Reciewed raw id instead of model, just save it, later it will be handeled by getById
+          // Reciewed raw id instead of model, just save it, later it will be handled by getById
           if (!isPureObject(field) && field !== null) {
             mappedIds.push(field)
           } else {

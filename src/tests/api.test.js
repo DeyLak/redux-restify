@@ -48,7 +48,7 @@ describe('api', () => {
       false,
       {},
     ))
-    let state = store.getState()
+    const state = store.getState()
     const testEntities = api.selectors.entityManager.testModelNested.getEntities(state)
     const testArray = testEntities.getArray()
     expect(removePrivateFields(testArray)).toEqual(testData)
@@ -177,10 +177,12 @@ describe('api', () => {
   const testGenericServerArrayRestifyModels = testGenericServerArrayResponse.results.map(item => ({
     ...item,
     genericFieldId: item.genericField.id,
+    // eslint-disable-next-line no-underscore-dangle
     genericFieldType: item.genericField._object,
     genericField: {
       id: item.genericField.id,
       test: item.genericField.test,
+      // eslint-disable-next-line no-underscore-dangle
       $modelType: item.genericField._object,
     },
     $modelType: 'genericModel',
@@ -707,6 +709,7 @@ describe('api', () => {
           expect(form).toEqual({
             ...modelGenericResponse,
             genericField: {
+              // eslint-disable-next-line no-underscore-dangle
               _object: modelGenericResponse.genericField._object,
               id: modelGenericResponse.genericField.id,
             },
