@@ -71,6 +71,10 @@ Simple entity config is a javascript object like
   Should return an object with data field, that can be mapped into restify entity
 * **getEntityUrl**
   Function to get custom url for manipulating entity CRUD like:
+* **getPaginationQuery**
+  Get pagination query with function like:
+  `(userQuery, page, pageSize) => newQueryWithPagination`
+  Query object is futher converted to query param string
 ```javascript
 ({
   apiHost, // Defined in config api host

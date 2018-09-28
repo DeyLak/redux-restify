@@ -98,6 +98,9 @@ class ApiXhrAdapter {
     // Get form field value for applyFormData with mapServerDataToIds: true
     // (model) => model.id
     getGenericFormField = defaultGetGenericFormField,
+    // Get pagination query with function like
+    // (userQuery, page, pageSize) => newQueryWithPagination
+    getPaginationQuery,
 
     // @deprecated this api is very poor constructed and should not be used
     alertAction, // TODO by @deylak need to think of entities CRUD callback api
@@ -114,6 +117,7 @@ class ApiXhrAdapter {
     this.defaultSortField = defaultSortField
     this.transformArrayResponse = transformArrayResponse
     this.transformEntityResponse = transformEntityResponse
+    this.getPaginationQuery = getPaginationQuery
     this.getEntityUrl = getEntityUrl
     this.getGenericModel = getGenericModel
     this.getGenericFormField = getGenericFormField

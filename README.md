@@ -82,3 +82,6 @@ Check out the [docs](./docs) for more info.
 
 ### 31.08.2018
  1. Added `forceLoad` option for arrays
+
+### 27.09.2018
+ 1. Added `getPaginationQuery` option for model and api config

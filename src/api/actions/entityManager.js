@@ -31,6 +31,12 @@ export const defaulTransformEntityResponse = (response) => ({
   data: response,
 })
 
+export const defaultGetPaginationQuery = (initialQuery, page, pageSize) => ({
+  ...initialQuery,
+  page,
+  pageSize,
+})
+
 const globalActions = {
   updateData: (modelType) => (
     data,
@@ -151,7 +157,7 @@ const globalActions = {
     }
     const currentApi = RESTIFY_CONFIG.registeredApies[currentModel.apiName]
 
-    const query = {
+    let query = {
       ...filter,
     }
     if (sort) {
@@ -170,8 +176,11 @@ const globalActions = {
                                     defaultTransformArrayResponse
 
     if (currentModel.pagination) {
-      query.page = page
-      query.pageSize = pageSize
+      const getPaginationQuery = modelConfig.getPaginationQuery ||
+                                  currentModel && currentModel.getPaginationQuery ||
+                                  currentApi && currentApi.getPaginationQuery ||
+                                  defaultGetPaginationQuery
+      query = getPaginationQuery(query, page, pageSize)
     }
 
     const onSuccess = (data) => {
@@ -206,6 +215,7 @@ const globalActions = {
       query,
       urlHash,
       crudAction: CRUD_ACTIONS.read,
+      convertToCamelCase: currentModel.convertToCamelCase,
     }))
     .then(() => {
       state = getState()
@@ -227,6 +237,7 @@ const globalActions = {
       sort,
       parentEntities = {},
       specialConfig = false,
+      modelConfig = {},
     } = config
     const state = getState()
     const currentModel = RESTIFY_CONFIG.registeredModels[modelType]
@@ -244,7 +255,7 @@ const globalActions = {
     return dispatch(globalActions.loadData(modelType)({
       ...config,
       page: nextPage,
-      urlHash: getPagesConfigHash(filter, sort, parentEntities, specialConfig, pageSize),
+      urlHash: getPagesConfigHash(filter, sort, parentEntities, specialConfig, pageSize, modelConfig),
     }))
   },
 
@@ -266,6 +277,7 @@ const globalActions = {
       id,
       crudAction: CRUD_ACTIONS.read,
       getEntityUrl: currentModel.getEntityUrl,
+      convertToCamelCase: currentModel.convertToCamelCase,
     }))
     .then(() => {
       const state = getState()
