@@ -153,12 +153,13 @@ const globalActions = {
       if (typeof obj !== 'object' || obj === null) return obj
       if (Array.isArray(obj)) {
         const arrayConfig = getFormArrayConfig(formType, prevName, currentFormConfig)
-        if (arrayConfig.orderable) {
-          return sortBy(obj, RESTIFY_CONFIG.options.orderableFormFieldName)
-        }
-        return obj.map((item, index) => {
+        const resultObj = obj.map((item, index) => {
           return dataReduceFunc(prevName.concat(index))(item)
         })
+        if (arrayConfig.orderable) {
+          return sortBy(resultObj, RESTIFY_CONFIG.options.orderableFormFieldName)
+        }
+        return resultObj
       }
       if (!currentFormConfig.mapServerDataToIds) {
         return Object.keys(obj).reduce((memo, key) => ({
