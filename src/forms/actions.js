@@ -24,6 +24,7 @@ import { isPureObject } from 'helpers/def'
 import { mutateObject, getRecursiveObjectReplacement, getNestedObjectField } from 'helpers/nestedObjects'
 
 import api, {
+  RestifyArray,
   RestifyLinkedModel,
   RestifyGenericForeignKey,
   CRUD_ACTIONS,
@@ -155,7 +156,9 @@ const globalActions = {
         if (arrayConfig.orderable) {
           return sortBy(obj, RESTIFY_CONFIG.options.orderableFormFieldName)
         }
-        return obj
+        return obj.map((item, index) => {
+          return dataReduceFunc(prevName.concat(index))(item)
+        })
       }
       if (!currentFormConfig.mapServerDataToIds) {
         return Object.keys(obj).reduce((memo, key) => ({
