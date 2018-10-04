@@ -149,12 +149,15 @@ const globalActions = {
         return memo
       }, [])
     }
-    const dataReduceFunc = (prevName) => (obj) => {
+    const dataReduceFunc = (prevName, prevModelDefaults) => (obj) => {
       if (typeof obj !== 'object' || obj === null) return obj
+      const getDefaults = defaults => {
+        return getNestedObjectField(defaults, 'defaults') || defaults
+      }
       if (Array.isArray(obj)) {
         const arrayConfig = getFormArrayConfig(formType, prevName, currentFormConfig)
         const resultObj = obj.map((item, index) => {
-          return dataReduceFunc(prevName.concat(index))(item)
+          return dataReduceFunc(prevName.concat(index), prevModelDefaults)(item)
         })
         if (arrayConfig.orderable) {
           return sortBy(resultObj, RESTIFY_CONFIG.options.orderableFormFieldName)
@@ -164,7 +167,7 @@ const globalActions = {
       if (!currentFormConfig.mapServerDataToIds) {
         return Object.keys(obj).reduce((memo, key) => ({
           ...memo,
-          [key]: dataReduceFunc(prevName.concat(key))(obj[key]),
+          [key]: dataReduceFunc(prevName.concat(key), getDefaults(prevModelDefaults[key]))(obj[key]),
         }), {})
       }
       return Object.keys(obj).reduce((memo, key) => {
@@ -173,8 +176,8 @@ const globalActions = {
         }
         let keyValue
         let currentField
-        if (currentModel && currentModel.defaults[key]) {
-          currentField = currentModel.defaults[key]
+        if (prevModelDefaults && prevModelDefaults[key]) {
+          currentField = prevModelDefaults[key]
         }
         if (currentField &&
           (currentField instanceof RestifyLinkedModel)) {
@@ -186,7 +189,7 @@ const globalActions = {
             keyValue = obj[currentField.getIdField(key)]
           }
         } else {
-          keyValue = dataReduceFunc(prevName.concat(key))(obj[key])
+          keyValue = dataReduceFunc(prevName.concat(key), getDefaults(prevModelDefaults[key]))(obj[key])
         }
         return {
           ...memo,
@@ -195,7 +198,7 @@ const globalActions = {
       }, {})
     }
 
-    return dispatch(globalActions.changeSomeFields(formType)(dataReduceFunc([])(data)))
+    return dispatch(globalActions.changeSomeFields(formType)(dataReduceFunc([], currentModel.defaults)(data)))
   },
 
   resetField: (formType) => (name) => ({
