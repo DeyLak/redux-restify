@@ -151,8 +151,8 @@ const globalActions = {
     }
     const dataReduceFunc = (prevName, prevModelDefaults) => (obj) => {
       if (typeof obj !== 'object' || obj === null) return obj
-      const getDefaults = defaults => {
-        return getNestedObjectField(defaults, 'defaults') || defaults
+      const getDefaults = (defaults, key) => {
+        return getNestedObjectField(defaults, [key, 'defaults']) || defaults
       }
       if (Array.isArray(obj)) {
         const arrayConfig = getFormArrayConfig(formType, prevName, currentFormConfig)
@@ -167,7 +167,7 @@ const globalActions = {
       if (!currentFormConfig.mapServerDataToIds) {
         return Object.keys(obj).reduce((memo, key) => ({
           ...memo,
-          [key]: dataReduceFunc(prevName.concat(key), getDefaults(prevModelDefaults[key]))(obj[key]),
+          [key]: dataReduceFunc(prevName.concat(key), getDefaults(prevModelDefaults, key))(obj[key]),
         }), {})
       }
       return Object.keys(obj).reduce((memo, key) => {
@@ -189,7 +189,7 @@ const globalActions = {
             keyValue = obj[currentField.getIdField(key)]
           }
         } else {
-          keyValue = dataReduceFunc(prevName.concat(key), getDefaults(prevModelDefaults[key]))(obj[key])
+          keyValue = dataReduceFunc(prevName.concat(key), getDefaults(prevModelDefaults, key))(obj[key])
         }
         return {
           ...memo,
