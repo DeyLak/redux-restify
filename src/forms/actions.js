@@ -198,7 +198,9 @@ const globalActions = {
       }, {})
     }
 
-    return dispatch(globalActions.changeSomeFields(formType)(dataReduceFunc([], currentModel.defaults)(data)))
+    return dispatch(
+      globalActions.changeSomeFields(formType)(dataReduceFunc([], currentModel && currentModel.defaults)(data)),
+    )
   },
 
   resetField: (formType) => (name) => ({
