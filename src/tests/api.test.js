@@ -224,6 +224,34 @@ describe('api', () => {
       }, 0)
     })
 
+    it(`Can load array with custom page size synchronously`, (done) => {
+      const maxItems = 2
+      const serverResponse = {
+        ...testServerArrayResponse,
+        count: maxItems,
+        results: testServerArrayResponse.results.slice(0, maxItems - 1),
+      }
+      mockRequest(serverResponse, {
+        url: `${modelUrl}?page=1&page_size=${maxItems}`
+      })
+      let currentArray = []
+      const interval = setInterval(() => {
+        const state = store.getState()
+        currentArray = api.selectors.entityManager.testModel.getEntities(state).getArray({
+          modelConfig: {
+            pageSize: maxItems,
+          },
+        })
+        if (currentArray.length > 0) {
+          clearInterval(interval)
+          expect(currentArray).toEqual(testServerArrayRestifyModels.slice(0, maxItems - 1))
+          done()
+        } else {
+          expect(currentArray).toEqual([])
+        }
+      }, 0)
+    })
+
     // TODO make this work
     // it('Stores an error response for request and doesn\'t make other request' , (done) => {
     //   jasmine.Ajax.stubRequest(defaultUrl).andReturn({
@@ -253,6 +281,28 @@ describe('api', () => {
       api.selectors.entityManager.testModel.getEntities(state).asyncGetArray()
         .then(array => {
           expect(array).toEqual(testServerArrayRestifyModels)
+          done()
+        })
+    })
+
+    it('can get a model array with custom pageSize asynchronously', (done) => {
+      const maxItems = 2
+      const serverResponse = {
+        ...testServerArrayResponse,
+        count: maxItems,
+        results: testServerArrayResponse.results.slice(0, maxItems - 1),
+      }
+      mockRequest(serverResponse, {
+        url: `${modelUrl}?page=1&page_size=${maxItems}`
+      })
+      const state = store.getState()
+      api.selectors.entityManager.testModel.getEntities(state).asyncGetArray({
+        modelConfig: {
+          pageSize: maxItems,
+        },
+      })
+        .then(array => {
+          expect(array).toEqual(testServerArrayRestifyModels.slice(0, maxItems - 1))
           done()
         })
     })

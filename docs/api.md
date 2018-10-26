@@ -249,7 +249,9 @@ Example:
   sort: 'title',
   parentEntities: {},
   specialConfig: false,
-  pageSize: 10,
+  modelConfig: {
+    pageSize: 10,
+  },
 }
 ```
 * **filter** (default: {})
