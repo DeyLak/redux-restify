@@ -576,7 +576,7 @@ const globalActions = {
         url = url(currentValues)
       }
       let currentApiName = currentForm.apiName
-      const currentId = data.id || currentForm.id
+      const currentId = data.id || currentForm.id || currentValues.id
       if (currentModel) {
         url = currentModel.endpoint
         currentApiName = currentModel.apiName
