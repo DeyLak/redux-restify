@@ -108,6 +108,7 @@ class ApiXhrAdapter {
   }) {
     this.getToken = getToken
     this.getCSRFToken = getCSRFToken
+    this.getHeaders = getHeaders
     this.apiHost = apiHost
     this.apiPrefix = apiPrefix
     this.dispatch = dispatch
