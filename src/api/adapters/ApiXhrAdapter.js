@@ -143,8 +143,8 @@ class ApiXhrAdapter {
     const method = argMethod.toUpperCase()
     return new Promise(async (res, rej) => {
       const api = new XMLHttpRequest()
-      let CSRFToken
 
+      let CSRFToken
       if (typeof this.getCSRFToken === 'function') {
         CSRFToken = this.getCSRFToken()
       }
@@ -152,7 +152,10 @@ class ApiXhrAdapter {
         CSRFToken = await CSRFToken
       }
 
-      let token = this.getToken()
+      let token
+      if (typeof this.getToken === 'function') {
+        token = this.getToken()
+      }
       if (token instanceof Promise) {
         token = await token
       }
