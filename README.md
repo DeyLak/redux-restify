@@ -85,3 +85,6 @@ Check out the [docs](./docs) for more info.
 
 ### 27.09.2018
  1. Added `getPaginationQuery` option for model and api config
+
+### 01.11.2018
+ 1. Added `getHeaders` option for xhr adapter

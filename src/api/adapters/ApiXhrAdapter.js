@@ -67,6 +67,7 @@ class ApiXhrAdapter {
   constructor({
     getToken, // Function () => apiToken (string)
     getCSRFToken, // Function () => CSRFToken (string)
+    getHeaders, // Function () => Headers (object)
     apiHost, // Host of current api
     apiPrefix, // Api url prefix for all api request, for ex: /api/v1.0
     dispatch, // redux dispatch for loadsManager and callbacks actions
@@ -182,14 +183,20 @@ class ApiXhrAdapter {
         url += `?${queryFormat(config.query, { dateFormat: this.deafultDateFormat })}`
       }
       api.open((config.forceMethod || methodToUse).toUpperCase(), url)
-      // TODO by @deylak add more thoughtful headers configuration,
-      // For now it's just a hack for some browsers sending wrong accept headers, causing DRF to return browsable api
+      // Hack for some browsers sending wrong accept headers, causing DRF to return browsable api
       api.setRequestHeader(ACCEPT_HEADER, '*/*')
       if (token) {
         api.setRequestHeader(AUTH_HEADER, `Token ${token}`)
       }
       if (CSRFToken) {
         api.setRequestHeader(CSRF_HEADER, CSRFToken)
+      }
+
+      if (typeof this.getHeaders === 'function') {
+        const headers = await this.getHeaders(baseUrl)
+        Object.keys(headers).forEach(header => {
+          api.setRequestHeader(header, headers[header])
+        })
       }
 
       let form
