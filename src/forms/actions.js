@@ -552,10 +552,10 @@ const globalActions = {
     )(currentValues)
 
     if (typeof currentForm.transformBeforeSubmit === 'function') {
-      data = currentForm.transformBeforeSubmit(currentValues)
+      data = currentForm.transformBeforeSubmit(currentValues, data)
     } else if (typeof currentForm.transformBeforeSubmit === 'object') {
       Object.keys(currentForm.transformBeforeSubmit).forEach(key => {
-        data[key] = currentForm.transformBeforeSubmit[key](key, data[key], currentValues)
+        data[key] = currentForm.transformBeforeSubmit[key](key, data[key], currentValues, data)
       })
     }
     return new Promise((resolve, reject) => {
