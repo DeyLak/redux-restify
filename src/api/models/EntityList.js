@@ -474,10 +474,9 @@ class EntityList {
     sort,
     parentEntities = {},
     specialConfig = false,
-    // @deprecated use modelConfig to change model settings for request
-    pageSize = this.pageSize,
     modelConfig = {},
   } = {}) {
+    const pageSize = modelConfig.pageSize || this.pageSize
     if (!this.modelConfig.pagination) return undefined
     const currentConfig = getPagesConfigHash(filter, sort, parentEntities, specialConfig, pageSize, modelConfig)
     const currentPages = Object.keys(this.pages[currentConfig] || {})
