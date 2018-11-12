@@ -474,16 +474,18 @@ class EntityList {
     sort,
     parentEntities = {},
     specialConfig = false,
+    // @deprecated use modelConfig to change model settings for request
+    pageSize = this.pageSize,
     modelConfig = {},
   } = {}) {
-    const pageSize = modelConfig.pageSize || this.pageSize
+    const pageSizeNew = modelConfig.pageSize || pageSize
     if (!this.modelConfig.pagination) return undefined
-    const currentConfig = getPagesConfigHash(filter, sort, parentEntities, specialConfig, pageSize, modelConfig)
+    const currentConfig = getPagesConfigHash(filter, sort, parentEntities, specialConfig, pageSizeNew, modelConfig)
     const currentPages = Object.keys(this.pages[currentConfig] || {})
     const currentCount = this.count[currentConfig] || 0
     const lastPage = currentPages.map(x => +x).sort((a, b) => b - a)[0] || 1
 
-    return currentPages.length < currentCount / pageSize ? lastPage + 1 : undefined
+    return currentPages.length < currentCount / pageSizeNew ? lastPage + 1 : undefined
   }
 
   getCount({
