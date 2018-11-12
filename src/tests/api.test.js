@@ -224,7 +224,7 @@ describe('api', () => {
       }, 0)
     })
 
-    it(`Can load array with custom page size synchronously`, (done) => {
+    it('Can load array with custom page size synchronously', (done) => {
       const maxItems = 2
       const serverResponse = {
         ...testServerArrayResponse,
@@ -232,7 +232,7 @@ describe('api', () => {
         results: testServerArrayResponse.results.slice(0, maxItems - 1),
       }
       mockRequest(serverResponse, {
-        url: `${modelUrl}?page=1&page_size=${maxItems}`
+        url: `${modelUrl}?page=1&page_size=${maxItems}`,
       })
       let currentArray = []
       const interval = setInterval(() => {
@@ -293,7 +293,7 @@ describe('api', () => {
         results: testServerArrayResponse.results.slice(0, maxItems - 1),
       }
       mockRequest(serverResponse, {
-        url: `${modelUrl}?page=1&page_size=${maxItems}`
+        url: `${modelUrl}?page=1&page_size=${maxItems}`,
       })
       const state = store.getState()
       api.selectors.entityManager.testModel.getEntities(state).asyncGetArray({

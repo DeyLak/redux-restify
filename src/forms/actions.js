@@ -1,7 +1,7 @@
 import uuidV4 from 'uuid/v4'
 import deepEqual from 'deep-equal'
 import sortBy from 'lodash/sortBy'
-import defaults from 'lodash/defaults'
+import lodashDefaults from 'lodash/defaults'
 import { batchActions } from 'redux-batched-actions'
 
 import {
@@ -470,7 +470,7 @@ const globalActions = {
     const currentErrors = selectors.getErrors(formType)(state)
     // Validation result should prevaluate under current errors,
     // but we should also not remove errors, which are not included in validation function
-    const newErrors = defaults({}, validationResult, currentErrors)
+    const newErrors = lodashDefaults({}, validationResult, currentErrors)
     if (!deepEqual(currentErrors, newErrors)) {
       dispatch(globalActions.setErrors(formType)(newErrors))
     }
