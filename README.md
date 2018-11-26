@@ -91,3 +91,6 @@ Check out the [docs](./docs) for more info.
 
 ### 07.11.2018
  1. Added `trasformedValues` argument to `transformBeforeSubmit` function, so you can use values with applied fakeId, submitExclude and other default transforms
+
+### 26.11.2018
+ 1. Added `query` param into form config, so you can send forms to endpoints with query params

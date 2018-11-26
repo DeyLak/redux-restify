@@ -65,6 +65,8 @@ export const DEFAULT_FORM_OBJECT = {
   // Passed to model getEntityUrl function and used for defining some urls
   // Can be detected automatically between create and update, based on id field
   crudAction: undefined,
+  // Query params for request
+  query: undefined,
 }
 
 export const getFormObjectConfig = (formType, name, config) => {

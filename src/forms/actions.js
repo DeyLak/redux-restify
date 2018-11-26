@@ -630,6 +630,7 @@ const globalActions = {
         specialAction: currentForm.specialAction,
         getEntityUrl: currentModel && currentModel.getEntityUrl,
         forceMethod: currentForm.method,
+        query: currentForm.query,
 
         onError: errorCallbacks,
         onSuccess: successCallbacks,

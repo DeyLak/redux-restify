@@ -12,6 +12,8 @@ import {
   modelUrl,
 } from './testConfigs'
 
+import { queryFormat } from '../api/constants'
+
 import { ACTIONS_TYPES } from '../api/actionsTypes'
 
 
@@ -180,6 +182,34 @@ describe('forms', () => {
       test_array: [],
     })
   })
+
+  it('Can send form with query params', (done) => {
+    const query = {
+      test1: true,
+      test2: 'test',
+    }
+    jasmine.Ajax.stubRequest(`${modelUrl}?${queryFormat(query)}`).andReturn({
+      status: 200,
+      responseText: JSON.stringify({}),
+      responseHeaders: [
+        {
+          name: 'Content-type',
+          value: 'application/json',
+        },
+      ],
+    })
+    store.dispatch(forms.actions.sendQuickForm({
+      endpoint: TEST_MODEL_ENDPOINT,
+      apiName: 'testApi',
+      query,
+      values: {
+        test: true,
+      },
+    })).then(() => {
+      done()
+    })
+  })
+
 
   it('Can send array, by using transform function', () => {
     jasmine.Ajax.stubRequest(modelUrl).andReturn({
