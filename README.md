@@ -94,3 +94,4 @@ Check out the [docs](./docs) for more info.
 
 ### 26.11.2018
  1. Added `query` param into form config, so you can send forms to endpoints with query params
+ 2. Added `authMethod` option to api config

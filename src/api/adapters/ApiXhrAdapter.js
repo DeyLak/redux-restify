@@ -102,6 +102,8 @@ class ApiXhrAdapter {
     // Get pagination query with function like
     // (userQuery, page, pageSize) => newQueryWithPagination
     getPaginationQuery,
+    // Auth merhod, token is appended to it, like this: Token <token>
+    authMethod = 'Token',
 
     // @deprecated this api is very poor constructed and should not be used
     alertAction, // TODO by @deylak need to think of entities CRUD callback api
@@ -123,6 +125,7 @@ class ApiXhrAdapter {
     this.getEntityUrl = getEntityUrl
     this.getGenericModel = getGenericModel
     this.getGenericFormField = getGenericFormField
+    this.authMethod = authMethod
 
     this.alertAction = alertAction
   }
@@ -190,7 +193,7 @@ class ApiXhrAdapter {
       // Hack for some browsers sending wrong accept headers, causing DRF to return browsable api
       api.setRequestHeader(ACCEPT_HEADER, '*/*')
       if (token) {
-        api.setRequestHeader(AUTH_HEADER, `Token ${token}`)
+        api.setRequestHeader(AUTH_HEADER, `${this.authMethod || ''}${this.authMethod ? ' ' : ''}${token}`)
       }
       if (CSRFToken) {
         api.setRequestHeader(CSRF_HEADER, CSRFToken)
