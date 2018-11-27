@@ -14,6 +14,7 @@ const AUTH_HEADER = 'Authorization'
 const CSRF_HEADER = 'X-CSRF-Token'
 
 const CONTENT_TYPE_JSON = 'application/json'
+const CONTENT_TYPE_PROBLEM_JSON = 'application/problem+json'
 const CONTENT_TYPE_HTML = 'text/html'
 
 const allow = [200, 201, 203, 204, 400, 401, 403]
@@ -24,7 +25,11 @@ const checkStatus = (api, config) => {
     if (config.isBinary) {
       return api.response
     }
-    if (responseType && responseType.includes(CONTENT_TYPE_JSON) && api.responseText && api.responseText !== '') {
+    if (
+      responseType &&
+      (responseType.includes(CONTENT_TYPE_JSON) || responseType.includes(CONTENT_TYPE_PROBLEM_JSON)) &&
+      api.responseText && api.responseText !== ''
+    ) {
       const result = JSON.parse(api.responseText)
       return config.convertToCamelCase ? objectToCamel(result, config) : result
     }

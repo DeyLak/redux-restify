@@ -183,6 +183,28 @@ describe('forms', () => {
     })
   })
 
+  it('Can catch http errors for form sending', (done) => {
+    const errorObject = {
+      error: true,
+    }
+    jasmine.Ajax.stubRequest(modelUrl).andReturn({
+      status: 403,
+      responseText: JSON.stringify(errorObject),
+      responseHeaders: [
+        {
+          name: 'Content-type',
+          value: 'application/problem+json',
+        },
+      ],
+    })
+    store.dispatch(forms.actions.testForm.submit())
+      .catch(({ data, status }) => {
+        expect(data).toEqual(errorObject)
+        expect(status).toEqual(403)
+        done()
+      })
+  })
+
   it('Can send form with query params', (done) => {
     const query = {
       test1: true,
