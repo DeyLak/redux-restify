@@ -109,6 +109,8 @@ class ApiXhrAdapter {
     getPaginationQuery,
     // Auth merhod, token is appended to it, like this: Token <token>
     authMethod = 'Token',
+    // XHR parameter for requests
+    withCredentials = false,
 
     // @deprecated this api is very poor constructed and should not be used
     alertAction, // TODO by @deylak need to think of entities CRUD callback api
@@ -131,6 +133,7 @@ class ApiXhrAdapter {
     this.getGenericModel = getGenericModel
     this.getGenericFormField = getGenericFormField
     this.authMethod = authMethod
+    this.withCredentials = withCredentials
 
     this.alertAction = alertAction
   }
@@ -195,6 +198,7 @@ class ApiXhrAdapter {
         url += `?${queryFormat(config.query, { dateFormat: this.deafultDateFormat })}`
       }
       api.open((config.forceMethod || methodToUse).toUpperCase(), url)
+      api.withCredentials = this.withCredentials
       // Hack for some browsers sending wrong accept headers, causing DRF to return browsable api
       api.setRequestHeader(ACCEPT_HEADER, '*/*')
       if (token) {
