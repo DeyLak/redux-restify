@@ -98,3 +98,6 @@ Check out the [docs](./docs) for more info.
 
 ### 30.11.2018
  1. Added `withCredentials` param for api config
+
+### 02.11.2018
+ 1. Added `skipLoadsManager` config param for grneral api actions

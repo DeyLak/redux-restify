@@ -254,18 +254,24 @@ class ApiXhrAdapter {
       let firedMutex
       const fireLoadActIfNotfiredMutex = () => {
         if (!firedMutex) {
-          this.dispatch(addLoadAct(baseUrl, urlQuery))
+          if (!config.skipLoadsManager) {
+            this.dispatch(addLoadAct(baseUrl, urlQuery))
+          }
           firedMutex = true
         }
       }
       api.upload.onprogress = (e) => {
         fireLoadActIfNotfiredMutex()
         const progress = (e.loaded / e.total) * 100
-        this.dispatch(actions.setLoadingProgress(progress, baseUrl, urlQuery))
+        if (!config.skipLoadsManager) {
+          this.dispatch(actions.setLoadingProgress(progress, baseUrl, urlQuery))
+        }
       }
       api.onloadstart = fireLoadActIfNotfiredMutex
       api.onload = () => {
-        this.dispatch(removeLoadAct(baseUrl, urlQuery))
+        if (!config.skipLoadsManager) {
+          this.dispatch(removeLoadAct(baseUrl, urlQuery))
+        }
         this.httpCallBackInvoke(api)
         res({
           status: api.status,
