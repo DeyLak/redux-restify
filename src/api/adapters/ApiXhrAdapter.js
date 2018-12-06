@@ -111,6 +111,8 @@ class ApiXhrAdapter {
     authMethod = 'Token',
     // XHR parameter for requests
     withCredentials = false,
+    // Use auto snake_case convertation
+    useSnakeCase = true,
 
     // @deprecated this api is very poor constructed and should not be used
     alertAction, // TODO by @deylak need to think of entities CRUD callback api
@@ -134,6 +136,7 @@ class ApiXhrAdapter {
     this.getGenericFormField = getGenericFormField
     this.authMethod = authMethod
     this.withCredentials = withCredentials
+    this.useSnakeCase = useSnakeCase
 
     this.alertAction = alertAction
   }
@@ -195,7 +198,10 @@ class ApiXhrAdapter {
         url = url.url
       }
       if (config.query && Object.keys(config.query).length) {
-        url += `?${queryFormat(config.query, { dateFormat: this.deafultDateFormat })}`
+        url += `?${queryFormat(config.query, {
+          dateFormat: this.deafultDateFormat,
+          useSnakeCase: this.useSnakeCase,
+        })}`
       }
       api.open((config.forceMethod || methodToUse).toUpperCase(), url)
       api.withCredentials = this.withCredentials

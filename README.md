@@ -101,3 +101,6 @@ Check out the [docs](./docs) for more info.
 
 ### 02.11.2018
  1. Added `skipLoadsManager` config param for grneral api actions
+
+### 06.11.20018
+ 1. Added `useSnakeCase` api parameter, so we can disable snake_case convertation for api

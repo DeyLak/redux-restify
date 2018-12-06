@@ -32,7 +32,7 @@ const convertToValidQueryParam = (key, value, { dateFormat = DEFAULT_BACKEND_DAT
 export const queryFormat = (query, config = {}) => {
   let formatedQuery = ''
   Object.entries(query).forEach(([key, val]) => {
-    const snakeKey = camelToLowerSnake(key)
+    const snakeKey = config.useSnakeCase ? camelToLowerSnake(key) : key
     if (Array.isArray(val)) {
       val.forEach(v => { (formatedQuery += convertToValidQueryParam(snakeKey, v, config)) })
     } else {

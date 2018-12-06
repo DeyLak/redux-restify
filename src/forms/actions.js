@@ -622,6 +622,7 @@ const globalActions = {
 
       const defaultMethod = currentId ? 'patch' : 'post'
       const currentCrudAction = currentId ? CRUD_ACTIONS.update : CRUD_ACTIONS.create
+      const isConvertToSnakeCase = (currentApi && currentApi.useSnakeCase) || currentForm.convertToSnakeCaseBeforeSend
       dispatch(api.actions.callApi(defaultMethod)({
         apiName: currentApiName,
         id: currentId,
@@ -634,7 +635,7 @@ const globalActions = {
 
         onError: errorCallbacks,
         onSuccess: successCallbacks,
-        data: currentForm.convertToSnakeCaseBeforeSend ? objectToLowerSnake(data) : data,
+        data: isConvertToSnakeCase ? objectToLowerSnake(data) : data,
         convertToCamelCase: currentForm.convertResultToCamelCase,
         removeNulls: currentForm.resultRemoveNulls,
         orderArrays: currentForm.resultOrderArrays,
