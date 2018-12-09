@@ -116,6 +116,7 @@ class EntityList {
 
   getRestifyModel(normalized, {
     isNestedModel = false,
+    asyncGetters,
   } = {}) {
     // Connected models keys, wich are not stored in store and can be misrecognized as missing keys
     const modelKeys = {}
@@ -283,10 +284,12 @@ class EntityList {
                     Call to ${key} property of ${this.modelType},
                     which is presented at model config, but can not be recieved via id request!
                   `.trim())
+                  return defaultValue
                 }
+                return res[key]
               })
           }
-          return defaultValue
+          return asyncGetters ? this.idLoaded[result.id] : defaultValue
         }
         Object.defineProperty(result, key, {
           enumerable: false,
@@ -320,8 +323,10 @@ class EntityList {
   getById(id, config = {}) {
     const {
       query,
+      isNestedModel,
       preventLoad = false,
       forceLoad = false,
+      asyncGetters = false,
     } = config
     const specialId = getSpecialIdWithQuery(id, query)
     if (!isDefAndNotNull(specialId)) {
@@ -339,7 +344,10 @@ class EntityList {
     if (!forceLoad && this.precalculatedSingles[specialId]) return this.precalculatedSingles[specialId]
     const currentEntity = this.singles[specialId]
     if (!forceLoad && currentEntity) {
-      const result = this.getRestifyModel(getOptimisticEntity(currentEntity), config)
+      const result = this.getRestifyModel(getOptimisticEntity(currentEntity), {
+        isNestedModel,
+        asyncGetters,
+      })
       this.precalculatedSingles[specialId] = result
       return result
     }
@@ -353,6 +361,7 @@ class EntityList {
         .asyncDispatch(entityManager[this.modelType]
         .loadById(id, {
           ...config,
+          asyncGetters,
           query,
           urlHash: specialId,
         }))
@@ -390,6 +399,7 @@ class EntityList {
     } = config
     const {
       forceLoad = false,
+      asyncGetters = true,
     } = config
     if (typeof config !== 'object') {
       query = config
@@ -398,7 +408,9 @@ class EntityList {
     if (!isDefAndNotNull(specialId) || this.errors[specialId]) return Promise.resolve()
     if (!forceLoad && this.precalculatedSingles[specialId]) return this.precalculatedSingles[specialId]
     if (!forceLoad && this.singles[specialId]) {
-      const result = this.getRestifyModel(getOptimisticEntity(this.singles[specialId]))
+      const result = this.getRestifyModel(getOptimisticEntity(this.singles[specialId]), {
+        asyncGetters,
+      })
       this.precalculatedSingles[specialId] = result
       return Promise.resolve(result)
     }
@@ -414,6 +426,7 @@ class EntityList {
     if (this.idLoaded[specialId]) return this.idLoaded[specialId]
     this.idLoaded[specialId] = this.dispatch(entityManager[this.modelType].loadById(id, {
       ...config,
+      asyncGetters,
       query,
       urlHash: specialId,
     })).then(result => {

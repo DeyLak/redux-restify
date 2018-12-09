@@ -92,6 +92,14 @@ export const apiDefinitions = {
     transformArrayResponse: customTransformArrayResponse,
     getEntityUrl: customGetEntityUrlWithMethod,
   },
+  camelCaseTestApi: {
+    getToken: () => TEST_TOKEN,
+    apiHost: TEST_API_HOST,
+    apiPrefix: TEST_API_PREFIX,
+    allowedNoTokenEndpoints: [],
+    httpCodesCallbacks: () => {},
+    useSnakeCase: false,
+  },
 }
 
 export const modelsDefinitions = {
@@ -224,6 +232,15 @@ export const modelsDefinitions = {
     name: 'Test model with generic foreign key',
     defaults: {
       genericField: new RestifyGenericForeignKey(['testModel', 'testModelNested']),
+    },
+  },
+  camelCaseTestModel: {
+    apiName: 'camelCaseTestApi',
+    endpoint: TEST_MODEL_ENDPOINT,
+    name: 'CamelCase test model',
+    defaults: {
+      id: undefined,
+      test: undefined,
     },
   },
 }

@@ -285,6 +285,20 @@ describe('api', () => {
         })
     })
 
+    it('can get a camelCase model array asynchronously', (done) => {
+      mockRequest(testServerArrayResponse, {
+        url: `${modelUrl}?camelCaseParam=1&page=1&pageSize=10`,
+      })
+      const state = store.getState()
+      api.selectors.entityManager.camelCaseTestModel.getEntities(state).asyncGetArray({
+        filter: {
+          camelCaseParam: 1,
+        },
+      }).then(() => {
+        done()
+      })
+    })
+
     it('can get a model array with custom pageSize asynchronously', (done) => {
       const maxItems = 2
       const serverResponse = {
@@ -373,6 +387,11 @@ describe('api', () => {
       notInArray: testServerArrayResponse.results,
     }
 
+    const modelWithForeignKeyArrayResponse = [{
+      id: 1,
+      test: true,
+    }]
+
     const modelWithForeignKeyResponseWithNull = {
       id: 1,
       test: true,
@@ -434,6 +453,7 @@ describe('api', () => {
     const configs = [
       {},
       { forceLoad: true },
+      { asyncGetters: false },
     ]
     configs.forEach(config => {
       it('can get a model asynchronously and then receive array without rewriting missing fields', (done) => {
@@ -445,7 +465,9 @@ describe('api', () => {
               ...modelWithForeignKeyRestifyModel,
               $modelType: 'testModelWithForeignKey',
             })
-            mockRequest([modelWithForeignKeyResponse])
+            mockRequest([modelWithForeignKeyArrayResponse], {
+              url: modelUrl,
+            })
             state = store.getState()
             api.selectors.entityManager.testModelWithForeignKey.getEntities(state).asyncGetArray().then(() => {
               state = store.getState()
@@ -454,9 +476,26 @@ describe('api', () => {
                 ...modelWithForeignKeyRestifyModel,
                 $modelType: 'testModelWithForeignKey',
               })
+              done()
             })
-            done()
           })
+      })
+
+      it('can get an array without some fields, and then get those fields by id', (done) => {
+        let state = store.getState()
+        mockRequest([modelWithForeignKeyArrayResponse], {
+          url: modelUrl,
+        })
+        api.selectors.entityManager.testModelWithForeignKey.getEntities(state).asyncGetArray().then(() => {
+          mockRequest(modelWithForeignKeyResponse, { url: `${modelUrl}1/` })
+          state = store.getState()
+          api.selectors.entityManager.testModelWithForeignKey.getEntities(state).asyncGetById(1, config)
+            .then(async model => {
+              const fieldValue = await model.notInForeignKey
+              expect(fieldValue).toEqual(modelWithForeignKeyRestifyModel.notInForeignKey)
+              done()
+            })
+        })
       })
     })
 
@@ -679,6 +718,16 @@ describe('api', () => {
           expect(model).toBe(undefined)
           done()
         })
+    })
+
+    it('can get a model for camelCase api', (done) => {
+      mockRequest(modelResponse, { url: `${modelUrl}1/?camelCaseParam=1` })
+      const state = store.getState()
+      api.selectors.entityManager.camelCaseTestModel.getEntities(state).asyncGetById(1, { query: {
+        camelCaseParam: 1,
+      } }).then(() => {
+        done()
+      })
     })
 
     it('stores error for bad id request', (done) => {

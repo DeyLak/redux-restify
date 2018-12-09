@@ -24,7 +24,6 @@ import { isPureObject } from 'helpers/def'
 import { mutateObject, getRecursiveObjectReplacement, getNestedObjectField } from 'helpers/nestedObjects'
 
 import api, {
-  RestifyArray,
   RestifyLinkedModel,
   RestifyGenericForeignKey,
   CRUD_ACTIONS,
