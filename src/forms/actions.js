@@ -621,7 +621,7 @@ const globalActions = {
 
       const defaultMethod = currentId ? 'patch' : 'post'
       const currentCrudAction = currentId ? CRUD_ACTIONS.update : CRUD_ACTIONS.create
-      const isConvertToSnakeCase = (currentApi && currentApi.useSnakeCase) || currentForm.convertToSnakeCaseBeforeSend
+      const isConvertToSnakeCase = currentForm.convertToSnakeCaseBeforeSend || (currentApi && currentApi.useSnakeCase)
       dispatch(api.actions.callApi(defaultMethod)({
         apiName: currentApiName,
         id: currentId,
