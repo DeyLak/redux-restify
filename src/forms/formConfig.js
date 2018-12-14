@@ -39,7 +39,7 @@ export const DEFAULT_FORM_OBJECT = {
   transformBeforeSubmit: {},
   resetOnSubmit: false, // Form can be reseted after submitting, for reuse
   deleteOnSubmit: false, // If the form is temporary, it can be deleted after success submitting
-  convertToSnakeCaseBeforeSend: true, // All fields in form are converted to lower_snake_case before submit
+  convertToSnakeCaseBeforeSend: undefined, // All fields in form are converted to lower_snake_case before submit
   convertResultToCamelCase: true, // Should back-end result be converted to camelCase
   resultRemoveNulls: true, // Should nulls be replaced with undefineds in result
   resultOrderArrays: true, // Should arrays be ordered by order filed
