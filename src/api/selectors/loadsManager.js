@@ -5,7 +5,7 @@ import {
   DOWNLOADING_URL,
   UPLOADING_URL,
 } from '../constants'
-import GroupedValue, { groupObjects, flushGroupedValues } from 'helpers/GroupedValue'
+import GroupedValue, { groupObjects, flushGroupedValues } from '~/helpers/GroupedValue'
 
 
 export const getLoadsManager = state => state.api.loadsManager

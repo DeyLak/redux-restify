@@ -1,6 +1,6 @@
 import sortBy from 'lodash/sortBy'
 
-import { isPureObject } from 'helpers/def'
+import { isPureObject } from '~/helpers/def'
 
 
 const camelToSnake = s => s.replace(/([a-z])([A-Z]+)/g, '$1_$2')

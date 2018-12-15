@@ -1,4 +1,4 @@
-import { makeActionsBundle } from 'helpers/actions'
+import { makeActionsBundle } from '~/helpers/actions'
 import { RESTIFY_CONFIG } from '../config'
 import { onRegisterForm } from '../init'
 

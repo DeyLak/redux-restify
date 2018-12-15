@@ -1,4 +1,4 @@
-import { getNestedObjectField, removePrivateFields, replaceNulls } from 'helpers/nestedObjects'
+import { getNestedObjectField, removePrivateFields, replaceNulls } from '~/helpers/nestedObjects'
 
 import { RESTIFY_CONFIG } from '../config'
 import { onInitRestify } from '../init'

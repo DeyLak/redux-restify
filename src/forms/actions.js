@@ -19,9 +19,9 @@ import createFormConfig, {
 import selectors, { checkErrors } from './selectors'
 import { ValidationPreset } from './validation'
 
-import { objectToLowerSnake } from 'helpers/namingNotation'
-import { isPureObject } from 'helpers/def'
-import { mutateObject, getRecursiveObjectReplacement, getNestedObjectField } from 'helpers/nestedObjects'
+import { objectToLowerSnake } from '~/helpers/namingNotation'
+import { isPureObject } from '~/helpers/def'
+import { mutateObject, getRecursiveObjectReplacement, getNestedObjectField } from '~/helpers/nestedObjects'
 
 import api, {
   RestifyLinkedModel,

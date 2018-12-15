@@ -2,7 +2,7 @@ import uuidV4 from 'uuid/v4'
 import deepEqual from 'deep-equal'
 import mergeWith from 'lodash/mergeWith'
 
-import { isDefAndNotNull, isPureObject } from 'helpers/def'
+import { isDefAndNotNull, isPureObject } from '~/helpers/def'
 
 
 // Replacing given value in given path in object, path can be just single key, or array of keys

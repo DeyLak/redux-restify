@@ -10,9 +10,9 @@ import {
 
 import { RESTIFY_CONFIG } from '../config'
 
-import { isPureObject } from 'helpers/def'
-import { objectToCamel } from 'helpers/namingNotation'
-import { getNestedObjectField } from 'helpers/nestedObjects'
+import { isPureObject } from '~/helpers/def'
+import { objectToCamel } from '~/helpers/namingNotation'
+import { getNestedObjectField } from '~/helpers/nestedObjects'
 
 
 // Returns backend entity mapped to restify model

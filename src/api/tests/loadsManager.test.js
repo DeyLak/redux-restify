@@ -1,4 +1,4 @@
-import { createMockStore } from 'helpers/tests'
+import { createMockStore } from '~/helpers/tests'
 
 import { NAME } from '../constants'
 import * as actions from '../actions/loadsManager'

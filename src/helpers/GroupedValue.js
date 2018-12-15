@@ -1,4 +1,4 @@
-import { mutateObject } from 'helpers/nestedObjects'
+import { mutateObject } from '~/helpers/nestedObjects'
 
 
 const round = (value, roundCount = 2) => {

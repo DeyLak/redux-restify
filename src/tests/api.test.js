@@ -1,7 +1,7 @@
 import forms from '../forms'
 import api from '../api'
 
-import { removePrivateFields } from 'helpers/nestedObjects'
+import { removePrivateFields } from '~/helpers/nestedObjects'
 
 import EntityList from '../api/models/EntityList'
 

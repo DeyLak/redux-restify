@@ -1,4 +1,4 @@
-import { makeActionsBundle } from 'helpers/actions'
+import { makeActionsBundle } from '~/helpers/actions'
 
 import { MODULE_NAME } from '../constants'
 import { RESTIFY_CONFIG } from '../config'

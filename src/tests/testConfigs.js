@@ -10,7 +10,7 @@ import RestifyGenericForeignKey from '../api/models/RestifyGenericForeignKey'
 import RestifyField from '../api/models/RestifyField'
 import forms from '../forms'
 
-import { createRestifyStore } from 'helpers/tests'
+import { createRestifyStore } from '~/helpers/tests'
 
 
 export const TEST_API_HOST = 'http://test.com/'

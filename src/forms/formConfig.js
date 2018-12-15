@@ -1,8 +1,8 @@
 import uuidV4 from 'uuid/v4'
 
 import { RESTIFY_CONFIG } from '../config'
-import { mergeAndReplaceArrays } from 'helpers/nestedObjects'
-import { isDefAndNotNull, isPureObject } from 'helpers/def'
+import { mergeAndReplaceArrays } from '~/helpers/nestedObjects'
+import { isDefAndNotNull, isPureObject } from '~/helpers/def'
 
 
 const UUID_FUNC = '$uuid'

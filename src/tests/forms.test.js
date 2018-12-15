@@ -1,6 +1,6 @@
 import forms from '../forms'
 
-import { getNestedObjectField } from 'helpers/nestedObjects'
+import { getNestedObjectField } from '~/helpers/nestedObjects'
 
 import {
   store,

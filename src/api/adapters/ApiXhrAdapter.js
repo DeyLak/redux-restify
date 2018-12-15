@@ -1,4 +1,4 @@
-import { objectToCamel } from 'helpers/namingNotation'
+import { objectToCamel } from '~/helpers/namingNotation'
 import * as actions from '../actions/loadsManager'
 import {
   DEFAULT_PAGE_SIZE,

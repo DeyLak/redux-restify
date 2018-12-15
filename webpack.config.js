@@ -59,9 +59,9 @@ module.exports = {
   },
   resolve: {
     alias: {
+      '~': path.join(__dirname, 'src'),
     },
     modules: [
-      path.join(__dirname, 'src'),
       'node_modules',
     ],
     extensions: ['.js', '.json'],

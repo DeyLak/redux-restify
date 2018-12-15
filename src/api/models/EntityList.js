@@ -12,8 +12,8 @@ import RestifyGenericForeignKey from './RestifyGenericForeignKey'
 import RestifyForeignKeysArray from './RestifyForeignKeysArray'
 import RestifyError from './RestifyError'
 
-import { isPureObject, isDefAndNotNull } from 'helpers/def'
-import { getNestedObjectField, mergeAndReplaceArrays } from 'helpers/nestedObjects'
+import { isPureObject, isDefAndNotNull } from '~/helpers/def'
+import { getNestedObjectField, mergeAndReplaceArrays } from '~/helpers/nestedObjects'
 
 
 const getOptimisticEntity = (entity) => {
