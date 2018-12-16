@@ -204,7 +204,7 @@ const globalActions = {
       url = parents.reverse().reduce((memo, item) => {
         const currentParent = RESTIFY_CONFIG.registeredModels[item]
         const currentId = parentEntities[item] ? `${parentEntities[item]}/` : ''
-        return currentParent.endpoint + currentId + url
+        return currentParent.endpoint + currentId + memo
       }, url)
     }
     return dispatch(apiGeneralActions.callGet({

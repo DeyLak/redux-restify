@@ -113,6 +113,26 @@ export const modelsDefinitions = {
       notInForeignKey: undefined,
     },
   },
+  testChild1Model: {
+    apiName: 'testApi',
+    parent: 'testModel',
+    endpoint: TEST_MODEL_ENDPOINT,
+    name: 'Test child 1 model',
+    defaults: {
+      id: undefined,
+      test: undefined,
+    },
+  },
+  testChild2Model: {
+    apiName: 'testApi',
+    parent: ['testChild1Model', 'testModel'],
+    endpoint: TEST_MODEL_ENDPOINT,
+    name: 'Test child 2 model',
+    defaults: {
+      id: undefined,
+      test: undefined,
+    },
+  },
   testModelNested: {
     apiName: 'testApi',
     endpoint: TEST_MODEL_ENDPOINT,

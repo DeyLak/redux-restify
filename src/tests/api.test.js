@@ -174,6 +174,16 @@ describe('api', () => {
     $modelType: 'testModel',
   }))
 
+  const testServerArrayRestifyChild1Models = testServerArrayResponse.results.map(item => ({
+    ...item,
+    $modelType: 'testChild1Model',
+  }))
+
+  const testServerArrayRestifyChild2Models = testServerArrayResponse.results.map(item => ({
+    ...item,
+    $modelType: 'testChild2Model',
+  }))
+
   const testGenericServerArrayRestifyModels = testGenericServerArrayResponse.results.map(item => ({
     ...item,
     genericFieldId: item.genericField.id,
@@ -281,6 +291,39 @@ describe('api', () => {
       api.selectors.entityManager.testModel.getEntities(state).asyncGetArray()
         .then(array => {
           expect(array).toEqual(testServerArrayRestifyModels)
+          done()
+        })
+    })
+
+    it('can get a child model array asynchronously on first parent level', (done) => {
+      mockRequest(testServerArrayResponse, {
+        url: `${modelUrl}1/${TEST_MODEL_ENDPOINT}?page=1&page_size=10`,
+      })
+      const state = store.getState()
+      api.selectors.entityManager.testChild1Model.getEntities(state).asyncGetArray({
+        parentEntities: {
+          testModel: 1,
+        }
+      })
+        .then(array => {
+          expect(array).toEqual(testServerArrayRestifyChild1Models)
+          done()
+        })
+    })
+
+    it('can get a child model array asynchronously on second parent level', (done) => {
+      mockRequest(testServerArrayResponse, {
+        url: `${modelUrl}1/${TEST_MODEL_ENDPOINT}1/${TEST_MODEL_ENDPOINT}?page=1&page_size=10`,
+      })
+      const state = store.getState()
+      api.selectors.entityManager.testChild2Model.getEntities(state).asyncGetArray({
+        parentEntities: {
+          testModel: 1,
+          testChild1Model: 1,
+        }
+      })
+        .then(array => {
+          expect(array).toEqual(testServerArrayRestifyChild2Models)
           done()
         })
     })
