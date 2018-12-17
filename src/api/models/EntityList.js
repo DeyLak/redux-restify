@@ -170,6 +170,7 @@ class EntityList {
                   return linkedModel.getById(id, {
                     isNestedModel: true,
                     ...currentField.fetchConfig,
+                    preventLoad: true,
                   })
                 })
               } else if (normalizedIdField === null) {
