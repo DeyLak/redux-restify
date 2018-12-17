@@ -57,9 +57,9 @@ describe('api', () => {
       id: 3,
       $modelType: 'testModelNested',
       $loading: true,
-      test: {
-        nested: undefined,
-      },
+    })
+    expect(defaultObj.test).toEqual({
+      nested: undefined,
     })
   })
 

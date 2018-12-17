@@ -51,7 +51,6 @@ class EntityList {
       this.dispatch = modelType.dispatch
       this.asyncDispatch = modelType.asyncDispatch
       this.modelType = modelType.modelType
-      this.defaultObject = modelType.defaultObject
       this.modelConfig = modelType.modelConfig
       this.apiConfig = modelType.apiConfig
       this.pages = modelType.pages
@@ -71,7 +70,6 @@ class EntityList {
       this.modelType = modelType
       this.modelConfig = RESTIFY_CONFIG.registeredModels[modelType]
       this.apiConfig = RESTIFY_CONFIG.registeredApies[this.modelConfig.apiName]
-      this.defaultObject = this.modelConfig.defaults
       this.pageSize = this.modelConfig && this.modelConfig.pageSize ||
                        this.apiConfig && this.apiConfig.defaultPageSize ||
                        DEFAULT_PAGE_SIZE
@@ -310,7 +308,7 @@ class EntityList {
   }
 
   getDefaulObject(id, fields = {}) {
-    const result = this.getRestifyModel(this.defaultObject)
+    const result = this.getRestifyModel({ id })
     result.id = id
     result.$modelType = this.modelType
     Object.keys(fields).forEach(key => {
