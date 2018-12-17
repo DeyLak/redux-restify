@@ -69,9 +69,8 @@ describe('api', () => {
     const defaultObj = testEntities.getById(3)
     expect(defaultObj).toEqual({
       id: 3,
-      $modelType: 'testModelNested',
+      $modelType: 'testModelWithForeignKey',
       $loading: true,
-      notInForeignKey: undefined,
     })
     expect(defaultObj.notInArray).toEqual([])
     expect(defaultObj.notInArrayIds).toEqual([])
@@ -80,11 +79,12 @@ describe('api', () => {
     expect(defaultObj.singleForeignKeyId).toEqual(undefined)
     expect(defaultObj.singleForeignKey).toEqual({
       id: undefined,
-      test: undefined,
-      notInForeignKey: undefined,
       $modelType: 'testModel',
-      $loading: true,
+      $loading: false,
+      $error: false,
     })
+    expect(defaultObj.singleForeignKey.test).toEqual(undefined)
+    expect(defaultObj.singleForeignKey.notInForeignKey).toEqual(undefined)
   })
 
   it('clears pages after router location changes', () => {

@@ -299,7 +299,12 @@ class EntityList {
           Object.defineProperty(result, modelKeys[key], {
             enumerable: false,
             configurable: true,
-            get: () => autoGetter().id,
+            get: () => {
+              if (this.modelConfig.defaults[key] instanceof RestifyForeignKeysArray) {
+                return []
+              }
+              return autoGetter().id
+            },
           })
         }
       }
