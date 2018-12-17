@@ -63,6 +63,30 @@ describe('api', () => {
     })
   })
 
+  it('can nest RestifyFields configs with RestifyForeignKeysArray', () => {
+    const state = store.getState()
+    const testEntities = api.selectors.entityManager.testModelWithForeignKey.getEntities(state)
+    const defaultObj = testEntities.getById(3)
+    expect(defaultObj).toEqual({
+      id: 3,
+      $modelType: 'testModelNested',
+      $loading: true,
+      notInForeignKey: undefined,
+    })
+    expect(defaultObj.notInArray).toEqual([])
+    expect(defaultObj.notInArrayIds).toEqual([])
+    expect(defaultObj.notInForeignKey).toEqual(undefined)
+    expect(defaultObj.test).toEqual(undefined)
+    expect(defaultObj.singleForeignKeyId).toEqual(undefined)
+    expect(defaultObj.singleForeignKey).toEqual({
+      id: undefined,
+      test: undefined,
+      notInForeignKey: undefined,
+      $modelType: 'testModel',
+      $loading: true,
+    })
+  })
+
   it('clears pages after router location changes', () => {
     const testData = [{ id: 1, test: true }, { id: 2, test: false }]
     store.dispatch(api.actions.entityManager.testModel.updateData(
