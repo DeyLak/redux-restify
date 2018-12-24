@@ -183,6 +183,31 @@ describe('forms', () => {
     })
   })
 
+  it('Can send form without api and convert to snake_case', done => {
+    jasmine.Ajax.stubRequest(modelUrl).andReturn({
+      status: 200,
+      responseText: JSON.stringify({}),
+      responseHeaders: [
+        {
+          name: 'Content-type',
+          value: 'application/json',
+        },
+      ],
+    })
+    store.dispatch(forms.actions.sendQuickForm({
+      endpoint: TEST_MODEL_ENDPOINT,
+      values: {
+        testCase: true,
+      }
+    })).then(() => {
+      const request = jasmine.Ajax.requests.mostRecent()
+      expect(request.data()).toEqual({
+        test_case: true,
+      })
+      done()
+    })
+  })
+
   it('Can catch http errors for form sending', (done) => {
     const errorObject = {
       error: true,

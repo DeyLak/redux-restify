@@ -3,7 +3,7 @@ import {
   setRestifyStore,
 } from '../init'
 
-import api, { CRUD_ACTIONS } from '../api'
+import api, { CRUD_ACTIONS, DEFAULT_API_NAME } from '../api'
 import RestifyForeignKeysArray from '../api/models/RestifyForeignKeysArray'
 import RestifyForeignKey from '../api/models/RestifyForeignKey'
 import RestifyGenericForeignKey from '../api/models/RestifyGenericForeignKey'
@@ -62,6 +62,13 @@ const customTransformArrayResponse = (response) => ({
 })
 
 export const apiDefinitions = {
+  [DEFAULT_API_NAME]: {
+    getToken: () => TEST_TOKEN,
+    apiHost: TEST_API_HOST,
+    apiPrefix: TEST_API_PREFIX,
+    allowedNoTokenEndpoints: [],
+    httpCodesCallbacks: () => {},
+  },
   testApi: {
     getToken: () => TEST_TOKEN,
     apiHost: TEST_API_HOST,
@@ -260,7 +267,7 @@ export const modelsDefinitions = {
     name: 'CamelCase test model',
     defaults: {
       id: undefined,
-      test: undefined,
+      testCamelCase: undefined,
     },
   },
 }

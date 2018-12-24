@@ -5,6 +5,8 @@ import { camelToLowerSnake } from '~/helpers/namingNotation'
 
 export const NAME = 'api'
 
+export const DEFAULT_USE_SNAKE_CASE = true
+
 export const DEFAULT_API_NAME = 'default'
 export const DEFAULT_API_SORT_FIELD = 'sort'
 

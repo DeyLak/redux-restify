@@ -7,7 +7,11 @@ import * as selectors from './selectors'
 
 export * from './models'
 
-export { CRUD_ACTIONS } from './constants'
+export {
+  CRUD_ACTIONS,
+  DEFAULT_API_NAME,
+  DEFAULT_USE_SNAKE_CASE,
+} from './constants'
 
 export default {
   actions,

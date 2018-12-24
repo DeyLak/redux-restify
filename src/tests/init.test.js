@@ -52,8 +52,8 @@ describe('initRestify', () => {
     expect(() => registerForm('testForm', modelsDefinitions.testForm)).toThrowError(/testForm/)
   })
 
-  it('throws error, when registering model with no api name and no default api registered', () => {
-    expect(() => registerModel('testModelNoApi', {})).toThrowError(/testModelNoApi/)
+  it('throws error, when registering model with no api name and no such api registered', () => {
+    expect(() => registerModel('testModelNoApi', { apiName: 'noSuchApi' })).toThrowError(/testModelNoApi/)
   })
 
   it('provides api and forms reducers for each registered entitiy', () => {

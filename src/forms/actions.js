@@ -27,6 +27,7 @@ import api, {
   RestifyLinkedModel,
   RestifyGenericForeignKey,
   CRUD_ACTIONS,
+  DEFAULT_USE_SNAKE_CASE,
 } from '../api'
 import { defaulTransformEntityResponse } from '../api/actions/entityManager'
 import { RESTIFY_CONFIG } from '../config'
@@ -621,7 +622,9 @@ const globalActions = {
 
       const defaultMethod = currentId ? 'patch' : 'post'
       const currentCrudAction = currentId ? CRUD_ACTIONS.update : CRUD_ACTIONS.create
-      const isConvertToSnakeCase = currentForm.convertToSnakeCaseBeforeSend || (currentApi && currentApi.useSnakeCase)
+      const isConvertToSnakeCase =
+        currentForm.convertToSnakeCaseBeforeSend ||
+        (currentApi ? currentApi.useSnakeCase : DEFAULT_USE_SNAKE_CASE)
       dispatch(api.actions.callApi(defaultMethod)({
         apiName: currentApiName,
         id: currentId,

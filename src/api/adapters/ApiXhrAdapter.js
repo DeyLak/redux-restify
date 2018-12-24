@@ -5,6 +5,7 @@ import {
   DEFAULT_API_SORT_FIELD,
   DEFAULT_BACKEND_DATE_FORMAT,
   queryFormat,
+  DEFAULT_USE_SNAKE_CASE,
 } from '../constants'
 
 
@@ -112,7 +113,7 @@ class ApiXhrAdapter {
     // XHR parameter for requests
     withCredentials = false,
     // Use auto snake_case convertation
-    useSnakeCase = true,
+    useSnakeCase = DEFAULT_USE_SNAKE_CASE,
 
     // @deprecated this api is very poor constructed and should not be used
     alertAction, // TODO by @deylak need to think of entities CRUD callback api

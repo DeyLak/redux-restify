@@ -787,12 +787,21 @@ describe('api', () => {
         })
     })
 
+    const camelCaseModelResponse = {
+      id: 1,
+      testCamelCase: true,
+    }
+
     it('can get a model for camelCase api', (done) => {
-      mockRequest(modelResponse, { url: `${modelUrl}1/?camelCaseParam=1` })
+      mockRequest(camelCaseModelResponse, { url: `${modelUrl}1/?camelCaseParam=1` })
       const state = store.getState()
       api.selectors.entityManager.camelCaseTestModel.getEntities(state).asyncGetById(1, { query: {
         camelCaseParam: 1,
-      } }).then(() => {
+      } }).then((model) => {
+        expect(model).toEqual({
+          ...camelCaseModelResponse,
+          $modelType: 'camelCaseTestModel',
+        })
         done()
       })
     })

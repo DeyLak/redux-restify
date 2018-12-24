@@ -50,6 +50,11 @@ export const registerModel = (modelName, config) => {
       `You tried to register a model with ${modelName}! with default api. But no default api is registered!`,
     )
   }
+  if (config.apiName && !RESTIFY_CONFIG.registeredApies[config.apiName]) {
+    throw new Error(
+      `You tried to register a model with ${modelName}! with api ${config.apiName}. But no such api is registered!`,
+    )
+  }
   RESTIFY_CONFIG.registeredModels[modelName] = createModelConfig(config)
   invokeCallbacks(registerModelCallbacks, RESTIFY_CONFIG.registeredModels[modelName])
 }
