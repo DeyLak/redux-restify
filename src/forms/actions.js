@@ -498,11 +498,14 @@ const globalActions = {
       currentModel = RESTIFY_CONFIG.registeredModels[currentForm.model]
     }
     let idField = 'id'
-    let currentApi
-    if (currentModel) {
+    let currentApiName
+    if (currentForm.apiName) {
+      currentApiName = currentForm.apiName
+    } else if (currentModel) {
       idField = currentModel.idField
-      currentApi = RESTIFY_CONFIG.registeredApies[currentModel.apiName]
+      currentApiName = RESTIFY_CONFIG.registeredApies[currentModel.apiName]
     }
+    const currentApi = currentApiName && RESTIFY_CONFIG.registeredApies[currentApiName]
     if (currentForm.validate && currentForm.validateOnSubmit) {
       const errors = dispatch(globalActions.validate(formType)())
       if (!checkErrors(errors)) {
@@ -514,7 +517,6 @@ const globalActions = {
       return Promise.resolve()
     }
     const currentValues = selectors.getFormWithNulls(formType)(state)
-
 
     let submitExcludeFunc = currentForm.submitExclude
     if (typeof currentForm.submitExclude === 'object') {
@@ -622,9 +624,10 @@ const globalActions = {
 
       const defaultMethod = currentId ? 'patch' : 'post'
       const currentCrudAction = currentId ? CRUD_ACTIONS.update : CRUD_ACTIONS.create
-      const isConvertToSnakeCase =
-        currentForm.convertToSnakeCaseBeforeSend ||
-        (currentApi ? currentApi.useSnakeCase : DEFAULT_USE_SNAKE_CASE)
+      let isConvertToSnakeCase = currentForm.convertToSnakeCaseBeforeSend
+      if (isConvertToSnakeCase === undefined) {
+        isConvertToSnakeCase = currentApi ? currentApi.useSnakeCase : DEFAULT_USE_SNAKE_CASE
+      }
       dispatch(api.actions.callApi(defaultMethod)({
         apiName: currentApiName,
         id: currentId,
