@@ -245,7 +245,7 @@ class ApiXhrAdapter {
             }
           })
         } else {
-          form = JSON.stringify(config.data)
+          form = typeof config.data === 'object' ? JSON.stringify(config.data) : config.data
           api.setRequestHeader(CONTENT_TYPE_HEADER, `${CONTENT_TYPE_JSON}; charset=utf-8`)
         }
       }
