@@ -634,7 +634,7 @@ const globalActions = {
         crudAction: currentForm.crudAction || currentCrudAction,
         url,
         specialAction: currentForm.specialAction,
-        getEntityUrl: currentModel && currentModel.getEntityUrl,
+        getEntityUrl: currentForm.getEntityUrl || currentModel && currentModel.getEntityUrl,
         forceMethod: currentForm.method,
         query: currentForm.query,
 
