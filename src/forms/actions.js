@@ -503,7 +503,7 @@ const globalActions = {
       currentApiName = currentForm.apiName
     } else if (currentModel) {
       idField = currentModel.idField
-      currentApiName = RESTIFY_CONFIG.registeredApies[currentModel.apiName]
+      currentApiName = currentModel.apiName
     }
     const currentApi = currentApiName && RESTIFY_CONFIG.registeredApies[currentApiName]
     if (currentForm.validate && currentForm.validateOnSubmit) {
@@ -602,6 +602,7 @@ const globalActions = {
         const transformEntityResponse = currentModel && currentModel.transformEntityResponse ||
                                         currentApi && currentApi.transformEntityResponse ||
                                         defaulTransformEntityResponse
+
         const transformed = transformEntityResponse(res).data
         if (transformed && currentModel && currentForm.updateEntity) {
           dispatch(
