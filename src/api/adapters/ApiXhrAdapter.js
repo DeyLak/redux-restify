@@ -18,7 +18,7 @@ const CONTENT_TYPE_JSON = 'application/json'
 const CONTENT_TYPE_PROBLEM_JSON = 'application/problem+json'
 const CONTENT_TYPE_HTML = 'text/html'
 
-const allow = [200, 201, 203, 204, 400, 401, 403, 409]
+const allow = [200, 201, 203, 204, 400, 404, 401, 403, 409]
 
 const checkStatus = (api, config) => {
   if (allow.includes(api.status)) {
@@ -31,14 +31,17 @@ const checkStatus = (api, config) => {
       (responseType.includes(CONTENT_TYPE_JSON) || responseType.includes(CONTENT_TYPE_PROBLEM_JSON)) &&
       api.responseText && api.responseText !== ''
     ) {
-      const result = JSON.parse(api.responseText)
-      return config.convertToCamelCase ? objectToCamel(result, config) : result
+      try {
+        const result = JSON.parse(api.responseText)
+        return config.convertToCamelCase ? objectToCamel(result, config) : result
+      } catch (e) {
+        return {}
+      }
     }
     if (responseType && responseType.includes(CONTENT_TYPE_HTML)) {
       return api.responseText
     }
   }
-  if (api.status === 404) return null
   return undefined
 }
 
