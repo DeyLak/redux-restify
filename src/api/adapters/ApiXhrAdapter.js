@@ -41,6 +41,7 @@ const checkStatus = (api, config) => {
     if (responseType && responseType.includes(CONTENT_TYPE_HTML)) {
       return api.responseText
     }
+    return api.responseText
   }
   return undefined
 }
