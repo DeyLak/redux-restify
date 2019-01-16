@@ -340,6 +340,7 @@ class EntityList {
       })
     }
     if (!forceLoad && this.errors[specialId]) {
+      this.idLoaded[specialId] = this.errors[specialId]
       return this.getDefaulObject(id, {
         $error: true,
         $loading: false,
