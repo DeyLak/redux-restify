@@ -270,7 +270,13 @@ const globalActions = {
     return dispatch(apiGeneralActions.callGet({
       apiName: config.apiName || currentModel.apiName,
       url: urlToLoad,
-      onSuccess: (data) => () => dispatch(globalActions.updateFromRawData(modelType)(id, data, query)),
+      onSuccess: (data, status) => () => {
+        if (status < 400) {
+          dispatch(globalActions.updateFromRawData(modelType)(id, data, query))
+        } else {
+          dispatch(globalActions.setLoadErrorForId(modelType)(id, true, query))
+        }
+      },
       onError: globalActions.setLoadErrorForId(modelType)(id, true, query),
       query,
       urlHash,
