@@ -5,12 +5,13 @@ import { DEFAULT_API_NAME } from '../constants'
 const invokeCallback = (dispatch, callback, res) => {
   switch (typeof callback) {
     case 'function' :
-      return dispatch(callback(res.data, res.status))
+      return dispatch(callback(res.data, res.status, res.api))
     case 'string':
       return dispatch({
         type: callback,
         data: res.data,
         status: res.status,
+        api: res.api,
       })
     case 'object':
       return dispatch(callback)

@@ -183,8 +183,8 @@ const globalActions = {
       query = getPaginationQuery(query, page, pageSize)
     }
 
-    const onSuccess = (data) => {
-      const transformedData = transformArrayResponse(data, currentModel.pagination)
+    const onSuccess = (data, status, api) => {
+      const transformedData = transformArrayResponse(data, currentModel.pagination, api)
       return globalActions.updateData(modelType)(
         transformedData.data,
         transformedData.page || page,

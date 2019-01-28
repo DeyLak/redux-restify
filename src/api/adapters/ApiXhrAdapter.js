@@ -287,6 +287,7 @@ class ApiXhrAdapter {
         res({
           status: api.status,
           data: checkStatus(api, config),
+          api,
         })
       }
       api.onerror = (e) => {
@@ -302,6 +303,7 @@ class ApiXhrAdapter {
         rej({
           status: api.status,
           data: JSON.parse(responseText || '{}'),
+          api,
         })
       }
       if (config.isBinary) {
