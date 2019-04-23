@@ -54,6 +54,7 @@ class EntityList {
       this.modelConfig = modelType.modelConfig
       this.apiConfig = modelType.apiConfig
       this.pages = modelType.pages
+      this.oldPages = modelType.oldPages
       this.singles = modelType.singles
       this.errors = modelType.errors
       this.arrays = modelType.arrays
@@ -74,9 +75,11 @@ class EntityList {
                        this.apiConfig && this.apiConfig.defaultPageSize ||
                        DEFAULT_PAGE_SIZE
       this.pages = {}
+      this.oldPages = {}
       this.singles = {}
       this.errors = {}
       this.arrays = {}
+      this.oldArrays = {}
       this.urls = {}
       this.count = {}
       this.idMap = {}
@@ -456,20 +459,25 @@ class EntityList {
     })
   }
 
+  getCalculatedArray(pages) {
+    return Object.keys(pages).reduce((memo, pageConfig) => ({
+          ...memo,
+          [pageConfig]: Object.keys(pages[pageConfig]).reduce((currentArray, page) => {
+            return currentArray.concat(
+              pages[pageConfig][page]
+                    .map(item => {
+                      if (typeof item !== 'object') return this.getById(item)
+                      return item
+                    })
+                    .filter(item => item && !item.$deleted),
+            )
+          }, []),
+        }), {})
+  }
+
   calculateArrays() {
-    this.arrays = Object.keys(this.pages).reduce((memo, pageConfig) => ({
-      ...memo,
-      [pageConfig]: Object.keys(this.pages[pageConfig]).reduce((currentArray, page) => {
-        return currentArray.concat(
-          this.pages[pageConfig][page]
-                .map(item => {
-                  if (typeof item !== 'object') return this.getById(item)
-                  return item
-                })
-                .filter(item => item && !item.$deleted),
-        )
-      }, []),
-    }), {})
+    this.arrays = this.getCalculatedArray(this.pages)
+    this.oldArrays = this.getCalculatedArray(this.oldPages)
     return this.arrays
   }
 
@@ -477,8 +485,9 @@ class EntityList {
     this.calculateArrays()
   }
 
-  setSource(pages, singles, errors, count, urls, linkedModelsDict) {
+  setSource(pages, oldPages, singles, errors, count, urls, linkedModelsDict) {
     this.pages = pages
+    this.oldPages = oldPages
     this.singles = singles
     this.errors = errors
     this.count = count
@@ -558,7 +567,7 @@ class EntityList {
             }
           })
     }
-    return []
+    return this.oldArrays[currentConfig] || []
   }
 
   /**

@@ -63,6 +63,7 @@ const getModelSelectorsFromDict = (selectorsDict) => (modelType, excludeModels =
 
 const globalSelectors = {
   getPages: (modelType) => (state) => state.api.entityManager[modelType].pages,
+  getOldPages: (modelType) => (state) => state.api.entityManager[modelType].oldPages,
   getSingles: (modelType) => (state) => state.api.entityManager[modelType].singleEntities,
   getLoadErrors: (modelType) => (state) => state.api.entityManager[modelType].loadErrorEntities,
   getCount: (modelType) => (state) => state.api.entityManager[modelType].count,
@@ -79,6 +80,7 @@ const globalSelectors = {
   getEntities: (modelType, linkedModelsNames, excludeModels) => createSelector(
     [
       globalSelectors.getPages(modelType),
+      globalSelectors.getOldPages(modelType),
       globalSelectors.getSingles(modelType),
       globalSelectors.getLoadErrors(modelType),
       globalSelectors.getCount(modelType),
@@ -87,7 +89,7 @@ const globalSelectors = {
         return getModelSelectorsFromDict(globalSelectors)(modelName, excludeModels).getEntities
       }),
     ],
-    (pages, singles, errors, count, urls, ...linkedModels) => {
+    (pages, oldPages, singles, errors, count, urls, ...linkedModels) => {
       const source = entityLists[modelType] || modelType
       const newList = new EntityList(source)
       entityLists[modelType] = newList
@@ -96,7 +98,7 @@ const globalSelectors = {
         ...memo,
         [item.modelType]: item,
       }), {})
-      newList.setSource(pages, singles, errors, count, urls, linkedModelsDict)
+      newList.setSource(pages, oldPages, singles, errors, count, urls, linkedModelsDict)
       return newList
     },
   ),

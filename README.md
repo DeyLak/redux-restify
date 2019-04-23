@@ -107,3 +107,6 @@ Check out the [docs](./docs) for more info.
 
 ### 09.11.2018
  1. Now `asyncGetById` also has async getters for missing model fields
+
+### 23.04.2019
+ 1. Now creating a new entity clears pages carefully, caching old version and serving it, while new request is in process

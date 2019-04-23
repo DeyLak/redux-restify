@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { ACTIONS_TYPES } from '../actionsTypes'
-import { getPagesConfigHash, getSpecialIdWithQuery } from '../constants'
+import { getPagesConfigHash, getSpecialIdWithQuery, DEFAULT_PAGE_NUMBER } from '../constants'
 import { ROUTER_LOCATION_CHANGE_ACTION } from '../../constants'
 import { mergeAndReplaceArrays } from '~/helpers/nestedObjects'
 import { mapDataToRestifyModel } from '../modelsRelations'
@@ -38,7 +38,13 @@ const updateByIdInState = (state, id, data, allowClearPages = false) => {
   } else {
     // First clear pages, if we don't have that id, than assign entity by id
     // We are not clearing pages everytime here for smooth lists behavior for user
-    state.pages = allowClearPages && state.singleEntities[id] === undefined ? {} : state.pages
+    if (allowClearPages && state.singleEntities[id] === undefined) {
+      state.oldPages = {
+        ...state.oldPages,
+        ...state.pages,
+      }
+      state.pages = {}
+    }
     state.singleEntities = {
       ...state.singleEntities,
       [id]: mergeAndReplaceArrays(
@@ -60,6 +66,7 @@ const modelInitState = {
   singleEntities: {},
   loadErrorEntities: {},
   pages: {},
+  oldPages: {},
 }
 
 const getEntityManagerReducer = (modelTypes = []) => {
@@ -94,6 +101,7 @@ const getEntityManagerReducer = (modelTypes = []) => {
           newModelState = {
             ...currentModelState,
             pages: {},
+            oldPages: {},
           }
           break
         }
@@ -131,7 +139,16 @@ const getEntityManagerReducer = (modelTypes = []) => {
               ...currentModelState.pages,
               [currentConfigHash]: {
                 ...(currentModelState.pages[currentConfigHash] || {}),
-                [action.page || 1]: (action.specialConfig ? normalizedData : normalizedData.map(item => item.id)),
+                [action.page || DEFAULT_PAGE_NUMBER]:
+                  (action.specialConfig ? normalizedData : normalizedData.map(item => item.id)),
+              },
+            },
+            // Clear old page, if any, cause we already have new info for this config
+            oldPages: {
+              ...currentModelState.oldPages,
+              [currentConfigHash]: {
+                ...(currentModelState.oldPages[currentConfigHash] || {}),
+                [action.page || DEFAULT_PAGE_NUMBER]: [],
               },
             },
           }
@@ -190,6 +207,10 @@ const getEntityManagerReducer = (modelTypes = []) => {
               newModelState = {
                 ...currentModelState,
                 pages: {},
+                oldPages: {
+                  ...currentModelState.oldPages,
+                  ...currentModelState.pages,
+                },
               }
             }
           }

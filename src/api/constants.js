@@ -14,6 +14,7 @@ export const DOWNLOADING_URL = 'downloading'
 export const UPLOADING_URL = 'uploading'
 
 export const DEFAULT_PAGE_SIZE = 10
+export const DEFAULT_PAGE_NUMBER = 1
 export const DEFAULT_BACKEND_DATE_FORMAT = 'YYYY-MM-DD'
 
 const convertToValidQueryParam = (key, value, { dateFormat = DEFAULT_BACKEND_DATE_FORMAT }) => {
