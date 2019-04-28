@@ -198,7 +198,7 @@ describe('forms', () => {
       endpoint: TEST_MODEL_ENDPOINT,
       values: {
         testCase: true,
-      }
+      },
     })).then(() => {
       const request = jasmine.Ajax.requests.mostRecent()
       expect(request.data()).toEqual({

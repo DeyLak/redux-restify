@@ -577,11 +577,11 @@ const globalActions = {
       if (typeof url === 'function') {
         url = url(currentValues)
       }
-      let currentApiName = currentForm.apiName
+      let currentFormApiName = currentForm.apiName
       const currentId = data.id || currentForm.id || currentValues.id
       if (currentModel) {
         url = currentModel.endpoint
-        currentApiName = currentModel.apiName
+        currentFormApiName = currentModel.apiName
         if (currentId) {
           dispatch(api.actions.entityManager[currentForm.model].updateOptimisticById(currentId, data))
           errorCallbacks.push(api.actions.entityManager[currentForm.model].discardOptimisticUpdateById(currentId))
@@ -630,7 +630,7 @@ const globalActions = {
         isConvertToSnakeCase = currentApi ? currentApi.useSnakeCase : DEFAULT_USE_SNAKE_CASE
       }
       dispatch(api.actions.callApi(defaultMethod)({
-        apiName: currentApiName,
+        apiName: currentFormApiName,
         id: currentId,
         crudAction: currentForm.crudAction || currentCrudAction,
         url,

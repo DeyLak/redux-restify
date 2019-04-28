@@ -110,3 +110,6 @@ Check out the [docs](./docs) for more info.
 
 ### 23.04.2019
  1. Now creating a new entity clears pages carefully, caching old version and serving it, while new request is in process
+
+### 28.04.2019
+ 1. Added typescript typings

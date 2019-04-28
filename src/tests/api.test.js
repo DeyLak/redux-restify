@@ -327,7 +327,7 @@ describe('api', () => {
       api.selectors.entityManager.testChild1Model.getEntities(state).asyncGetArray({
         parentEntities: {
           testModel: 1,
-        }
+        },
       })
         .then(array => {
           expect(array).toEqual(testServerArrayRestifyChild1Models)
@@ -344,7 +344,7 @@ describe('api', () => {
         parentEntities: {
           testModel: 1,
           testChild1Model: 1,
-        }
+        },
       })
         .then(array => {
           expect(array).toEqual(testServerArrayRestifyChild2Models)

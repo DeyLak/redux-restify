@@ -461,18 +461,18 @@ class EntityList {
 
   getCalculatedArray(pages) {
     return Object.keys(pages).reduce((memo, pageConfig) => ({
-          ...memo,
-          [pageConfig]: Object.keys(pages[pageConfig]).reduce((currentArray, page) => {
-            return currentArray.concat(
-              pages[pageConfig][page]
-                    .map(item => {
-                      if (typeof item !== 'object') return this.getById(item)
-                      return item
-                    })
-                    .filter(item => item && !item.$deleted),
-            )
-          }, []),
-        }), {})
+      ...memo,
+      [pageConfig]: Object.keys(pages[pageConfig]).reduce((currentArray, page) => {
+        return currentArray.concat(
+          pages[pageConfig][page]
+                .map(item => {
+                  if (typeof item !== 'object') return this.getById(item)
+                  return item
+                })
+                .filter(item => item && !item.$deleted),
+        )
+      }, []),
+    }), {})
   }
 
   calculateArrays() {
