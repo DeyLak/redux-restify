@@ -5,7 +5,9 @@ import {
 } from './adapters'
 
 
-export type RestifyId = number | string;
+type NotZero<T> = 0 extends T ? never : T
+
+export type RestifyId = NotZero<number | string>;
 
 export interface RestifyModelConfig {
   pageSize: number;
