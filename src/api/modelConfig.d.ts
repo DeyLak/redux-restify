@@ -6,8 +6,9 @@ import {
 
 
 type NotZero<T> = 0 extends T ? never : T
+type NotEmptyString<T> = '' extends T ? never : T
 
-export type RestifyId = NotZero<number> | string;
+export type RestifyId = NotZero<number> | NotEmptyString<string>;
 
 export interface RestifyModelConfig {
   pageSize: number;
