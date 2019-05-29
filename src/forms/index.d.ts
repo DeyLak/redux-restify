@@ -46,16 +46,28 @@ export interface RestifyFormActions extends ActionCreatorsMapObject {
 
 export type RestifyFormErrors<T> = any
 
+type FormTypeSelector = string | RegExp
+
+type GetIsFormExist = (state: any) => boolean;
+type GetEndpoint = (state: any) => RestifyEndpointInfo;
+type GetForm = <T>(state: any) => T;
+type GetFormWithNulls = <T>(state: any) => T;
+type GetField = <T>(name: string) => (state: any) => T;
+type GetSavedField = <T>(name: string) => (state: any) => T;
+type GetErrors = <T>(state: any) => RestifyFormErrors<T>;
+type GetIsValid = (state: any) => boolean;
+type GetEditingFields = <T>(state: any) => Partial<T>;
+
 export interface FormSelectors {
-  getIsFormExist(state: any): boolean;
-  getEndpoint(state: any): RestifyEndpointInfo;
-  getForm<T>(state: any): T;
-  getFormWithNulls<T>(state: any): T;
-  getField<T>(name: string): (state: any) => T;
-  getSavedField<T>(name: string): (state: any) => T;
-  getErrors<T>(state: any): RestifyFormErrors<T>;
-  getIsValid(state: any): boolean;
-  getEditingFields<T>(state: any): Partial<T>;
+  getIsFormExist: GetIsFormExist,
+  getEndpoint: GetEndpoint,
+  getForm: GetForm,
+  getFormWithNulls: GetFormWithNulls,
+  getField: GetField,
+  getSavedField: GetSavedField,
+  getErrors: GetErrors,
+  getIsValid: GetIsValid,
+  getEditingFields: GetEditingFields,
 }
 
 export namespace forms {
@@ -76,8 +88,18 @@ export namespace forms {
   export function getFormActions(formType: string): RestifyFormActions;
   export function checkErrors(errors: any, form: any, validateAll: boolean): boolean;
   export const selectors: {
-    getFormsMap(formType: string | RegExp, state: any, mapFunction: (key: string, state: any) => any): any;
-    getFormConfig(formType: string | RegExp): any;
+    getFormsMap(formType: FormTypeSelector, state: any, mapFunction: (key: string, state: any) => any): any;
+    getFormConfig(formType: FormTypeSelector): any;
+
+    getIsFormExist: (formType: FormTypeSelector) => GetIsFormExist;
+    getEndpoint: (formType: FormTypeSelector) => GetEndpoint;
+    getForm: (formType: FormTypeSelector) => GetForm;
+    getFormWithNulls: (formType: FormTypeSelector) => GetFormWithNulls;
+    getField: (formType: FormTypeSelector) => GetField;
+    getSavedField: (formType: FormTypeSelector) => GetSavedField;
+    getErrors: (formType: FormTypeSelector) => GetErrors;
+    getIsValid: (formType: FormTypeSelector) => GetIsValid;
+    getEditingFields: (formType: FormTypeSelector) => GetEditingFields;
   } & {
     [key: string]: FormSelectors;
   };
