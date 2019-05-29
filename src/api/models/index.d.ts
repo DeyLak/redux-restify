@@ -84,9 +84,9 @@ export type RestifyEntititesArray<T> = Array<T & { id: RestifyId }>
 
 export class RestifyEntityList<T> {
   constructor(modelType: string | RestifyEntityList<T>);
-  getById: (id: RestifyId, config?: GetByIdConfig) => T;
+  getById: (id?: RestifyId, config?: GetByIdConfig) => T;
   getIsLoadingById: (id: RestifyId, config?: GetByIdConfig | string) => boolean;
-  asyncGetById: (id: RestifyId, config?: GetByIdConfig) => Promise<T>;
+  asyncGetById: (id?: RestifyId, config?: GetByIdConfig) => Promise<T>;
   getByUrl: (url: string, config?: GetByIdConfig) => T;
   asyncGetByUrl: (url: string, config?: GetByIdConfig) => Promise<T>;
   getNextPage: (config?: GetArrayConfig) => number | undefined;
