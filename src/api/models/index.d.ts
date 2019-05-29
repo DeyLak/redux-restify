@@ -80,7 +80,7 @@ export class RestifyArray extends RestifyField {
   $isRestifyArray: boolean;
 }
 
-export type RestifyEntititesArray<T> = Array<T & { id: RestifyId }>
+export type RestifyEntitiesArray<T> = Array<T & { id: RestifyId }>
 
 export class RestifyEntityList<T> {
   constructor(modelType: string | RestifyEntityList<T>);
@@ -91,7 +91,7 @@ export class RestifyEntityList<T> {
   asyncGetByUrl: (url: string, config?: GetByIdConfig) => Promise<T>;
   getNextPage: (config?: GetArrayConfig) => number | undefined;
   getCount: (config?: GetArrayConfig) => number;
-  getArray: (config?: GetArrayConfig) => RestifyEntititesArray<T>;
+  getArray: (config?: GetArrayConfig) => RestifyEntitiesArray<T>;
   getIsLoadingArray: (config?: GetArrayConfig) => boolean;
-  asyncGetArray: (config?: GetArrayConfig) => Promise<RestifyEntititesArray<T>>;
+  asyncGetArray: (config?: GetArrayConfig) => Promise<RestifyEntitiesArray<T>>;
 }
