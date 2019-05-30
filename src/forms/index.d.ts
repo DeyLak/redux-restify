@@ -9,7 +9,7 @@ export { RestifyFormConfig } from './formConfig'
 
 export * from './validation'
 
-export type FormPath = string | string[]
+export type FormPath = string | number | (string | number)[]
 
 export interface RestifyFormActions extends ActionCreatorsMapObject {
   deleteForm(): any;
