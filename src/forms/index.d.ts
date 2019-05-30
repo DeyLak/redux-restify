@@ -19,8 +19,8 @@ export interface RestifyFormActions extends ActionCreatorsMapObject {
   changeSomeFields(fieldsObject: any, forceUndefines?: boolean): any;
   applyServerData(data: any): any;
   resetField(name: FormPath): any;
-  insertToArray(arrayName: FormPath, value: any, insertingIndex?: number): any;
-  insertToArrayAndEdit(arrayName: FormPath, value: any, index?: number): any;
+  insertToArray(arrayName: FormPath, value?: any, insertingIndex?: number): any;
+  insertToArrayAndEdit(arrayName: FormPath, value?: any, index?: number): any;
   manageSavedFieldArrayDeletion(arrayName: FormPath, index: number): any;
   manageSavedFieldArrayInsertion(arrayName: FormPath, index: number, insertedField: any): any;
   removeFromArray(arrayName: FormPath, index?: number, count?: number): any;
