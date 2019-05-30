@@ -80,7 +80,9 @@ export class RestifyArray extends RestifyField {
   $isRestifyArray: boolean;
 }
 
-export type RestifyEntitiesArray<T> = Array<T & { id: RestifyId }>
+export type WithId<T> = T & { id: RestifyId }
+
+export type RestifyEntitiesArray<T> = Array<WithId<T>>
 
 export class RestifyEntityList<T> {
   constructor(modelType: string | RestifyEntityList<T>);
