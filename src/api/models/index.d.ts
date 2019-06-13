@@ -86,6 +86,9 @@ export type RestifyEntitiesArray<T> = Array<WithId<T>>
 
 export class RestifyEntityList<T> {
   constructor(modelType: string | RestifyEntityList<T>);
+  readonly modelConfig: RestifyModelConfig & {
+    [key: string]: any;
+  };
   getById: (id?: RestifyId, config?: GetByIdConfig) => T;
   getIsLoadingById: (id: RestifyId, config?: GetByIdConfig | string) => boolean;
   asyncGetById: (id?: RestifyId, config?: GetByIdConfig) => Promise<T>;
