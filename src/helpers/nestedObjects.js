@@ -64,13 +64,13 @@ export const getNestedObjectField = (obj, name) => {
 export const reduceObject = (predicate, recursive = true) => (obj) => {
   if (!isPureObject(obj)) return obj
   if (Array.isArray(obj)) {
-    return obj.map(item => reduceObject(predicate)(item))
+    return obj.map(item => reduceObject(predicate, recursive)(item))
   }
   return Object.keys(obj).reduce((memo, key) => {
     if (predicate(key, obj[key], obj)) return memo
     return {
       ...memo,
-      [key]: recursive ? reduceObject(predicate)(obj[key]) : obj[key],
+      [key]: recursive ? reduceObject(predicate, recursive)(obj[key]) : obj[key],
     }
   }, {})
 }
