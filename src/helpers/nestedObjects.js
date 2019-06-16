@@ -61,7 +61,7 @@ export const getNestedObjectField = (obj, name) => {
   }, obj)
 }
 
-export const reduceObject = (predicate) => (obj) => {
+export const reduceObject = (predicate, recursive = true) => (obj) => {
   if (!isPureObject(obj)) return obj
   if (Array.isArray(obj)) {
     return obj.map(item => reduceObject(predicate)(item))
@@ -70,7 +70,7 @@ export const reduceObject = (predicate) => (obj) => {
     if (predicate(key, obj[key], obj)) return memo
     return {
       ...memo,
-      [key]: reduceObject(predicate)(obj[key]),
+      [key]: recursive ? reduceObject(predicate)(obj[key]) : obj[key],
     }
   }, {})
 }
@@ -94,7 +94,7 @@ export const mutateObject = (predicate, transformFunc, keyParentPath = []) => (o
   }, {})
 }
 
-export const removePrivateFields = reduceObject(key => key[0] === '$')
+export const removePrivateFields = reduceObject(key => key[0] === '$', false)
 
 export const removeUndefinedKeys = reduceObject((key, value) => value === undefined)
 
