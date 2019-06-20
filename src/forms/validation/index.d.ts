@@ -1,7 +1,7 @@
 import { FormError } from '../formConfig'
 
 
-export type ValidateFunction = (currentLevelValues: any, formValues: object) => FormError;
+export type ValidateFunction = (currentLevelValues: any, formValues: any) => FormError;
 
 export interface ValidationPresetConfig {
   validate: ValidateFunction;
