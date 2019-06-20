@@ -11,12 +11,12 @@ export * from './validation'
 
 export type FormPath = string | number | (string | number)[]
 
-export interface RestifyFormActions extends ActionCreatorsMapObject {
+export interface RestifyFormActions<T = any> extends ActionCreatorsMapObject {
   deleteForm(): any;
   resetForm(): any;
   renameForm(formName: string): any;
   changeField(name: FormPath, newValue: any): any;
-  changeSomeFields(fieldsObject: any, forceUndefines?: boolean): any;
+  changeSomeFields(fieldsObject: Partial<T>, forceUndefines?: boolean): any;
   applyServerData(data: any): any;
   resetField(name: FormPath): any;
   insertToArray(arrayName: FormPath, value?: any, insertingIndex?: number): any;
