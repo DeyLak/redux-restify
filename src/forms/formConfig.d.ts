@@ -23,29 +23,29 @@ export interface RestifyFormConfig<T> {
   id: RestifyId,
   specialAction: string;
   method: HttpMethod;
-  onRouteChangeReset: {
+  onRouteChangeReset: Partial<{
     [key in keyof T]: boolean;
-  };
-  onRefreshReset: {
+  }>;
+  onRefreshReset: Partial<{
     [key in keyof T]: boolean;
-  };
+  }>;
   defaults: Partial<T>;
   values: Partial<T>;
-  submitExclude: {
+  submitExclude: Partial<{
     [key in keyof T]: boolean;
-  } | ((key: string, formValues: any, keyParentPath: string[]) => boolean);
-  transformBeforeSubmit: {
+  }> | ((key: string, formValues: any, keyParentPath: string[]) => boolean);
+  transformBeforeSubmit: Partial<{
     [key in keyof T]: FormTransformationFunction;
-  } | FormTransformationFunction;
+  }> | FormTransformationFunction;
   resetOnSubmit: boolean;
   deleteOnSubmit: boolean;
   convertToSnakeCaseBeforeSend?: boolean;
   convertResultToCamelCase: boolean;
   resultRemoveNulls: boolean;
   resultOrderArrays: boolean;
-  validate: {
+  validate: Partial<{
     [key in keyof T]: ValidationPreset | ValidateFunction;
-  } | ValidateFunction;
+  }> | ValidateFunction;
   validateOnFieldChange: boolean;
   validateAll: boolean;
   validateOnSubmit: boolean;
