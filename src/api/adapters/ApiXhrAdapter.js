@@ -103,6 +103,10 @@ class ApiXhrAdapter {
     // (response) => ({ data: {} })
     // should return an object with data field, that can be mapped into restify entity
     transformEntityResponse,
+    // Transform error response
+    // (response) => ({ errors: {} })
+    // should return an object with errors
+    transformErrorResponse,
     // Get generic model representation for RestifyGenericForeignKey
     // (genericFieldRawValue) => ({ modelType: 'model', model: {} })
     getGenericModel = defaultGetGenericModel,
@@ -135,6 +139,7 @@ class ApiXhrAdapter {
     this.defaultSortField = defaultSortField
     this.transformArrayResponse = transformArrayResponse
     this.transformEntityResponse = transformEntityResponse
+    this.transformErrorResponse = transformErrorResponse
     this.getPaginationQuery = getPaginationQuery
     this.getEntityUrl = getEntityUrl
     this.getGenericModel = getGenericModel

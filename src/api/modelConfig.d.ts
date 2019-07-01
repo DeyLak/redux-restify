@@ -1,6 +1,7 @@
 import {
   TransformEntityResponse,
   TransformArrayResponse,
+  TransformErrorResponse,
   GetEntityUrl,
 } from './adapters'
 
@@ -26,6 +27,7 @@ export interface RestifyModelConfig {
   apiName: string;
   transformArrayResponse?: TransformArrayResponse;
   transformEntityResponse?: TransformEntityResponse;
+  transformErrorResponse?: TransformErrorResponse;
   getEntityUrl?: GetEntityUrl;
   warnAboutUnregisteredFields: boolean;
 }

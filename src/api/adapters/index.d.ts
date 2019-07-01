@@ -24,6 +24,10 @@ export type TransformEntityResponse = (response: any) => {
   data: any;
 }
 
+export type TransformErrorResponse = (response: any) => {
+  errors: any;
+}
+
 export type GetGenericModel = (genericFieldRawValue: any) => {
   modelType: string;
   model: any;
@@ -60,6 +64,7 @@ export interface ApiXhrAdapterConfig {
   transformArrayResponse?: TransformArrayResponse;
   getEntityUrl?: GetEntityUrl;
   transformEntityResponse?: TransformEntityResponse;
+  transformErrorResponse?: TransformErrorResponse;
   getGenericModel?: GetGenericModel;
   getGenericFormField?: GetGenericFormField;
   getPaginationQuery?: GetPaginationQuery;
@@ -102,8 +107,9 @@ export class ApiXhrAdapter {
   defaultSortField: string;
   transformArrayResponse: TransformArrayResponse;
   transformEntityResponse: TransformEntityResponse;
+  transformErrorResponse: TransformErrorResponse;
   getPaginationQuery: GetPaginationQuery;
-  getEntityUrl: GetEntityUrl;;
+  getEntityUrl: GetEntityUrl;
   getGenericModel: GetGenericModel;
   getGenericFormField: GetGenericFormField;
   authMethod: string;

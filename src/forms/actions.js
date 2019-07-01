@@ -29,7 +29,7 @@ import api, {
   CRUD_ACTIONS,
   DEFAULT_USE_SNAKE_CASE,
 } from '../api'
-import { defaulTransformEntityResponse } from '../api/actions/entityManager'
+import { defaulTransformEntityResponse, defaulTransformErrorResponse } from '../api/actions/entityManager'
 import { RESTIFY_CONFIG } from '../config'
 import { onInitRestify } from '../init'
 import { ACTION_UPDATE, ACTION_CREATE } from '../constants'
@@ -621,7 +621,13 @@ const globalActions = {
       })
       errorCallbacks.push((res, status) => () => reject({ data: res, status }))
 
-      errorCallbacks.push(globalActions.setErrors(formType))
+      errorCallbacks.push((res, status, resApi) => {
+        const transformErrorResponse = currentModel && currentModel.transformErrorResponse ||
+          currentApi && currentApi.transformErrorResponse ||
+          defaulTransformErrorResponse
+        const transformed = transformErrorResponse(res).errors
+        return globalActions.setErrors(formType)(transformed, status, resApi)
+      })
 
       const defaultMethod = currentId ? 'patch' : 'post'
       const currentCrudAction = currentId ? CRUD_ACTIONS.update : CRUD_ACTIONS.create
