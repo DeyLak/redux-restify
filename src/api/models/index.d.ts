@@ -84,19 +84,25 @@ export type WithId<T> = T & { id: RestifyId }
 
 export type RestifyEntitiesArray<T> = Array<WithId<T>>
 
+export type RestifyModel<T> = T & {
+  $loading: boolean;
+  $error: boolean;
+  $modelType: string;
+}
+
 export class RestifyEntityList<T> {
   constructor(modelType: string | RestifyEntityList<T>);
   readonly modelConfig: RestifyModelConfig & {
     [key: string]: any;
   };
-  getById: (id?: RestifyId, config?: GetByIdConfig) => T;
+  getById: (id?: RestifyId, config?: GetByIdConfig) => RestifyModel<T>;
   getIsLoadingById: (id: RestifyId, config?: GetByIdConfig | string) => boolean;
-  asyncGetById: (id?: RestifyId, config?: GetByIdConfig) => Promise<T>;
-  getByUrl: (url: string, config?: GetByIdConfig) => T;
-  asyncGetByUrl: (url: string, config?: GetByIdConfig) => Promise<T>;
+  asyncGetById: (id?: RestifyId, config?: GetByIdConfig) => Promise<RestifyModel<T>>;
+  getByUrl: (url: string, config?: GetByIdConfig) => RestifyModel<T>;
+  asyncGetByUrl: (url: string, config?: GetByIdConfig) => Promise<RestifyModel<T>>;
   getNextPage: (config?: GetArrayConfig) => number | undefined;
   getCount: (config?: GetArrayConfig) => number;
-  getArray: (config?: GetArrayConfig) => RestifyEntitiesArray<T>;
+  getArray: (config?: GetArrayConfig) => RestifyEntitiesArray<RestifyModel<T>>;
   getIsLoadingArray: (config?: GetArrayConfig) => boolean;
-  asyncGetArray: (config?: GetArrayConfig) => Promise<RestifyEntitiesArray<T>>;
+  asyncGetArray: (config?: GetArrayConfig) => Promise<RestifyEntitiesArray<RestifyModel<T>>>;
 }
