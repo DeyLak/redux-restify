@@ -104,7 +104,7 @@ class ApiXhrAdapter {
     // should return an object with data field, that can be mapped into restify entity
     transformEntityResponse,
     // Transform error response
-    // (response) => (errors = {})
+    // (response) => ({ errors: {} })
     // should return an object with errors
     transformErrorResponse,
     // Get generic model representation for RestifyGenericForeignKey

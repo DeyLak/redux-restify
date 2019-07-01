@@ -621,12 +621,11 @@ const globalActions = {
       })
       errorCallbacks.push((res, status) => () => reject({ data: res, status }))
 
-      errorCallbacks.push((res, status, resApi) => () => {
+      errorCallbacks.push((res, status, resApi) => {
         const transformErrorResponse = currentModel && currentModel.transformErrorResponse ||
           currentApi && currentApi.transformErrorResponse ||
           defaulTransformErrorResponse
-        const transformed = transformErrorResponse(res)
-        console.log(currentApi)
+        const transformed = transformErrorResponse(res).errors
         return globalActions.setErrors(formType)(transformed, status, resApi)
       })
 

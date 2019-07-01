@@ -24,7 +24,9 @@ export type TransformEntityResponse = (response: any) => {
   data: any;
 }
 
-export type TransformErrorResponse = (response: any) => any;
+export type TransformErrorResponse = (response: any) => {
+  errors: any;
+}
 
 export type GetGenericModel = (genericFieldRawValue: any) => {
   modelType: string;
