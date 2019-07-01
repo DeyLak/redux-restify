@@ -31,6 +31,8 @@ export const defaulTransformEntityResponse = (response) => ({
   data: response,
 })
 
+export const defaulTransformErrorResponse = (response) => response
+
 export const defaultGetPaginationQuery = (initialQuery, page, pageSize) => ({
   ...initialQuery,
   page,
