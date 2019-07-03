@@ -279,7 +279,9 @@ class EntityList {
             this.modelConfig.allowIdRequests
           ) {
             this.idLoaded[result.id] = this.asyncDispatch(entityManager[this.modelType]
-              .loadById(result.id)).then((res) => {
+              .loadById(result.id, {
+                urlHash: getSpecialIdWithQuery(result.id).toString(),
+              })).then((res) => {
                 this.idLoaded[result.id] = false
                 if (!Object.keys(res).includes(key)) {
                   console.warn(`
@@ -371,7 +373,7 @@ class EntityList {
           ...config,
           asyncGetters,
           query,
-          urlHash: specialId,
+          urlHash: specialId && specialId.toString(),
         }))
         .then((result) => {
           this.idLoaded[specialId] = false
@@ -436,7 +438,7 @@ class EntityList {
       ...config,
       asyncGetters,
       query,
-      urlHash: specialId,
+      urlHash: specialId && specialId.toString(),
     })).then(result => {
       this.idLoaded[specialId] = false
       this.precalculatedSingles[specialId] = result
@@ -551,7 +553,7 @@ class EntityList {
           parentEntities,
           specialConfig,
           modelConfig,
-          urlHash: currentConfig,
+          urlHash: currentConfig && currentConfig.toString(),
         }))
           .then((result) => {
             this.arrayLoaded[currentConfig] = false
@@ -615,7 +617,7 @@ class EntityList {
       parentEntities,
       specialConfig,
       modelConfig,
-      urlHash: currentConfig,
+      urlHash: currentConfig && currentConfig.toString(),
     }))
       .then(result => {
         this.arrayLoaded[currentConfig] = false
