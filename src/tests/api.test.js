@@ -454,6 +454,19 @@ describe('api', () => {
       notInArray: testServerArrayResponse.results,
     }
 
+    const modelNested2Response = {
+      id: 1,
+      test: {
+        nested: true,
+      },
+      notNested: true,
+    }
+
+    const modelNested2ArrayResponse = [{
+      id: 1,
+      notNested: true,
+    }]
+
     const modelWithForeignKeyArrayResponse = [{
       id: 1,
       test: true,
@@ -521,7 +534,9 @@ describe('api', () => {
       {},
       { forceLoad: true },
       { asyncGetters: false },
+      { asyncGetters: true },
     ]
+
     configs.forEach(config => {
       it('can get a model asynchronously and then receive array without rewriting missing fields', (done) => {
         mockRequest(modelWithForeignKeyResponse, { url: `${modelUrl}1/` })
@@ -564,6 +579,53 @@ describe('api', () => {
             })
         })
       })
+    })
+
+    const configs2 = [
+      { forceLoad: true },
+      { asyncGetters: true },
+    ]
+    configs2.forEach(config => {
+      it(
+        `can get a an array, and then get model asynchronously with nested object: ${JSON.stringify(config)}`,
+        (done) => {
+          mockRequest(modelNested2ArrayResponse, { url: modelUrl })
+          let state = store.getState()
+          api.selectors.entityManager.testModelNested2.getEntities(state).asyncGetArray().then(async (array) => {
+            expect(array).toEqual(modelNested2ArrayResponse.map(model => ({
+              ...model,
+              $modelType: 'testModelNested2',
+            })))
+            // Create a race condition between getting async property and recieving object by id.
+            let firstPromise = Promise.resolve()
+            if (config.asyncGetters) {
+              mockRequest(modelNested2Response, { url: `${modelUrl}1/` })
+              state = store.getState()
+              const model = api.selectors.entityManager.testModelNested2.getEntities(state).getById(1, config)
+              firstPromise = model.test.then(testValue => {
+                expect(testValue).toEqual(modelNested2Response.test)
+              })
+            }
+            state = store.getState()
+            mockRequest(modelNested2Response, { url: `${modelUrl}1/` })
+            const secondPromise = api.selectors.entityManager.testModelNested2.getEntities(state).asyncGetById(1, {
+              ...config,
+              forceLoad: true,
+            })
+              .then(model => {
+                expect(model).toEqual({
+                  ...modelNested2Response,
+                  $modelType: 'testModelNested2',
+                })
+              })
+
+            Promise.all([
+              firstPromise,
+              secondPromise,
+            ]).then(() => done())
+          })
+        },
+      )
     })
 
     it('can get a model asynchronously and then receive this model in foreign key without rewriting fields', (done) => {

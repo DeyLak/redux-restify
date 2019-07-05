@@ -154,6 +154,19 @@ export const modelsDefinitions = {
       }),
     },
   },
+  testModelNested2: {
+    apiName: 'testApi',
+    endpoint: TEST_MODEL_ENDPOINT,
+    name: 'Test model nested 2',
+    defaults: {
+      id: undefined,
+      test: {
+        nested: undefined,
+      },
+      notNested: undefined,
+    },
+    pagination: false,
+  },
   testModelOtherId: {
     clearDataOnRouteChange: true,
     apiName: 'testApi',

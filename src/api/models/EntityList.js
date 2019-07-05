@@ -3,6 +3,7 @@ import {
   getPagesConfigHash,
   DEFAULT_PAGE_SIZE,
   getSpecialIdWithQuery,
+  getCacheValidationHashForId,
 } from '../constants'
 import { RESTIFY_CONFIG } from '../../config'
 import RestifyArray from './RestifyArray'
@@ -172,6 +173,7 @@ class EntityList {
                     isNestedModel: true,
                     ...currentField.fetchConfig,
                     preventLoad: true,
+                    asyncGetters,
                   })
                 })
               } else if (normalizedIdField === null) {
@@ -180,6 +182,7 @@ class EntityList {
                 denormalized = linkedModel.getById(normalizedIdField, {
                   isNestedModel: true,
                   ...currentField.fetchConfig,
+                  asyncGetters,
                 })
               }
               return denormalized
@@ -273,6 +276,7 @@ class EntityList {
         !Object.prototype.hasOwnProperty.call(normalized, key)) {
         const defaultValue = result[key]
         const autoGetter = () => {
+          let returnValue = defaultValue
           if (isDefAndNotNull(result.id) &&
             RESTIFY_CONFIG.options.autoPropertiesIdRequests &&
             !this.idLoaded[result.id] &&
@@ -281,6 +285,7 @@ class EntityList {
             this.idLoaded[result.id] = this.asyncDispatch(entityManager[this.modelType]
               .loadById(result.id, {
                 urlHash: getSpecialIdWithQuery(result.id).toString(),
+                asyncGetters,
               })).then((res) => {
                 this.idLoaded[result.id] = false
                 if (!Object.keys(res).includes(key)) {
@@ -290,10 +295,14 @@ class EntityList {
                   `.trim())
                   return defaultValue
                 }
-                return res[key]
+                return res
               })
           }
-          return asyncGetters ? this.idLoaded[result.id] : defaultValue
+          if (asyncGetters) {
+            returnValue = this.idLoaded[result.id] && this.idLoaded[result.id].then((res) => res[key])
+            // returnValue = this.idLoaded[result.id]
+          }
+          return returnValue
         }
         Object.defineProperty(result, key, {
           enumerable: false,
@@ -338,6 +347,7 @@ class EntityList {
       asyncGetters = false,
     } = config
     const specialId = getSpecialIdWithQuery(id, query)
+    const cacheId = getCacheValidationHashForId(specialId, asyncGetters)
     if (!isDefAndNotNull(specialId)) {
       return this.getDefaulObject(id, {
         $error: false,
@@ -351,14 +361,14 @@ class EntityList {
         $loading: false,
       })
     }
-    if (!forceLoad && this.precalculatedSingles[specialId]) return this.precalculatedSingles[specialId]
+    if (!forceLoad && this.precalculatedSingles[cacheId]) return this.precalculatedSingles[cacheId]
     const currentEntity = this.singles[specialId]
     if (!forceLoad && currentEntity) {
       const result = this.getRestifyModel(getOptimisticEntity(currentEntity), {
         isNestedModel,
         asyncGetters,
       })
-      this.precalculatedSingles[specialId] = result
+      this.precalculatedSingles[cacheId] = result
       return result
     }
 
@@ -369,15 +379,16 @@ class EntityList {
     if (shouldLoad) {
       this.idLoaded[specialId] = this
         .asyncDispatch(entityManager[this.modelType]
-        .loadById(id, {
-          ...config,
-          asyncGetters,
-          query,
-          urlHash: specialId && specialId.toString(),
-        }))
+          .loadById(id, {
+            ...config,
+            asyncGetters,
+            query,
+            urlHash: specialId && specialId.toString(),
+          }),
+        )
         .then((result) => {
           this.idLoaded[specialId] = false
-          this.precalculatedSingles[specialId] = result
+          this.precalculatedSingles[cacheId] = result
           return result
         })
     }
@@ -415,13 +426,14 @@ class EntityList {
       query = config
     }
     const specialId = getSpecialIdWithQuery(id, query)
+    const cacheId = getCacheValidationHashForId(specialId, asyncGetters)
     if (!isDefAndNotNull(specialId) || this.errors[specialId]) return Promise.resolve()
-    if (!forceLoad && this.precalculatedSingles[specialId]) return this.precalculatedSingles[specialId]
+    if (!forceLoad && this.precalculatedSingles[cacheId]) return this.precalculatedSingles[cacheId]
     if (!forceLoad && this.singles[specialId]) {
       const result = this.getRestifyModel(getOptimisticEntity(this.singles[specialId]), {
         asyncGetters,
       })
-      this.precalculatedSingles[specialId] = result
+      this.precalculatedSingles[cacheId] = result
       return Promise.resolve(result)
     }
     if (!this.modelConfig.allowIdRequests) {
@@ -441,7 +453,7 @@ class EntityList {
       urlHash: specialId && specialId.toString(),
     })).then(result => {
       this.idLoaded[specialId] = false
-      this.precalculatedSingles[specialId] = result
+      this.precalculatedSingles[cacheId] = result
       return result
     })
     return this.idLoaded[specialId]

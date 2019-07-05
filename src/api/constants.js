@@ -70,6 +70,10 @@ export const getSpecialIdWithQuery = (id, query) => {
   return `${id}/?${queryFormat(query)}`
 }
 
+export const getCacheValidationHashForId = (id, asyncGetters) => {
+  return hash({ id, asyncGetters })
+}
+
 export const CRUD_ACTION_CREATE = 'create'
 export const CRUD_ACTION_UPDATE = 'update'
 export const CRUD_ACTION_DELETE = 'delete'
