@@ -113,6 +113,9 @@ Check out the [docs](./docs) for more info.
 
 ### 28.04.2019
  1. Added typescript typings
- 
+
 ### 01.07.2019
  1. Added `transformErrorResponse` function
+
+### 05.07.2019
+ 1. Added `useOptimisticUpdate` config to form

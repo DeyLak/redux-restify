@@ -19,6 +19,7 @@ export interface RestifyFormConfig<T> {
   apiName: string;
   endpoint: string;
   model: string;
+  useOptimisticUpdate: boolean;
   updateEntity: boolean;
   id: RestifyId,
   specialAction: string;

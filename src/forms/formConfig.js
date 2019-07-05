@@ -21,6 +21,7 @@ export const DEFAULT_FORM_OBJECT = {
   endpoint: '', // Endpoint to submit to server, can be either string, or function (formValues) => string
   // If set, endpoint field is ignored, links form to api model, updates data according to RESTfull protocol
   model: '',
+  useOptimisticUpdate: true, // Should optimistic update occure
   updateEntity: true, // Sholud entity by id be updated, when submitting RESTfull form
   // Entity id, which is used in RESTfull requests, like entities/{id}
   // Field is optional, also id field from data passed is used by default

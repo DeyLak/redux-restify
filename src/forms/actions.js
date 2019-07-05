@@ -582,7 +582,7 @@ const globalActions = {
       if (currentModel) {
         url = currentModel.endpoint
         currentFormApiName = currentModel.apiName
-        if (currentId) {
+        if (currentId && currentForm.useOptimisticUpdate) {
           dispatch(api.actions.entityManager[currentForm.model].updateOptimisticById(currentId, data))
           errorCallbacks.push(api.actions.entityManager[currentForm.model].discardOptimisticUpdateById(currentId))
         }
