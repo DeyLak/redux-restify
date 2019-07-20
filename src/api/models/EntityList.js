@@ -119,6 +119,7 @@ class EntityList {
   getRestifyModel(normalized, {
     isNestedModel = false,
     asyncGetters,
+    parentEntities,
   } = {}) {
     // Connected models keys, wich are not stored in store and can be misrecognized as missing keys
     const modelKeys = {}
@@ -284,8 +285,9 @@ class EntityList {
           ) {
             this.idLoaded[result.id] = this.asyncDispatch(entityManager[this.modelType]
               .loadById(result.id, {
-                urlHash: getSpecialIdWithQuery(result.id).toString(),
+                urlHash: getSpecialIdWithQuery(result.id, undefined, parentEntities).toString(),
                 asyncGetters,
+                parentEntities,
               })).then((res) => {
                 this.idLoaded[result.id] = false
                 if (!Object.keys(res).includes(key)) {
@@ -345,8 +347,9 @@ class EntityList {
       preventLoad = false,
       forceLoad = false,
       asyncGetters = false,
+      parentEntities,
     } = config
-    const specialId = getSpecialIdWithQuery(id, query)
+    const specialId = getSpecialIdWithQuery(id, query, parentEntities)
     const cacheId = getCacheValidationHashForId(specialId, asyncGetters)
     if (!isDefAndNotNull(specialId)) {
       return this.getDefaulObject(id, {
@@ -367,6 +370,7 @@ class EntityList {
       const result = this.getRestifyModel(getOptimisticEntity(currentEntity), {
         isNestedModel,
         asyncGetters,
+        parentEntities,
       })
       this.precalculatedSingles[cacheId] = result
       return result
@@ -381,6 +385,7 @@ class EntityList {
         .asyncDispatch(entityManager[this.modelType]
           .loadById(id, {
             ...config,
+            parentEntities,
             asyncGetters,
             query,
             urlHash: specialId && specialId.toString(),
@@ -407,9 +412,10 @@ class EntityList {
   getIsLoadingById(id, config = {}) {
     const {
       query,
+      parentEntities,
     } = config
 
-    const specialId = getSpecialIdWithQuery(id, query)
+    const specialId = getSpecialIdWithQuery(id, query, parentEntities)
     const url = this.urls.find(u => u.key === `${this.modelConfig.endpoint}${specialId}`)
     return !url || url.downloading !== 0
   }
@@ -421,17 +427,19 @@ class EntityList {
     const {
       forceLoad = false,
       asyncGetters = true,
+      parentEntities = undefined,
     } = config
     if (typeof config !== 'object') {
       query = config
     }
-    const specialId = getSpecialIdWithQuery(id, query)
+    const specialId = getSpecialIdWithQuery(id, query, parentEntities)
     const cacheId = getCacheValidationHashForId(specialId, asyncGetters)
     if (!isDefAndNotNull(specialId) || this.errors[specialId]) return Promise.resolve()
     if (!forceLoad && this.precalculatedSingles[cacheId]) return this.precalculatedSingles[cacheId]
     if (!forceLoad && this.singles[specialId]) {
       const result = this.getRestifyModel(getOptimisticEntity(this.singles[specialId]), {
         asyncGetters,
+        parentEntities,
       })
       this.precalculatedSingles[cacheId] = result
       return Promise.resolve(result)
@@ -448,6 +456,7 @@ class EntityList {
     if (this.idLoaded[specialId]) return this.idLoaded[specialId]
     this.idLoaded[specialId] = this.dispatch(entityManager[this.modelType].loadById(id, {
       ...config,
+      parentEntities,
       asyncGetters,
       query,
       urlHash: specialId && specialId.toString(),

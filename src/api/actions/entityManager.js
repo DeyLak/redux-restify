@@ -27,6 +27,15 @@ const defaultTransformArrayResponse = (response, pagination) => {
   }
 }
 
+const getUrlWithParents = (url, currentModel, parentEntities) => {
+  const parents = Array.isArray(currentModel.parent) ? currentModel.parent : [currentModel.parent]
+  return parents.reverse().reduce((memo, item) => {
+    const currentParent = RESTIFY_CONFIG.registeredModels[item]
+    const currentId = parentEntities[item] ? `${parentEntities[item]}/` : ''
+    return currentParent.endpoint + currentId + memo
+  }, url)
+}
+
 export const defaulTransformEntityResponse = (response) => ({
   data: response,
 })
@@ -204,12 +213,7 @@ const globalActions = {
 
     let url = currentModel.endpoint
     if (currentModel.parent) {
-      const parents = Array.isArray(currentModel.parent) ? currentModel.parent : [currentModel.parent]
-      url = parents.reverse().reduce((memo, item) => {
-        const currentParent = RESTIFY_CONFIG.registeredModels[item]
-        const currentId = parentEntities[item] ? `${parentEntities[item]}/` : ''
-        return currentParent.endpoint + currentId + memo
-      }, url)
+      url = getUrlWithParents(url, currentModel, parentEntities)
     }
     return dispatch(apiGeneralActions.callGet({
       apiName: currentModel.apiName,
@@ -267,10 +271,14 @@ const globalActions = {
     const {
       query,
       urlHash,
+      parentEntities,
       useModelEndpoint = true,
     } = config
     const currentModel = RESTIFY_CONFIG.registeredModels[modelType]
-    const urlToLoad = useModelEndpoint ? currentModel.endpoint : ''
+    let urlToLoad = useModelEndpoint ? currentModel.endpoint : ''
+    if (useModelEndpoint && currentModel.parent) {
+      urlToLoad = getUrlWithParents(urlToLoad, currentModel, parentEntities)
+    }
     return dispatch(apiGeneralActions.callGet({
       apiName: config.apiName || currentModel.apiName,
       url: urlToLoad,

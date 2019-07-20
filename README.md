@@ -119,3 +119,6 @@ Check out the [docs](./docs) for more info.
 
 ### 05.07.2019
  1. Added `useOptimisticUpdate` config to form
+
+### 20.07.2019
+ 1. Added `parentEntities` config to getById

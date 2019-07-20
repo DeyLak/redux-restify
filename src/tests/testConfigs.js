@@ -201,6 +201,29 @@ export const modelsDefinitions = {
       foreignKeys: new RestifyForeignKeysArray('testModelWithForeignKey'),
     },
   },
+  testModelWithForeignKey3: {
+    apiName: 'testApi',
+    endpoint: TEST_MODEL_ENDPOINT,
+    name: 'Test model with foreign key 3',
+    pagination: false,
+    defaults: {
+      id: undefined,
+      foreignKeys: new RestifyForeignKeysArray('testModelWithForeignKey4'),
+    },
+  },
+  testModelWithForeignKey4: {
+    apiName: 'testApi',
+    endpoint: TEST_MODEL_ENDPOINT,
+    name: 'Test model with foreign key 4',
+    pagination: false,
+    defaults: {
+      id: undefined,
+      test: undefined,
+      singleForeignKey: new RestifyForeignKey('testModel'),
+      notInArray: new RestifyForeignKeysArray('testModel'),
+      notInForeignKey: undefined,
+    },
+  },
   testModelWithoutRequests: {
     apiName: 'testApi',
     endpoint: TEST_MODEL_ENDPOINT,

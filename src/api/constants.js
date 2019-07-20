@@ -65,9 +65,14 @@ export const getQueryHash = (query) => {
   return ''
 }
 
-export const getSpecialIdWithQuery = (id, query) => {
+export const getSpecialIdWithQuery = (id, query, parentEntities) => {
   if (!query) return id
-  return `${id}/?${queryFormat(query)}`
+  let parentEntitiesAddition = ''
+  if (parentEntities) {
+    parentEntitiesAddition = `/${hash(parentEntities)}`
+  }
+
+  return `${id}/?${queryFormat(query)}${parentEntitiesAddition}`
 }
 
 export const getCacheValidationHashForId = (id, asyncGetters) => {

@@ -319,6 +319,46 @@ describe('api', () => {
         })
     })
 
+    it('can get a child model synchronously by empty id on first parent level', (done) => {
+      mockRequest(testServerArrayResponse.results[0], {
+        url: `${modelUrl}1/${TEST_MODEL_ENDPOINT}`,
+      })
+      let currentModel = {}
+      const modelResponse = testServerArrayRestifyChild1Models[0]
+      const checkModel = () => {
+        const state = store.getState()
+        currentModel = api.selectors.entityManager.testChild1Model.getEntities(state).getById('', {
+          parentEntities: {
+            testModel: 1,
+          },
+        })
+        if (currentModel.test === modelResponse.test) {
+          expect(currentModel).toEqual(modelResponse)
+          done()
+        } else {
+          setTimeout(checkModel, 0)
+        }
+      }
+      setTimeout(checkModel, 0)
+      checkModel()
+    })
+
+    it('can get a child model asynchronously by id on first parent level', (done) => {
+      mockRequest(testServerArrayResponse.results[0], {
+        url: `${modelUrl}1/${TEST_MODEL_ENDPOINT}1/`,
+      })
+      const state = store.getState()
+      api.selectors.entityManager.testChild1Model.getEntities(state).asyncGetById(1, {
+        parentEntities: {
+          testModel: 1,
+        },
+      })
+        .then(model => {
+          expect(model).toEqual(testServerArrayRestifyChild1Models[0])
+          done()
+        })
+    })
+
     it('can get a child model array asynchronously on first parent level', (done) => {
       mockRequest(testServerArrayResponse, {
         url: `${modelUrl}1/${TEST_MODEL_ENDPOINT}?page=1&page_size=10`,
@@ -490,10 +530,10 @@ describe('api', () => {
       },
     }
 
-    // const modelWithForeignKeyResponseId2 = {
-    //   ...modelWithForeignKeyResponse,
-    //   id: 2,
-    // }
+    const modelWithForeignKeyResponseId2 = {
+      ...modelWithForeignKeyResponse,
+      id: 2,
+    }
 
     const modelWithForeignKey2Response = {
       id: 1,
@@ -509,10 +549,10 @@ describe('api', () => {
       ],
     }
 
-    // const modelWithForeignKey2PrimitiveKeysResponse = {
-    //   id: 2,
-    //   foreignKeys: [1, 2],
-    // }
+    const modelWithForeignKey2PrimitiveKeysResponse = {
+      id: 2,
+      foreignKeys: [1, 2],
+    }
     const modelWithForeignKeyRestifyModel = {
       ...modelWithForeignKeyResponse,
       notInArray: modelWithForeignKeyResponse.notInArray.map(item => ({
@@ -521,10 +561,10 @@ describe('api', () => {
       })),
       notInArrayIds: testServerArrayResponse.results.map(item => item.id),
     }
-    // const modelWithForeignKeyRestifyModelId2 = {
-    //   ...modelWithForeignKeyResponseId2,
-    //   notInArrayIds: testServerArrayResponse.results.map(item => item.id),
-    // }
+    const modelWithForeignKeyRestifyModelId2 = {
+      ...modelWithForeignKeyResponseId2,
+      notInArrayIds: testServerArrayResponse.results.map(item => item.id),
+    }
 
     const modelWithForeignKeyResponse2 = {
       ...modelWithForeignKeyRestifyModel,
@@ -736,30 +776,34 @@ describe('api', () => {
         })
     })
 
-    // TODO by @deylak Fix this test
-    // This test somehow by setting interval mess up other tests, but works without them
-    // it('can get a model asynchronously with foreign keys as primitive ids and use them for auto-request', (done) => {
-    //   const idUrl = `${modelUrl}2/`
-    //   mockRequest(modelWithForeignKey2PrimitiveKeysResponse, { url: idUrl })
-    //   let state = store.getState()
-    //   api.selectors.entityManager.testModelWithForeignKey2.getEntities(state).asyncGetById(2)
-    //     .then(() => {
-    //       mockRequest(modelWithForeignKeyResponseId2, { url: idUrl })
-    //       const interval = setInterval(() => {
-    //         state = store.getState()
-    //         const currentModel = api.selectors.entityManager.testModelWithForeignKey2.getEntities(state).getById(2)
-    //         // expect(currentModel.foreignKeys.length).toBe(2)
-    //         const currentLazyEntity = currentModel.foreignKeys[1]
-    //         // console.log(currentModel.foreignKeys)
+    it('can get a model asynchronously with foreign keys as primitive ids and use them for auto-request', (done) => {
+      const idUrl = `${modelUrl}2/`
+      mockRequest(modelWithForeignKey2PrimitiveKeysResponse, { url: idUrl })
+      let state = store.getState()
+      api.selectors.entityManager.testModelWithForeignKey3.getEntities(state).asyncGetById(2)
+        .then(() => {
+          mockRequest(modelWithForeignKeyResponseId2, { url: idUrl })
+          const interval = setInterval(() => {
+            state = store.getState()
+            const currentModel = api.selectors.entityManager.testModelWithForeignKey3.getEntities(state).getById(2)
+            expect(currentModel.foreignKeys.length).toBe(2)
+            const currentLazyEntity = currentModel.foreignKeys[1]
 
-    //         // if (!currentLazyEntity.$loading) {
-    //           clearInterval(interval)
-    //       //     expect(currentLazyEntity).toEqual(modelWithForeignKeyRestifyModelId2)
-    //           done()
-    //         // }
-    //       }, 0)
-    //     })
-    // })
+            if (currentLazyEntity.test !== undefined && !currentLazyEntity.$loading) {
+              clearInterval(interval)
+              expect(currentLazyEntity).toEqual({
+                ...modelWithForeignKeyRestifyModelId2,
+                notInArray: modelWithForeignKeyRestifyModelId2.notInArray.map(item => ({
+                  ...item,
+                  $modelType: 'testModel',
+                })),
+                $modelType: 'testModelWithForeignKey4',
+              })
+              done()
+            }
+          }, 0)
+        })
+    })
 
     it('can get a default model with default fields for arrays, while loading it', () => {
       const state = store.getState()
