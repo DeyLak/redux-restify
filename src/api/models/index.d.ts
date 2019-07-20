@@ -9,6 +9,9 @@ export interface GetByIdConfig {
   forceLoad?: boolean;
   asyncGetters?: boolean;
   useModelEndpoint?: boolean;
+  parentEntities?: {
+    [key: string]: RestifyId;
+  };
 }
 
 export interface GetArrayConfig {
