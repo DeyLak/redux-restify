@@ -1,5 +1,7 @@
 import hash from 'object-hash/index' // import from index to suppress webpack prebuild js warning
 
+import { RESTIFY_CONFIG } from '../config'
+
 import { camelToLowerSnake } from '~/helpers/namingNotation'
 
 
@@ -77,6 +79,15 @@ export const getSpecialIdWithQuery = (id, query, parentEntities) => {
 
 export const getCacheValidationHashForId = (id, asyncGetters) => {
   return hash({ id, asyncGetters })
+}
+
+export const getUrlWithParents = (url, currentModel, parentEntities) => {
+  const parents = Array.isArray(currentModel.parent) ? currentModel.parent : [currentModel.parent]
+  return parents.reverse().filter(p => p).reduce((memo, item) => {
+    const currentParent = RESTIFY_CONFIG.registeredModels[item]
+    const currentId = parentEntities[item] ? `${parentEntities[item]}/` : ''
+    return currentParent.endpoint + currentId + memo
+  }, url)
 }
 
 export const CRUD_ACTION_CREATE = 'create'

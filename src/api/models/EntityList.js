@@ -4,6 +4,7 @@ import {
   DEFAULT_PAGE_SIZE,
   getSpecialIdWithQuery,
   getCacheValidationHashForId,
+  getUrlWithParents,
 } from '../constants'
 import { RESTIFY_CONFIG } from '../../config'
 import RestifyArray from './RestifyArray'
@@ -416,7 +417,12 @@ class EntityList {
     } = config
 
     const specialId = getSpecialIdWithQuery(id, query, parentEntities)
-    const url = this.urls.find(u => u.key === `${this.modelConfig.endpoint}${specialId}`)
+    const urlToFind = getUrlWithParents(
+      `${this.modelConfig.endpoint}${specialId}`,
+      this.modelConfig,
+      parentEntities,
+    )
+    const url = this.urls.find(u => u.key === urlToFind)
     return !url || url.downloading !== 0
   }
 
@@ -612,7 +618,12 @@ class EntityList {
     modelConfig = {},
   } = {}) {
     const currentConfig = getPagesConfigHash(filter, sort, parentEntities, specialConfig, pageSize, modelConfig)
-    const url = this.urls.find(u => u.key === `${modelConfig.endpoint || this.modelConfig.endpoint}${currentConfig}`)
+    const urlToFind = getUrlWithParents(
+      `${modelConfig.endpoint || this.modelConfig.endpoint}${currentConfig}`,
+      this.modelConfig,
+      parentEntities,
+    )
+    const url = this.urls.find(u => u.key === urlToFind)
     return !url || url.downloading !== 0
   }
 

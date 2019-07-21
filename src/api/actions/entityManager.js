@@ -1,9 +1,18 @@
 import * as selectors from '../selectors'
 import { ACTIONS_TYPES } from '../actionsTypes'
-import { DEFAULT_PAGE_SIZE, DEFAULT_API_NAME, getPagesConfigHash, CRUD_ACTIONS } from '../constants'
+import {
+  DEFAULT_PAGE_SIZE,
+  DEFAULT_API_NAME,
+  getPagesConfigHash,
+  CRUD_ACTIONS,
+  getUrlWithParents,
+} from '../constants'
 import { RESTIFY_CONFIG } from '../../config'
 import { onInitRestify } from '../../init'
-import { ACTIONS_ALERTS, ACTION_DELETE } from '../../constants'
+import {
+  ACTIONS_ALERTS,
+  ACTION_DELETE,
+} from '../../constants'
 import * as apiGeneralActions from './general'
 import RestifyError from '../models/RestifyError'
 
@@ -25,15 +34,6 @@ const defaultTransformArrayResponse = (response, pagination) => {
     count,
     page,
   }
-}
-
-const getUrlWithParents = (url, currentModel, parentEntities) => {
-  const parents = Array.isArray(currentModel.parent) ? currentModel.parent : [currentModel.parent]
-  return parents.reverse().reduce((memo, item) => {
-    const currentParent = RESTIFY_CONFIG.registeredModels[item]
-    const currentId = parentEntities[item] ? `${parentEntities[item]}/` : ''
-    return currentParent.endpoint + currentId + memo
-  }, url)
 }
 
 export const defaulTransformEntityResponse = (response) => ({
