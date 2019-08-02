@@ -343,6 +343,21 @@ describe('api', () => {
       checkModel()
     })
 
+    it('can get a model asynchronously and check if it is loaded', (done) => {
+      mockRequest(testServerArrayResponse.results[0], { url: `${modelUrl}1/` })
+      let state = store.getState()
+      let testModelEntities = api.selectors.entityManager.testModel.getEntities(state)
+      expect(testModelEntities.hasById(1)).toEqual(false)
+      testModelEntities.asyncGetById(1)
+        .then(model => {
+          expect(model).toEqual(testServerArrayRestifyModels[0])
+          state = store.getState()
+          testModelEntities = api.selectors.entityManager.testModel.getEntities(state)
+          expect(testModelEntities.hasById(1)).toEqual(true)
+          done()
+        })
+    })
+
     it('can get a child model asynchronously by id on first parent level', (done) => {
       mockRequest(testServerArrayResponse.results[0], {
         url: `${modelUrl}1/${TEST_MODEL_ENDPOINT}1/`,
@@ -812,7 +827,7 @@ describe('api', () => {
     })
 
     it('Prevent id requests for entities with allowIdRequest === true', (done) => {
-      spyOn(console, 'warn') // Test will produce warnin, but we don't wont to read it
+      spyOn(console, 'warn') // Test will produce warning, but we don't wont to read it
       const idUrl = `${modelUrl}1/`
       mockRequest(modelResponse, { idUrl })
       const state = store.getState()

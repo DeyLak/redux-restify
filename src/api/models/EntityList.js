@@ -339,6 +339,20 @@ class EntityList {
     return result
   }
 
+  hasById(id, config = {}) {
+    const {
+      query,
+      asyncGetters = false,
+      parentEntities,
+    } = config
+    const specialId = getSpecialIdWithQuery(id, query, parentEntities)
+    const cacheId = getCacheValidationHashForId(specialId, asyncGetters)
+    if (this.precalculatedSingles[cacheId] || this.singles[specialId]) {
+      return true
+    }
+    return false
+  }
+
   // TODO by @deylak preventLoad may be can be removed, due to denormalization fields changed to getters
   // Should be tested
   getById(id, config = {}) {

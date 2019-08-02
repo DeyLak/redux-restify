@@ -98,6 +98,7 @@ export class RestifyEntityList<T> {
   readonly modelConfig: RestifyModelConfig & {
     [key: string]: any;
   };
+  hasById: (id?: RestifyId, config?: GetByIdConfig) => boolean;
   getById: (id?: RestifyId, config?: GetByIdConfig) => RestifyModel<T>;
   getIsLoadingById: (id: RestifyId, config?: GetByIdConfig | string) => boolean;
   asyncGetById: (id?: RestifyId, config?: GetByIdConfig) => Promise<RestifyModel<T>>;
