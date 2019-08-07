@@ -292,7 +292,7 @@ class EntityList {
             this.idLoaded[result.id] = this.asyncDispatch(entityManager[this.modelType]
               .loadById(result.id, {
                 urlHash: getSpecialIdWithQuery(result.id, undefined, parentEntities).toString(),
-                asyncGetters,
+                asyncGetters: true,
                 parentEntities,
               })).then((res) => {
                 this.idLoaded[result.id] = false
@@ -400,7 +400,7 @@ class EntityList {
           .loadById(id, {
             ...config,
             parentEntities,
-            asyncGetters,
+            asyncGetters: true,
             query,
             urlHash: specialId && specialId.toString(),
           }),
@@ -454,7 +454,9 @@ class EntityList {
     const specialId = getSpecialIdWithQuery(id, query, parentEntities)
     const cacheId = getCacheValidationHashForId(specialId, asyncGetters)
     if (!isDefAndNotNull(specialId) || this.errors[specialId]) return Promise.resolve()
-    if (!forceLoad && this.precalculatedSingles[cacheId]) return this.precalculatedSingles[cacheId]
+    if (!forceLoad && this.precalculatedSingles[cacheId]) {
+      return this.precalculatedSingles[cacheId]
+    }
     if (!forceLoad && this.singles[specialId]) {
       const result = this.getRestifyModel(getOptimisticEntity(this.singles[specialId]), {
         asyncGetters,
