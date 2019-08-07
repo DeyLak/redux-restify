@@ -181,11 +181,16 @@ class EntityList {
               } else if (normalizedIdField === null) {
                 denormalized = null
               } else {
-                denormalized = linkedModel.getById(normalizedIdField, {
+                const getByIdConfig = {
                   isNestedModel: true,
                   ...currentField.fetchConfig,
                   asyncGetters,
-                })
+                }
+                if (asyncGetters && !linkedModel.hasById(normalizedIdField)) {
+                  denormalized = linkedModel.asyncGetById(normalizedIdField, getByIdConfig)
+                } else {
+                  denormalized = linkedModel.getById(normalizedIdField, getByIdConfig)
+                }
               }
               return denormalized
             },
@@ -303,7 +308,6 @@ class EntityList {
           }
           if (asyncGetters) {
             returnValue = this.idLoaded[result.id] && this.idLoaded[result.id].then((res) => res[key])
-            // returnValue = this.idLoaded[result.id]
           }
           return returnValue
         }

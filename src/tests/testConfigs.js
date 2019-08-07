@@ -306,6 +306,33 @@ export const modelsDefinitions = {
       testCamelCase: undefined,
     },
   },
+  testModelWithDeepNest1: {
+    apiName: 'testApi',
+    endpoint: TEST_MODEL_ENDPOINT,
+    name: 'Test model with deep nest 1',
+    defaults: {
+      id: undefined,
+      nest1: new RestifyForeignKey('testModelWithDeepNest2'),
+    },
+  },
+  testModelWithDeepNest2: {
+    apiName: 'testApi',
+    endpoint: TEST_MODEL_ENDPOINT,
+    name: 'Test model with deep nest 2',
+    defaults: {
+      id: undefined,
+      nest2: new RestifyForeignKey('testModelWithDeepNest3'),
+    },
+  },
+  testModelWithDeepNest3: {
+    apiName: 'testApi',
+    endpoint: TEST_MODEL_ENDPOINT,
+    name: 'Test model with deep nest 3',
+    defaults: {
+      id: undefined,
+      nest3: undefined,
+    },
+  },
 }
 
 export const formsDefinitions = {

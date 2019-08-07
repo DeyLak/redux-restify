@@ -640,6 +640,19 @@ describe('api', () => {
       { forceLoad: true },
       { asyncGetters: true },
     ]
+
+    const modelWithDeepNest1Response = {
+      id: 1,
+      nest1: 1,
+    }
+    const modelWithDeepNest2Response = {
+      id: 1,
+      nest2: 1,
+    }
+    const modelWithDeepNest3Response = {
+      id: 1,
+      nest3: true,
+    }
     configs2.forEach(config => {
       it(
         `can get a an array, and then get model asynchronously with nested object: ${JSON.stringify(config)}`,
@@ -681,6 +694,23 @@ describe('api', () => {
           })
         },
       )
+
+      it('can get an array without some fields, and then use async getters to get nested objects', (done) => {
+        const state = store.getState()
+        const deepModelUrl = `${modelUrl}1/`
+        mockRequest(modelWithDeepNest1Response, { url: deepModelUrl })
+        api.selectors.entityManager.testModelWithDeepNest1.getEntities(state).asyncGetById(1, config)
+          .then(async model => {
+            mockRequest(modelWithDeepNest2Response, { url: deepModelUrl })
+            const nest1 = await model.nest1
+            mockRequest(modelWithDeepNest3Response, { url: deepModelUrl })
+            const nest2 = await nest1.nest2
+            // TODO by @deylak this should not be promise, cause we have this data already
+            const nest3 = await nest2.nest3
+            expect(nest3).toEqual(true)
+            done()
+          })
+      })
     })
 
     it('can get a model asynchronously and then receive this model in foreign key without rewriting fields', (done) => {
