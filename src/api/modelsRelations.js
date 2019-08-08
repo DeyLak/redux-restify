@@ -73,7 +73,7 @@ export const mapDataToRestifyModel = (data, modelType) => {
             let rawModel = field
             let currentModelType = currentFieldDefault.modelType
             if (currentFieldDefault instanceof RestifyGenericForeignKey) {
-              ({ modelType: currentModelType, model: rawModel } = currentApi.getGenericModel(field))
+              ({ modelType: currentModelType, model: rawModel } = currentApi.getGenericModel(field, data))
             }
             // Mapping connected model
             const { model, normalized } = mapDataToRestifyModel(rawModel, currentModelType)
