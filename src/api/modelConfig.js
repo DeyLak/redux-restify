@@ -29,6 +29,7 @@ export const DEFAULT_MODEL_OBJECT = {
   transformArrayResponse: undefined, // Same, as in api config, but for one model
   transformEntityResponse: undefined, // Same, as in api config, but for one model
   transformErrorResponse: undefined, // Same, as in api config, but for one model
+  getGenericModel: undefined, // Same, as in api config, but for one model
   getEntityUrl: undefined, // Same, as in api config, but for one model
    // If set to false, then all unregistered back-end fields will be available in restify model without warnings
   warnAboutUnregisteredFields: true,

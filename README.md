@@ -125,3 +125,6 @@ Check out the [docs](./docs) for more info.
 
 ### 02.08.2019
  1. Added `hasById` selector
+
+### 09.08.2019
+ 1. Added `key` and `data` params to generic fields

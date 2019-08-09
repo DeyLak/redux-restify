@@ -66,15 +66,17 @@ export const mapDataToRestifyModel = (data, modelType) => {
         const mappedTypes = []
 
         fieldsToMap.forEach(field => {
+          let rawModel = field
+          let currentModelType = currentFieldDefault.modelType
+          const currentGetGenericModel = currentModel.getGenericModel || currentApi.getGenericModel
+          if (currentFieldDefault instanceof RestifyGenericForeignKey) {
+            ({ modelType: currentModelType, model: rawModel } = currentGetGenericModel(field, key, data))
+          }
           // Reciewed raw id instead of model, just save it, later it will be handled by getById
-          if (!isPureObject(field) && field !== null) {
-            mappedIds.push(field)
+          if (!isPureObject(rawModel) && rawModel !== null) {
+            mappedIds.push(rawModel)
+            mappedTypes.push(currentModelType)
           } else {
-            let rawModel = field
-            let currentModelType = currentFieldDefault.modelType
-            if (currentFieldDefault instanceof RestifyGenericForeignKey) {
-              ({ modelType: currentModelType, model: rawModel } = currentApi.getGenericModel(field, data))
-            }
             // Mapping connected model
             const { model, normalized } = mapDataToRestifyModel(rawModel, currentModelType)
             // Add connected model to normalized models

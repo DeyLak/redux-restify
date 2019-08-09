@@ -45,9 +45,9 @@ export const defaulTransformErrorResponse = (response) => ({
 })
 
 export const defaultGetPaginationQuery = (initialQuery, page, pageSize) => ({
-  ...initialQuery,
   page,
   pageSize,
+  ...initialQuery,
 })
 
 const globalActions = {
