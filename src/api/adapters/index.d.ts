@@ -75,17 +75,14 @@ export interface ApiXhrAdapterConfig {
 
 export interface ApiCallConfig {
   getEntityUrl?: GetEntityUrl;
+  apiName?: string;
   withoutPrefix?: boolean;
   id?: RestifyId;
   crudAction?: CrudAction;
   specialAction?: string;
-  query?: {
-    [key: string]: any;
-  };
+  query?: Record<string, any>;
   forceMethod?: HttpMethod;
-  data?: {
-    [key: string]: any;
-  };
+  data?: Record<string, any>;
   urlHash?: string;
   skipLoadsManager?: boolean;
   isBinary?: boolean;
