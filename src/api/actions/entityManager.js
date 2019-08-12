@@ -301,7 +301,9 @@ const globalActions = {
     })
   },
 
-  deleteById: (modelType) => (id, useOptimistic = true) => (dispatch) => {
+  deleteById: (modelType) => (id, {
+    useOptimistic = true,
+  } = {}) => (dispatch) => {
     const currentModel = RESTIFY_CONFIG.registeredModels[modelType]
     const urlToLoad = currentModel.endpoint
     if (useOptimistic) {
