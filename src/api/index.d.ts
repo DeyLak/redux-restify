@@ -58,7 +58,7 @@ export interface ApiActions extends ActionCreatorsMapObject {
   loadData<T>(config: LoadDataConfig): any;
   loadNextPage<T>(config: LoadDataConfig): any;
   loadById(id: RestifyId, config: LoadByIdConfig): any;
-  deleteById(id: RestifyId): any;
+  deleteById(id: RestifyId, useOptimistic?: boolean): any;
 }
 
 export interface ApiSelectors {

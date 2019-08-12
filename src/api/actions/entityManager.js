@@ -301,10 +301,12 @@ const globalActions = {
     })
   },
 
-  deleteById: (modelType) => (id) => (dispatch) => {
+  deleteById: (modelType) => (id, useOptimistic = true) => (dispatch) => {
     const currentModel = RESTIFY_CONFIG.registeredModels[modelType]
     const urlToLoad = currentModel.endpoint
-    dispatch(globalActions.updateOptimisticById(modelType)(id, { $deleted: true }))
+    if (useOptimistic) {
+      dispatch(globalActions.updateOptimisticById(modelType)(id, { $deleted: true }))
+    }
 
     return dispatch(apiGeneralActions.callDel({
       apiName: currentModel.apiName,
@@ -316,7 +318,11 @@ const globalActions = {
         () => globalActions.updateById(modelType)(id, { $deleted: true }),
         () => globalActions.showEntityAlert(modelType)(ACTION_DELETE),
       ],
-      onError: globalActions.discardOptimisticUpdateById(modelType)(id),
+      onError: () => () => {
+        if (useOptimistic) {
+          dispatch(globalActions.discardOptimisticUpdateById(modelType)(id))
+        }
+      },
     }))
   },
 }

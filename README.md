@@ -128,3 +128,6 @@ Check out the [docs](./docs) for more info.
 
 ### 09.08.2019
  1. Added `key` and `data` params to generic fields
+
+### 12.08.2019
+ 1. Added `useOptimistic` parameter to `deleteById` action. Use, if you want to show element deletion progress.
