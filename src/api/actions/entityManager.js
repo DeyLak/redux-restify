@@ -122,13 +122,13 @@ const globalActions = {
    * @param {Boolean} [allowClearPages] - should we reset pages, after updating entity(usually for some sorting configs)
    * @return {Object} Redux action to dispatch
    */
-  updateFromRawData: (modelType) => (id, data, query, allowClearPages = true) => {
+  updateFromRawData: (modelType) => (id, data, query, allowClearPages = true, api) => {
     const currentModel = RESTIFY_CONFIG.registeredModels[modelType]
     const currentApi = RESTIFY_CONFIG.registeredApies[currentModel.apiName]
     const transformEntityResponse = currentModel && currentModel.transformEntityResponse ||
                                     currentApi && currentApi.transformEntityResponse ||
                                     defaulTransformEntityResponse
-    const transformedData = transformEntityResponse(data).data
+    const transformedData = transformEntityResponse(data, api, modelType).data
     return globalActions.updateById(modelType)(id, transformedData, query, allowClearPages)
   },
 
@@ -197,7 +197,7 @@ const globalActions = {
     }
 
     const onSuccess = (data, status, api) => {
-      const transformedData = transformArrayResponse(data, currentModel.pagination, api)
+      const transformedData = transformArrayResponse(data, currentModel.pagination, api, modelType)
       return globalActions.updateData(modelType)(
         transformedData.data,
         transformedData.page || page,
@@ -282,7 +282,8 @@ const globalActions = {
     return dispatch(apiGeneralActions.callGet({
       apiName: config.apiName || currentModel.apiName,
       url: urlToLoad,
-      onSuccess: (data) => () => dispatch(globalActions.updateFromRawData(modelType)(id, data, query)),
+      onSuccess: (data, status, api) => () =>
+        dispatch(globalActions.updateFromRawData(modelType)(id, data, query, undefined, api)),
       onError: globalActions.setLoadErrorForId(modelType)(id, true, query),
       query,
       urlHash,

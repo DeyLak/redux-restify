@@ -131,3 +131,6 @@ Check out the [docs](./docs) for more info.
 
 ### 12.08.2019
  1. Added config and `useOptimistic` parameter to `deleteById` action. Use, if you want to show element deletion progress.
+
+### 13.08.2019
+ 1. Added modelName parameter to transform*Response functions

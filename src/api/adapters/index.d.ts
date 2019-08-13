@@ -14,17 +14,17 @@ export type HttpCodesCallbacks = {
   [key: number]: any;
 } | ((code: number) => any)
 
-export type TransformArrayResponse = (response: any, pagination: boolean) => {
+export type TransformArrayResponse = (response: any, pagination: boolean, api: any, modelName: string) => {
   data: any[];
   count?: number;
   page?: number;
 }
 
-export type TransformEntityResponse = (response: any) => {
+export type TransformEntityResponse = (response: any, api: any, modelName: string) => {
   data: any;
 }
 
-export type TransformErrorResponse = (response: any) => {
+export type TransformErrorResponse = (response: any, api: any, modelName: string) => {
   errors: any;
 }
 
