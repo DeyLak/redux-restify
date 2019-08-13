@@ -598,12 +598,12 @@ const globalActions = {
       }
 
       // Workaround for dispatching callbacks(behaves like thunk function)
-      successCallbacks.push((res, status) => () => {
+      successCallbacks.push((res, status, resApi) => () => {
         const transformEntityResponse = currentModel && currentModel.transformEntityResponse ||
                                         currentApi && currentApi.transformEntityResponse ||
                                         defaulTransformEntityResponse
 
-        const transformed = transformEntityResponse(res, currentForm.model).data
+        const transformed = transformEntityResponse(res, resApi, currentForm.model).data
         if (transformed && currentModel && currentForm.updateEntity) {
           dispatch(
             api.actions.entityManager[currentForm.model].updateById(transformed[idField], transformed),
@@ -625,7 +625,7 @@ const globalActions = {
         const transformErrorResponse = currentModel && currentModel.transformErrorResponse ||
           currentApi && currentApi.transformErrorResponse ||
           defaulTransformErrorResponse
-        const transformed = transformErrorResponse(res, currentForm.model).errors
+        const transformed = transformErrorResponse(res, resApi, currentForm.model).errors
         return globalActions.setErrors(formType)(transformed, status, resApi)
       })
 

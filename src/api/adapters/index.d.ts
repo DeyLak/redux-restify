@@ -20,11 +20,11 @@ export type TransformArrayResponse = (response: any, pagination: boolean, api: a
   page?: number;
 }
 
-export type TransformEntityResponse = (response: any, modelName: string) => {
+export type TransformEntityResponse = (response: any, api: any, modelName: string) => {
   data: any;
 }
 
-export type TransformErrorResponse = (response: any, modelName: string) => {
+export type TransformErrorResponse = (response: any, api: any, modelName: string) => {
   errors: any;
 }
 
