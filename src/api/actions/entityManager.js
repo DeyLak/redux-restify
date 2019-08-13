@@ -128,7 +128,7 @@ const globalActions = {
     const transformEntityResponse = currentModel && currentModel.transformEntityResponse ||
                                     currentApi && currentApi.transformEntityResponse ||
                                     defaulTransformEntityResponse
-    const transformedData = transformEntityResponse(data).data
+    const transformedData = transformEntityResponse(data, modelType).data
     return globalActions.updateById(modelType)(id, transformedData, query, allowClearPages)
   },
 
@@ -197,7 +197,7 @@ const globalActions = {
     }
 
     const onSuccess = (data, status, api) => {
-      const transformedData = transformArrayResponse(data, currentModel.pagination, api)
+      const transformedData = transformArrayResponse(data, currentModel.pagination, api, modelType)
       return globalActions.updateData(modelType)(
         transformedData.data,
         transformedData.page || page,

@@ -603,7 +603,7 @@ const globalActions = {
                                         currentApi && currentApi.transformEntityResponse ||
                                         defaulTransformEntityResponse
 
-        const transformed = transformEntityResponse(res).data
+        const transformed = transformEntityResponse(res, currentForm.model).data
         if (transformed && currentModel && currentForm.updateEntity) {
           dispatch(
             api.actions.entityManager[currentForm.model].updateById(transformed[idField], transformed),
@@ -625,7 +625,7 @@ const globalActions = {
         const transformErrorResponse = currentModel && currentModel.transformErrorResponse ||
           currentApi && currentApi.transformErrorResponse ||
           defaulTransformErrorResponse
-        const transformed = transformErrorResponse(res).errors
+        const transformed = transformErrorResponse(res, currentForm.model).errors
         return globalActions.setErrors(formType)(transformed, status, resApi)
       })
 
