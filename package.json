@@ -1,6 +1,6 @@
 {
   "name": "redux-restify",
-  "version": "0.0.42",
+  "version": "0.0.43",
   "description": "Redux extension for RESTfull api communications and data management",
   "dependencies": {
     "babel-core": "^6.24.0",
