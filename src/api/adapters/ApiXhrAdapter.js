@@ -151,6 +151,21 @@ class ApiXhrAdapter {
     this.alertAction = alertAction
   }
 
+  asyncDispatch(...args) {
+    return new Promise(res => {
+      setTimeout(() => {
+        const result = this.dispatch(...args)
+        if (result instanceof Promise) {
+          result.then((value) => {
+            res(value)
+          })
+        } else {
+          res()
+        }
+      }, 0)
+    })
+  }
+
   httpCallBackInvoke(api) {
     let currentCodes = this.httpCodesCallbacks
     if (typeof this.httpCodesCallbacks === 'function') {
@@ -286,7 +301,7 @@ class ApiXhrAdapter {
       api.onloadstart = fireLoadActIfNotfiredMutex
       api.onload = () => {
         if (!config.skipLoadsManager) {
-          this.dispatch(removeLoadAct(baseUrl, urlQuery))
+          this.asyncDispatch(removeLoadAct(baseUrl, urlQuery))
         }
         this.httpCallBackInvoke(api)
         res({
