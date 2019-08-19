@@ -1,3 +1,5 @@
+import { createSelector } from 'reselect'
+
 import { getNestedObjectField, removePrivateFields, replaceNulls } from '~/helpers/nestedObjects'
 
 import { RESTIFY_CONFIG } from '../config'
@@ -16,80 +18,126 @@ export const checkErrors = (errors = {}, form = {}, validateAll) => {
   })
 }
 
-const getFormsMap = (formType, state, mapFunction) => {
+const getFormsMap = (formType, selector, mapFunction) => {
   if (formType instanceof RegExp) {
-    return Object.keys(state.forms).reduce((memo, key) => {
-      if (!formType.test(key)) return memo
-      return {
-        ...memo,
-        [key]: mapFunction(key, state),
-      }
-    }, {})
+    return state => {
+      return Object.keys(state.forms).reduce((memo, key) => {
+        if (!formType.test(key)) return memo
+        const currentSelectedValue = selector(key)(state)
+        return {
+          ...memo,
+          [key]: mapFunction(currentSelectedValue, key),
+        }
+      }, {})
+    }
   }
-  return mapFunction(formType)
+  return createSelector(
+    selector(formType),
+    selectedForm => mapFunction(selectedForm, formType),
+  )
 }
 
-const getFormConfig = (formType) => (state) => {
-  return getFormsMap(formType, state, (stringType) => {
-    if (RESTIFY_CONFIG.registeredForms[stringType]) {
-      return RESTIFY_CONFIG.registeredForms[stringType]
-    }
-    const config = state.forms.$configs[stringType]
-    return getComposedConfig(config)
-  })
+const getFormConfig = (formType) => {
+  return getFormsMap(
+    formType,
+    () => state => state.forms.$configs,
+    (selectedForm, stringType) => {
+      if (RESTIFY_CONFIG.registeredForms[stringType]) {
+        return RESTIFY_CONFIG.registeredForms[stringType]
+      }
+      const config = selectedForm[stringType]
+      return getComposedConfig(config)
+    },
+  )
 }
 
 
 const globalSelectors = {
-  getIsFormExist: (formType) => (state) => {
-    return getFormsMap(formType, state, (stringType) => !!state.forms[stringType])
+  getIsFormExist: (formType) => {
+    return getFormsMap(
+      formType,
+      () => state => state.forms,
+      (selectedForm, stringType) => !!selectedForm[stringType],
+    )
   },
-  getEndpoint: (formType) => (state) => {
-    return getFormsMap(formType, state, (stringType) => {
-      let formConfig = RESTIFY_CONFIG.registeredForms[stringType]
-      let apiConfig = {}
-      if (formConfig.model) {
-        formConfig = RESTIFY_CONFIG.registeredModels[formConfig.model]
-      }
-      if (formConfig.apiName) {
-        apiConfig = RESTIFY_CONFIG.registeredApies[formConfig.apiName]
-      }
-      return {
-        apiHost: apiConfig.apiHost,
-        apiPrefix: apiConfig.apiPrefix,
-        endpoint: formConfig.endpoint,
-      }
-    })
+  getEndpoint: (formType) => {
+    return getFormsMap(
+      formType,
+      () => () => null,
+      (selectedForm, stringType) => {
+        let formConfig = RESTIFY_CONFIG.registeredForms[stringType]
+        let apiConfig = {}
+        if (formConfig.model) {
+          formConfig = RESTIFY_CONFIG.registeredModels[formConfig.model]
+        }
+        if (formConfig.apiName) {
+          apiConfig = RESTIFY_CONFIG.registeredApies[formConfig.apiName]
+        }
+        return {
+          apiHost: apiConfig.apiHost,
+          apiPrefix: apiConfig.apiPrefix,
+          endpoint: formConfig.endpoint,
+        }
+      },
+    )
   },
-  getForm: (formType) => (state) => {
-    return getFormsMap(formType, state, (stringType) => removePrivateFields(replaceNulls(state.forms[stringType])))
+  getForm: (formType) => {
+    return getFormsMap(
+      formType,
+      stringType => state => state.forms[stringType],
+      (selectedForm) => removePrivateFields(replaceNulls(selectedForm)),
+    )
   },
-  getFormWithNulls: (formType) => (state) => {
-    return getFormsMap(formType, state, (stringType) => removePrivateFields(state.forms[stringType]))
+  getFormWithNulls: (formType) => {
+    return getFormsMap(
+      formType,
+      stringType => state => state.forms[stringType],
+      (selectedForm) => removePrivateFields(selectedForm),
+    )
   },
-  getField: (formType) => (name) => (state) => {
-    return getFormsMap(formType, state, (stringType) => getNestedObjectField(state.forms[stringType], name))
+  getField: (formType) => (name) => {
+    return getFormsMap(
+      formType,
+      stringType => state => state.forms[stringType],
+      (selectedForm) => getNestedObjectField(selectedForm, name),
+    )
   },
-  getSavedField: (formType) => (name) => (state) => {
-    return getFormsMap(formType, state, (stringType) => getNestedObjectField(state.forms[stringType].$edit, name))
+  getSavedField: (formType) => (name) => {
+    return getFormsMap(
+      formType,
+      stringType => state => state.forms[stringType],
+      (selectedForm, stringType) => getNestedObjectField(selectedForm.$edit, name),
+    )
   },
-  getErrors: (formType) => (state) => {
-    return getFormsMap(formType, state, (stringType) => {
-      return state.forms[stringType] && state.forms[stringType].$errors || {}
-    })
+  getErrors: (formType) => {
+    return getFormsMap(
+      formType,
+      stringType => state => state.forms[stringType],
+      (selectedForm, stringType) => {
+        return (selectedForm && selectedForm.$errors) || {}
+      },
+    )
   },
-  getIsValid: (formType) => (state) => {
-    return getFormsMap(formType, state, (stringType) => {
-      const formConfig = getFormConfig(stringType)(state)
-      return checkErrors(
-        globalSelectors.getErrors(stringType)(state),
-        globalSelectors.getForm(stringType)(state),
-        formConfig.validateAll,
-      )
-    })
+  getIsValid: (formType) => {
+    return getFormsMap(
+      formType,
+      () => state => state,
+      (state, stringType) => {
+        const formConfig = getFormConfig(stringType)(state)
+        return checkErrors(
+          globalSelectors.getErrors(stringType)(state),
+          globalSelectors.getForm(stringType)(state),
+          formConfig.validateAll,
+        )
+      },
+    )
   },
-  getEditingFields: (formType) => (state) => {
-    return getFormsMap(formType, state, (stringType) => state.forms[stringType] && state.forms[stringType].$edit || {})
+  getEditingFields: (formType) => {
+    return getFormsMap(
+      formType,
+      stringType => state => state.forms[stringType],
+      (selectedForm, stringType) => selectedForm && selectedForm.$edit || {},
+    )
   },
 }
 
