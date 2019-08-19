@@ -100,7 +100,7 @@ export class RestifyEntityList<T> {
   };
   hasById: (id?: RestifyId, config?: GetByIdConfig) => boolean;
   getById: (id?: RestifyId, config?: GetByIdConfig) => RestifyModel<T>;
-  getIsLoadingById: (id: RestifyId, config?: GetByIdConfig | string) => boolean;
+  getIsLoadingById: (id?: RestifyId, config?: GetByIdConfig | string) => boolean;
   asyncGetById: (id?: RestifyId, config?: GetByIdConfig) => Promise<RestifyModel<T>>;
   getByUrl: (url: string, config?: GetByIdConfig) => RestifyModel<T>;
   asyncGetByUrl: (url: string, config?: GetByIdConfig) => Promise<RestifyModel<T>>;
