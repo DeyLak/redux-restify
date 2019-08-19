@@ -106,14 +106,14 @@ const globalSelectors = {
     return getFormsMap(
       formType,
       stringType => state => state.forms[stringType],
-      (selectedForm, stringType) => getNestedObjectField(selectedForm.$edit, name),
+      (selectedForm) => getNestedObjectField(selectedForm.$edit, name),
     )
   },
   getErrors: (formType) => {
     return getFormsMap(
       formType,
       stringType => state => state.forms[stringType],
-      (selectedForm, stringType) => {
+      (selectedForm) => {
         return (selectedForm && selectedForm.$errors) || {}
       },
     )
@@ -136,7 +136,7 @@ const globalSelectors = {
     return getFormsMap(
       formType,
       stringType => state => state.forms[stringType],
-      (selectedForm, stringType) => selectedForm && selectedForm.$edit || {},
+      (selectedForm) => selectedForm && selectedForm.$edit || {},
     )
   },
 }
