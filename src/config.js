@@ -3,13 +3,21 @@ export const RESTIFY_DEFAULT_OPTIONS = {
   orderableFormFieldName: 'order',
 }
 
-export const RESTIFY_CONFIG = {
+const restifyConfig = {
   store: undefined,
   registeredApies: {},
   registeredModels: {},
   registeredForms: {},
   options: RESTIFY_DEFAULT_OPTIONS,
 }
+
+// TODO by @deylak add api for dinamic entity registration, so we could use restify models in npm packages
+if (typeof window !== 'undefined') {
+  // eslint-disable-next-line no-underscore-dangle
+  window.__RESTIFY_CONFIG__ = window.__RESTIFY_CONFIG__ || restifyConfig
+}
+// eslint-disable-next-line no-underscore-dangle
+export const RESTIFY_CONFIG = typeof window === 'undefined' ? restifyConfig : window.__RESTIFY_CONFIG__
 
 let $apiesTypes
 Object.defineProperty(RESTIFY_CONFIG, 'apiesTypes', {
