@@ -21,6 +21,7 @@ export const RESTIFY_CONFIG = typeof window === 'undefined' ? restifyConfig : wi
 
 let $apiesTypes
 Object.defineProperty(RESTIFY_CONFIG, 'apiesTypes', {
+  configurable: true,
   get: () => {
     if ($apiesTypes) {
       return $apiesTypes
@@ -32,6 +33,7 @@ Object.defineProperty(RESTIFY_CONFIG, 'apiesTypes', {
 
 let $modelsTypes
 Object.defineProperty(RESTIFY_CONFIG, 'modelsTypes', {
+  configurable: true,
   get: () => {
     if ($modelsTypes) {
       return $modelsTypes
@@ -43,6 +45,7 @@ Object.defineProperty(RESTIFY_CONFIG, 'modelsTypes', {
 
 let $formsTypes
 Object.defineProperty(RESTIFY_CONFIG, 'formsTypes', {
+  configurable: true,
   get: () => {
     if ($formsTypes) {
       return $formsTypes
