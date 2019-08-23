@@ -19,57 +19,33 @@ if (typeof window !== 'undefined') {
 // eslint-disable-next-line no-underscore-dangle
 export const RESTIFY_CONFIG = typeof window === 'undefined' ? restifyConfig : window.__RESTIFY_CONFIG__
 
-let $apiesTypes
 Object.defineProperty(RESTIFY_CONFIG, 'apiesTypes', {
   configurable: true,
   get: () => {
-    if ($apiesTypes) {
-      return $apiesTypes
-    }
-    $apiesTypes = Object.keys(RESTIFY_CONFIG.registeredApies)
-    return $apiesTypes
+    return Object.keys(RESTIFY_CONFIG.registeredApies)
   },
 })
 
-let $modelsTypes
 Object.defineProperty(RESTIFY_CONFIG, 'modelsTypes', {
   configurable: true,
   get: () => {
-    if ($modelsTypes) {
-      return $modelsTypes
-    }
-    $modelsTypes = Object.keys(RESTIFY_CONFIG.registeredModels)
-    return $modelsTypes
+    return Object.keys(RESTIFY_CONFIG.registeredModels)
   },
 })
 
-let $formsTypes
 Object.defineProperty(RESTIFY_CONFIG, 'formsTypes', {
   configurable: true,
   get: () => {
-    if ($formsTypes) {
-      return $formsTypes
-    }
-    $formsTypes = Object.keys(RESTIFY_CONFIG.registeredForms)
-    return $formsTypes
+    return Object.keys(RESTIFY_CONFIG.registeredForms)
   },
 })
 
 
 export const registerFormCallbacks = [
-  () => { // Clearing private fields for singletons recalcultaion
-    $formsTypes = undefined
-  },
 ]
 
 export const registerModelCallbacks = [
-  () => { // Clearing private fields for singletons recalcultaion
-    $modelsTypes = undefined
-  },
 ]
 
 export const registerApiCallbacks = [
-  () => { // Clearing private fields for singletons recalcultaion
-    $apiesTypes = undefined
-  },
 ]
