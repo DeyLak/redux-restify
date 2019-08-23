@@ -148,11 +148,19 @@ const getFormSelectors = (formType) => {
   }), {})
 }
 
-const forms = {
+const restifyForms = {
   ...globalSelectors,
   getFormConfig,
   getFormsMap,
 }
+
+if (typeof window !== 'undefined') {
+// eslint-disable-next-line no-underscore-dangle
+  window.__RESTIFY_FORMS__ = window.__RESTIFY_FORMS__ || restifyForms
+}
+
+// eslint-disable-next-line no-underscore-dangle
+const forms = typeof window === 'undefined' ? restifyForms : window.__RESTIFY_FORMS__
 
 onInitRestify(() => {
   RESTIFY_CONFIG.formsTypes.forEach(formType => {
