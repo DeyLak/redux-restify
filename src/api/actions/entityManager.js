@@ -80,6 +80,27 @@ const globalActions = {
     })
   },
 
+  setLoadErrorForPage: (modelType) => (
+    error,
+    page,
+    pageSize,
+    filter,
+    sort,
+    parentEntities,
+    specialConfig,
+    modelConfig,
+  ) => ({
+    type: ACTIONS_TYPES[modelType].setLoadErrorForPage,
+    error,
+    page,
+    pageSize,
+    filter,
+    sort,
+    parentEntities,
+    specialConfig,
+    modelConfig,
+  }),
+
   showEntityAlert: (modelType) => (actionType) => (dispatch) => {
     const currentModel = RESTIFY_CONFIG.registeredModels[modelType]
     const currentApi = RESTIFY_CONFIG.registeredApies[currentModel.apiName || DEFAULT_API_NAME]
@@ -211,6 +232,19 @@ const globalActions = {
       )
     }
 
+    const onError = () => {
+      return globalActions.setLoadErrorForPage(modelType)(
+        true,
+        page,
+        pageSize,
+        filter,
+        sort,
+        parentEntities,
+        specialConfig,
+        modelConfig,
+      )
+    }
+
     let url = currentModel.endpoint
     if (currentModel.parent) {
       url = getUrlWithParents(url, currentModel, parentEntities)
@@ -220,6 +254,7 @@ const globalActions = {
       getEntityUrl: currentModel.getEntityUrl,
       url,
       onSuccess,
+      onError,
       query,
       urlHash,
       crudAction: CRUD_ACTIONS.read,

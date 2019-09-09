@@ -59,6 +59,7 @@ class EntityList {
       this.oldPages = modelType.oldPages
       this.singles = modelType.singles
       this.errors = modelType.errors
+      this.errorsPages = modelType.errorsPages
       this.arrays = modelType.arrays
       this.urls = modelType.urls
       this.count = modelType.count
@@ -80,6 +81,7 @@ class EntityList {
       this.oldPages = {}
       this.singles = {}
       this.errors = {}
+      this.errorsPages = {}
       this.arrays = {}
       this.oldArrays = {}
       this.urls = {}
@@ -121,6 +123,7 @@ class EntityList {
     isNestedModel = false,
     asyncGetters,
     parentEntities,
+    preventLoad = false,
   } = {}) {
     // Connected models keys, wich are not stored in store and can be misrecognized as missing keys
     const modelKeys = {}
@@ -185,6 +188,7 @@ class EntityList {
                   isNestedModel: true,
                   ...currentField.fetchConfig,
                   asyncGetters,
+                  preventLoad,
                 }
                 if (asyncGetters && !linkedModel.hasById(normalizedIdField)) {
                   denormalized = linkedModel.asyncGetById(normalizedIdField, getByIdConfig)
@@ -284,7 +288,9 @@ class EntityList {
         const defaultValue = result[key]
         const autoGetter = () => {
           let returnValue = defaultValue
-          if (isDefAndNotNull(result.id) &&
+          if (
+            !preventLoad &&
+            isDefAndNotNull(result.id) &&
             RESTIFY_CONFIG.options.autoPropertiesIdRequests &&
             !this.idLoaded[result.id] &&
             this.modelConfig.allowIdRequests
@@ -299,7 +305,7 @@ class EntityList {
                 if (!Object.keys(res).includes(key)) {
                   console.warn(`
                     Call to ${key} property of ${this.modelType},
-                    which is presented at model config, but can not be recieved via id request!
+                    which is presented at model config, but can not be received via id request!
                   `.trim())
                   return defaultValue
                 }
@@ -334,7 +340,7 @@ class EntityList {
   }
 
   getDefaulObject(id, fields = {}) {
-    const result = this.getRestifyModel({ id })
+    const result = this.getRestifyModel({ id }, { preventLoad: fields.$error })
     result.id = id
     result.$modelType = this.modelType
     Object.keys(fields).forEach(key => {
@@ -529,11 +535,12 @@ class EntityList {
     this.calculateArrays()
   }
 
-  setSource(pages, oldPages, singles, errors, count, urls, linkedModelsDict) {
+  setSource(pages, oldPages, singles, errors, errorsPages, count, urls, linkedModelsDict) {
     this.pages = pages
     this.oldPages = oldPages
     this.singles = singles
     this.errors = errors
+    this.errorsPages = errorsPages
     this.count = count
     this.urls = urls
     this.linkedModelsDict = linkedModelsDict
@@ -585,6 +592,9 @@ class EntityList {
     const currentConfig = getPagesConfigHash(filter, sort, parentEntities, specialConfig, pageSize, modelConfig)
     if (!forceLoad && this.arrays[currentConfig]) {
       return this.arrays[currentConfig]
+    }
+    if (this.errorsPages[currentConfig]) {
+      return []
     }
     if (!this.arrayLoaded[currentConfig]) {
       this.arrayLoaded[currentConfig] = this.asyncDispatch(entityManager[this.modelType]
@@ -657,6 +667,9 @@ class EntityList {
       return this.arrays[currentConfig]
     }
     if (this.arrayLoaded[currentConfig]) return this.arrayLoaded[currentConfig]
+    if (this.errorsPages[currentConfig]) {
+      return []
+    }
     this.arrayLoaded[currentConfig] = this.dispatch(entityManager[this.modelType].loadData({
       pageSize,
       filter,

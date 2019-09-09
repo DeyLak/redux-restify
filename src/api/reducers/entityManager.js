@@ -65,6 +65,7 @@ const modelInitState = {
   count: {},
   singleEntities: {},
   loadErrorEntities: {},
+  loadErrorPages: {},
   pages: {},
   oldPages: {},
 }
@@ -190,6 +191,24 @@ const getEntityManagerReducer = (modelTypes = []) => {
             loadErrorEntities: {
               ...currentModelState.loadErrorEntities,
               [specialId]: action.error,
+            },
+          }
+          break
+        }
+        case ACTIONS_TYPES[modelType].setLoadErrorForPage: {
+          const currentConfigHash = getPagesConfigHash(
+            action.filter,
+            action.sort,
+            action.parentEntities,
+            action.specialConfig,
+            action.pageSize,
+            action.modelConfig,
+          )
+          newModelState = {
+            ...currentModelState,
+            loadErrorPages: {
+              ...currentModelState.loadErrorPages,
+              [currentConfigHash]: action.error,
             },
           }
           break

@@ -20,6 +20,7 @@ const actionsTypesEntityManager = [
   'UPDATE_BY_ID',
   'UPDATE_OPTIMISTIC_BY_ID',
   'SET_LOAD_ERROR_FOR_ID',
+  'SET_LOAD_ERROR_FOR_PAGE',
   'SET_LOAD_FINISH_',
 ]
 
