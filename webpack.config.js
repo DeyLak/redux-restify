@@ -1,5 +1,6 @@
 const path = require('path')
 const webpack = require('webpack')
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 
 
 const ENV_PROD = 'production'
@@ -51,6 +52,7 @@ module.exports = {
     libraryTarget: 'umd',
     library: 'redux-restify',
   },
+  mode: 'production',
   node: env.test ? {
     fs: 'empty',
   } : {},
@@ -78,14 +80,11 @@ module.exports = {
     new webpack.ProvidePlugin({
       key: 'keymaster',
     }),
+    // new BundleAnalyzerPlugin(),
   ].concat(!env.prod ? [
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoEmitOnErrorsPlugin(),
   ] : [
-    new webpack.optimize.UglifyJsPlugin({
-      minimize: true,
-      compress: { drop_console: false },
-    }),
     new webpack.ExtendedAPIPlugin(),
   ]),
 }

@@ -1,2 +1,2 @@
-export ApiXhrAdapter from './ApiXhrAdapter'
+export { default as ApiXhrAdapter } from './ApiXhrAdapter'
 

@@ -1,2 +1,2 @@
 export * from './general'
-export entityManager from './entityManager'
+export { default as entityManager } from './entityManager'

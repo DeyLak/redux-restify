@@ -1,4 +1,3 @@
-require('babel-polyfill')
 require('jasmine-ajax')
 require('./src/index.js')
 

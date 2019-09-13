@@ -1,2 +1,5 @@
-export * as loadsManager from './loadsManager'
-export entityManager from './entityManager'
+import * as loadsManager from './loadsManager'
+
+
+export { loadsManager }
+export { default as entityManager } from './entityManager'

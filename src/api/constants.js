@@ -1,9 +1,8 @@
-import hash from 'object-hash/index' // import from index to suppress webpack prebuild js warning
+import hash from 'object-hash'
 
 import { RESTIFY_CONFIG } from '../config'
 
 import { camelToLowerSnake } from '~/helpers/namingNotation'
-
 
 export const NAME = 'api'
 
