@@ -61,7 +61,7 @@ export interface ApiActions extends ActionCreatorsMapObject {
   setLoadErrorForId(id: RestifyId, error: any, query: RestifyQuery): any;
   loadData<T>(config: LoadDataConfig): any;
   loadNextPage<T>(config: LoadDataConfig): any;
-  loadById(id: RestifyId, config: LoadByIdConfig): any;
+  loadById(id: RestifyId, config?: LoadByIdConfig): any;
   deleteById(id: RestifyId, config?: DeleteByIdConfig): any;
 }
 
