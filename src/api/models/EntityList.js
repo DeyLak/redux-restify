@@ -60,7 +60,6 @@ class EntityList {
       this.singles = modelType.singles
       this.errors = modelType.errors
       this.errorsPages = modelType.errorsPages
-      this.arrays = modelType.arrays
       this.urls = modelType.urls
       this.count = modelType.count
       this.idMap = modelType.idMap
@@ -82,8 +81,6 @@ class EntityList {
       this.singles = {}
       this.errors = {}
       this.errorsPages = {}
-      this.arrays = {}
-      this.oldArrays = {}
       this.urls = {}
       this.count = {}
       this.idMap = {}
@@ -94,6 +91,8 @@ class EntityList {
       this.arrayLoaded = {}
       this.idLoaded = {}
     }
+    this.$arrays = undefined
+    this.$oldArrays = undefined
     this.precalculatedSingles = {}
   }
 
@@ -525,14 +524,18 @@ class EntityList {
     }), {})
   }
 
-  calculateArrays() {
-    this.arrays = this.getCalculatedArray(this.pages)
-    this.oldArrays = this.getCalculatedArray(this.oldPages)
-    return this.arrays
+  get oldArrays() {
+    if (!this.$oldArrays) {
+      this.$oldArrays = this.getCalculatedArray(this.pages)
+    }
+    return this.$oldArrays
   }
 
-  calculateEntities() {
-    this.calculateArrays()
+  get arrays() {
+    if (!this.$arrays) {
+      this.$arrays = this.getCalculatedArray(this.pages)
+    }
+    return this.$arrays
   }
 
   setSource(pages, oldPages, singles, errors, errorsPages, count, urls, linkedModelsDict) {
@@ -544,7 +547,6 @@ class EntityList {
     this.count = count
     this.urls = urls
     this.linkedModelsDict = linkedModelsDict
-    this.calculateEntities()
   }
 
   getNextPage({
