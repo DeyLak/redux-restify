@@ -18,7 +18,7 @@ const CONTENT_TYPE_JSON = 'application/json'
 const CONTENT_TYPE_PROBLEM_JSON = 'application/problem+json'
 const CONTENT_TYPE_HTML = 'text/html'
 
-const allow = [200, 201, 203, 204, 400, 404, 401, 403, 409]
+const allow = [200, 201, 203, 204, 400, 404, 401, 403, 409, 422]
 
 const checkStatus = (api, config) => {
   if (allow.includes(api.status)) {
