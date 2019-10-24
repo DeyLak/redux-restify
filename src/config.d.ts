@@ -3,8 +3,10 @@ import { RestifyModelConfig, ApiXhrAdapterConfig } from './api'
 
 
 export interface RestifyOptions {
-  autoPropertiesIdRequests: boolean;
-  orderableFormFieldName: string;
+  autoPropertiesIdRequests?: boolean;
+  orderableFormFieldName?: string;
+  retries?: number;
+  retryTimeoutMs?: number;
 }
 
 export interface restifyConfig {
