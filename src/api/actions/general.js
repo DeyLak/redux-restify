@@ -34,6 +34,8 @@ export const callApi = method => ({
   return RESTIFY_CONFIG.registeredApies[apiName].callApi(url, method, {
     ...other,
     orderField: RESTIFY_CONFIG.options.orderableFormFieldName,
+    retries: RESTIFY_CONFIG.options.retries,
+    retryTimeoutMs: RESTIFY_CONFIG.options.retryTimeoutMs,
   })
   .then(res => {
     const resultActionType = res.status >= 300 ? onError : onSuccess

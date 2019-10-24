@@ -1,6 +1,8 @@
 export const RESTIFY_DEFAULT_OPTIONS = {
   autoPropertiesIdRequests: true,
   orderableFormFieldName: 'order',
+  retries: 0,
+  retryTimeoutMs: 1000,
 }
 
 const restifyConfig = {

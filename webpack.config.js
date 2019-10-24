@@ -52,7 +52,7 @@ module.exports = {
     libraryTarget: 'umd',
     library: 'redux-restify',
   },
-  mode: 'production',
+  mode: env.prod ? 'production' : 'development',
   node: env.test ? {
     fs: 'empty',
   } : {},

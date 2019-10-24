@@ -133,4 +133,7 @@ Check out the [docs](./docs) for more info.
  1. Added config and `useOptimistic` parameter to `deleteById` action. Use, if you want to show element deletion progress.
 
 ### 13.08.2019
- 1. Added modelName parameter to transform*Response functions
+ 1. Added modelName parameter to transform Response functions
+
+### 24.10.2019
+ 1. Added `retries` `retryTimeoutMs` options to restify config, so user can define default reties behaviour

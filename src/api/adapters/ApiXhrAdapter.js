@@ -18,6 +18,9 @@ const CONTENT_TYPE_JSON = 'application/json'
 const CONTENT_TYPE_PROBLEM_JSON = 'application/problem+json'
 const CONTENT_TYPE_HTML = 'text/html'
 
+const DEFAULT_RETIRES_COUNT = 0
+const DEFAULT_RETIRES_TIMEOUT = 1000
+
 const allow = [200, 201, 203, 204, 400, 404, 401, 403, 409, 422]
 
 const checkStatus = (api, config) => {
@@ -179,160 +182,199 @@ class ApiXhrAdapter {
     }
   }
 
+  /**
+   * Make a call to some url, wrapper for xhr
+   * @param  {string} baseUrl   base url, like api host
+   * @param  {HttpMethod} argMethod HTTP method
+   * @param  {{
+      getEntityUrl: ({
+        apiPrefix;
+        modelEndpoint;
+        entityId;
+        crudAction;
+        specialAction;
+      }) => string;
+      withoutPrefix: boolean;
+      id: RestifyId;
+      crudAction: CrudActions;
+      specialAction: string;
+      query: Record<string, any>;
+      forceMethod: HttpMethods;
+      data: Record<string, any>;
+      urlHash: string;
+      skipLoadsManager: boolean;
+      isBinary: boolean;
+      onXhrReady: (api: xhr) => void;
+      retries: number;
+      retryTimeoutMs: number;
+   * }} config - request options
+   * @return {Promise} promise of the request
+   */
   callApi(baseUrl, argMethod, config) {
     const method = argMethod.toUpperCase()
-    return new Promise(async (res, rej) => {
-      const api = new XMLHttpRequest()
+    let retriesLeft = config.retries || DEFAULT_RETIRES_COUNT
+    return new Promise((res, rej) => {
+      const createXhrInstanse = async (isRetry) => {
+        const api = new XMLHttpRequest()
 
-      let CSRFToken
-      if (typeof this.getCSRFToken === 'function') {
-        CSRFToken = this.getCSRFToken()
-      }
-      if (CSRFToken instanceof Promise) {
-        CSRFToken = await CSRFToken
-      }
+        let CSRFToken
+        if (typeof this.getCSRFToken === 'function') {
+          CSRFToken = this.getCSRFToken()
+        }
+        if (CSRFToken instanceof Promise) {
+          CSRFToken = await CSRFToken
+        }
 
-      let token
-      if (typeof this.getToken === 'function') {
-        token = this.getToken()
-      }
-      if (token instanceof Promise) {
-        token = await token
-      }
-      const isTokenRequired = !this.allowedNoTokenEndpoints.some(endpoint => {
-        if (typeof endpoint === 'string') return endpoint === baseUrl
-        if (endpoint instanceof RegExp) return endpoint.test(baseUrl)
-        return false
-      })
-      if (!token && isTokenRequired) {
-        console.warn(`Called ${baseUrl} which requires token, but there was no token found!`)
-        rej({ status: 401 })
-        return
-      }
-      let url = (config.getEntityUrl || this.getEntityUrl)({
-        apiHost: this.apiHost,
-        apiPrefix: config.withoutPrefix ? '/' : this.apiPrefix,
-        modelEndpoint: baseUrl,
-        entityId: config.id,
-        crudAction: config.crudAction,
-        specialAction: config.specialAction,
-      })
-      let methodToUse = method
-      if (typeof url === 'object') {
-        methodToUse = url.method
-        url = url.url
-      }
-      if (config.query && Object.keys(config.query).length) {
-        url += `?${queryFormat(config.query, {
-          dateFormat: this.deafultDateFormat,
-          useSnakeCase: this.useSnakeCase,
-        })}`
-      }
-      api.open((config.forceMethod || methodToUse).toUpperCase(), url)
-      api.withCredentials = this.withCredentials
-      // Hack for some browsers sending wrong accept headers, causing DRF to return browsable api
-      api.setRequestHeader(ACCEPT_HEADER, '*/*')
-      if (token) {
-        api.setRequestHeader(AUTH_HEADER, `${this.authMethod || ''}${this.authMethod ? ' ' : ''}${token}`)
-      }
-      if (CSRFToken) {
-        api.setRequestHeader(CSRF_HEADER, CSRFToken)
-      }
-
-      if (typeof this.getHeaders === 'function') {
-        const headers = await this.getHeaders(baseUrl)
-        Object.keys(headers).forEach(header => {
-          api.setRequestHeader(header, headers[header])
-        })
-      }
-
-      let form
-      let filename
-      if (config.data) {
-        const dataArr = Object.entries(config.data)
-        const checkFile = dataArr.some(val => {
-          if (val[1] instanceof Blob) {
-            if (val[1] instanceof File) {
-              filename = val[1].name
-            }
-            return true
-          }
+        let token
+        if (typeof this.getToken === 'function') {
+          token = this.getToken()
+        }
+        if (token instanceof Promise) {
+          token = await token
+        }
+        const isTokenRequired = !this.allowedNoTokenEndpoints.some(endpoint => {
+          if (typeof endpoint === 'string') return endpoint === baseUrl
+          if (endpoint instanceof RegExp) return endpoint.test(baseUrl)
           return false
         })
-        if (checkFile) {
-          form = new FormData()
-          dataArr.forEach(([key, val]) => {
-            if (val instanceof Blob && !(val instanceof File)) {
-              form.append(key, val, 'blob.jpg')
-            } else {
-              form.append(key, val)
-            }
+        if (!token && isTokenRequired) {
+          console.warn(`Called ${baseUrl} which requires token, but there was no token found!`)
+          rej({ status: 401 })
+          return
+        }
+        let url = (config.getEntityUrl || this.getEntityUrl)({
+          apiHost: this.apiHost,
+          apiPrefix: config.withoutPrefix ? '/' : this.apiPrefix,
+          modelEndpoint: baseUrl,
+          entityId: config.id,
+          crudAction: config.crudAction,
+          specialAction: config.specialAction,
+        })
+        let methodToUse = method
+        if (typeof url === 'object') {
+          methodToUse = url.method
+          url = url.url
+        }
+        if (config.query && Object.keys(config.query).length) {
+          url += `?${queryFormat(config.query, {
+            dateFormat: this.deafultDateFormat,
+            useSnakeCase: this.useSnakeCase,
+          })}`
+        }
+        api.open((config.forceMethod || methodToUse).toUpperCase(), url)
+        api.withCredentials = this.withCredentials
+        // Hack for some browsers sending wrong accept headers, causing DRF to return browsable api
+        api.setRequestHeader(ACCEPT_HEADER, '*/*')
+        if (token) {
+          api.setRequestHeader(AUTH_HEADER, `${this.authMethod || ''}${this.authMethod ? ' ' : ''}${token}`)
+        }
+        if (CSRFToken) {
+          api.setRequestHeader(CSRF_HEADER, CSRFToken)
+        }
+
+        if (typeof this.getHeaders === 'function') {
+          const headers = await this.getHeaders(baseUrl)
+          Object.keys(headers).forEach(header => {
+            api.setRequestHeader(header, headers[header])
           })
-        } else {
-          form = typeof config.data === 'object' ? JSON.stringify(config.data) : config.data
-          api.setRequestHeader(CONTENT_TYPE_HEADER, `${CONTENT_TYPE_JSON}; charset=utf-8`)
         }
-      }
-      let urlQuery = config.urlHash
-      if (!urlQuery && (config.query || filename)) {
-        urlQuery = {
-          ...config.query,
-          filename,
-        }
-      }
-      const addLoadAct = method === 'GET' ? actions.addDownload : actions.addUpload
-      const removeLoadAct = method === 'GET' ? actions.removeDownload : actions.removeUpload
-      let firedMutex
-      const fireLoadActIfNotfiredMutex = () => {
-        if (!firedMutex) {
-          if (!config.skipLoadsManager) {
-            this.dispatch(addLoadAct(baseUrl, urlQuery))
+
+        let form
+        let filename
+        if (config.data) {
+          const dataArr = Object.entries(config.data)
+          const checkFile = dataArr.some(val => {
+            if (val[1] instanceof Blob) {
+              if (val[1] instanceof File) {
+                filename = val[1].name
+              }
+              return true
+            }
+            return false
+          })
+          if (checkFile) {
+            form = new FormData()
+            dataArr.forEach(([key, val]) => {
+              if (val instanceof Blob && !(val instanceof File)) {
+                form.append(key, val, 'blob.jpg')
+              } else {
+                form.append(key, val)
+              }
+            })
+          } else {
+            form = typeof config.data === 'object' ? JSON.stringify(config.data) : config.data
+            api.setRequestHeader(CONTENT_TYPE_HEADER, `${CONTENT_TYPE_JSON}; charset=utf-8`)
           }
-          firedMutex = true
         }
-      }
-      api.upload.onprogress = (e) => {
-        fireLoadActIfNotfiredMutex()
-        const progress = (e.loaded / e.total) * 100
-        if (!config.skipLoadsManager) {
-          this.dispatch(actions.setLoadingProgress(progress, baseUrl, urlQuery))
+        let urlQuery = config.urlHash
+        if (!urlQuery && (config.query || filename)) {
+          urlQuery = {
+            ...config.query,
+            filename,
+          }
         }
-      }
-      api.onloadstart = fireLoadActIfNotfiredMutex
-      api.onload = () => {
-        if (!config.skipLoadsManager) {
-          this.asyncDispatch(removeLoadAct(baseUrl, urlQuery))
+        const addLoadAct = method === 'GET' ? actions.addDownload : actions.addUpload
+        const removeLoadAct = method === 'GET' ? actions.removeDownload : actions.removeUpload
+        let firedMutex
+        const fireLoadActIfNotfiredMutex = () => {
+          if (!firedMutex) {
+            if (!isRetry && !config.skipLoadsManager) {
+              this.dispatch(addLoadAct(baseUrl, urlQuery))
+            }
+            firedMutex = true
+          }
         }
-        this.httpCallBackInvoke(api)
-        res({
-          status: api.status,
-          data: checkStatus(api, config),
-          api,
-        })
-      }
-      api.onerror = (e) => {
-        this.dispatch(removeLoadAct(baseUrl, urlQuery))
-        this.dispatch(actions.setLoadingError(e.error))
-        this.httpCallBackInvoke(api)
+        api.upload.onprogress = (e) => {
+          fireLoadActIfNotfiredMutex()
+          const progress = (e.loaded / e.total) * 100
+          if (!config.skipLoadsManager) {
+            this.dispatch(actions.setLoadingProgress(progress, baseUrl, urlQuery))
+          }
+        }
+        api.onloadstart = fireLoadActIfNotfiredMutex
+        api.onload = () => {
+          if (!config.skipLoadsManager) {
+            this.asyncDispatch(removeLoadAct(baseUrl, urlQuery))
+          }
+          this.httpCallBackInvoke(api)
+          res({
+            status: api.status,
+            data: checkStatus(api, config),
+            api,
+          })
+        }
+        api.onerror = (e) => {
+          if (api.status === 0 && retriesLeft > 0) {
+            retriesLeft -= 1
+            setTimeout(() => {
+              createXhrInstanse(true)
+            }, config.retryTimeoutMs === undefined ? DEFAULT_RETIRES_TIMEOUT : config.retryTimeoutMs)
+          } else {
+            this.dispatch(removeLoadAct(baseUrl, urlQuery))
+            this.dispatch(actions.setLoadingError(e.error))
+            this.httpCallBackInvoke(api)
 
-        let responseText = api.responseText
-        if (api.status < 100) {
-          responseText = ''
-        }
+            let responseText = api.responseText
+            if (api.status < 100) {
+              responseText = ''
+            }
 
-        rej({
-          status: api.status,
-          data: JSON.parse(responseText || '{}'),
-          api,
-        })
+            rej({
+              status: api.status,
+              data: JSON.parse(responseText || '{}'),
+              api,
+            })
+          }
+        }
+        if (config.isBinary) {
+          api.responseType = 'arraybuffer'
+        }
+        api.send(form)
+        if (typeof config.onXhrReady === 'function') {
+          config.onXhrReady(api)
+        }
       }
-      if (config.isBinary) {
-        api.responseType = 'arraybuffer'
-      }
-      api.send(form)
-      if (typeof config.onXhrReady === 'function') {
-        config.onXhrReady(api)
-      }
+      createXhrInstanse(false)
     })
   }
 

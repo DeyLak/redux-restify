@@ -24,126 +24,128 @@ import {
 
 
 describe('api', () => {
-  beforeEach(() => beforeEachFunc())
+  describe('basic', () => {
+    beforeEach(() => beforeEachFunc())
 
-  it('provides an EntityList object for each registered model', () => {
-    const state = store.getState()
-    const testEntities = api.selectors.entityManager.testModel.getEntities(state)
-    expect(testEntities).toEqual(jasmine.any(EntityList))
-  })
+    it('provides an EntityList object for each registered model', () => {
+      const state = store.getState()
+      const testEntities = api.selectors.entityManager.testModel.getEntities(state)
+      expect(testEntities).toEqual(jasmine.any(EntityList))
+    })
 
-  it('can nest RestifyFields configs with defaults option', () => {
-    const testData = [
-      { id: 1, test: { nested: true } },
-      { id: 2, test: { nested: false } },
-    ]
-    store.dispatch(api.actions.entityManager.testModelNested.updateData(
-      testData,
-      1,
-      10,
-      2,
-      {},
-      undefined,
-      {},
-      false,
-      {},
-    ))
-    const state = store.getState()
-    const testEntities = api.selectors.entityManager.testModelNested.getEntities(state)
-    const testArray = testEntities.getArray()
-    expect(removePrivateFields(testArray)).toEqual(testData)
-    const defaultObj = testEntities.getById(3)
-    expect(defaultObj).toEqual({
-      id: 3,
-      $modelType: 'testModelNested',
-      $loading: true,
+    it('can nest RestifyFields configs with defaults option', () => {
+      const testData = [
+        { id: 1, test: { nested: true } },
+        { id: 2, test: { nested: false } },
+      ]
+      store.dispatch(api.actions.entityManager.testModelNested.updateData(
+        testData,
+        1,
+        10,
+        2,
+        {},
+        undefined,
+        {},
+        false,
+        {},
+      ))
+      const state = store.getState()
+      const testEntities = api.selectors.entityManager.testModelNested.getEntities(state)
+      const testArray = testEntities.getArray()
+      expect(removePrivateFields(testArray)).toEqual(testData)
+      const defaultObj = testEntities.getById(3)
+      expect(defaultObj).toEqual({
+        id: 3,
+        $modelType: 'testModelNested',
+        $loading: true,
+      })
+      expect(defaultObj.test).toEqual({
+        nested: undefined,
+      })
     })
-    expect(defaultObj.test).toEqual({
-      nested: undefined,
-    })
-  })
 
-  it('can nest RestifyFields configs with RestifyForeignKeysArray', () => {
-    const state = store.getState()
-    const testEntities = api.selectors.entityManager.testModelWithForeignKey.getEntities(state)
-    const defaultObj = testEntities.getById(3)
-    expect(defaultObj).toEqual({
-      id: 3,
-      $modelType: 'testModelWithForeignKey',
-      $loading: true,
+    it('can nest RestifyFields configs with RestifyForeignKeysArray', () => {
+      const state = store.getState()
+      const testEntities = api.selectors.entityManager.testModelWithForeignKey.getEntities(state)
+      const defaultObj = testEntities.getById(3)
+      expect(defaultObj).toEqual({
+        id: 3,
+        $modelType: 'testModelWithForeignKey',
+        $loading: true,
+      })
+      expect(defaultObj.notInArray).toEqual([])
+      expect(defaultObj.notInArrayIds).toEqual([])
+      expect(defaultObj.notInForeignKey).toEqual(undefined)
+      expect(defaultObj.test).toEqual(undefined)
+      expect(defaultObj.singleForeignKeyId).toEqual(undefined)
+      expect(defaultObj.singleForeignKey).toEqual({
+        id: undefined,
+        $modelType: 'testModel',
+        $loading: false,
+        $error: false,
+      })
+      expect(defaultObj.singleForeignKey.test).toEqual(undefined)
+      expect(defaultObj.singleForeignKey.notInForeignKey).toEqual(undefined)
     })
-    expect(defaultObj.notInArray).toEqual([])
-    expect(defaultObj.notInArrayIds).toEqual([])
-    expect(defaultObj.notInForeignKey).toEqual(undefined)
-    expect(defaultObj.test).toEqual(undefined)
-    expect(defaultObj.singleForeignKeyId).toEqual(undefined)
-    expect(defaultObj.singleForeignKey).toEqual({
-      id: undefined,
-      $modelType: 'testModel',
-      $loading: false,
-      $error: false,
-    })
-    expect(defaultObj.singleForeignKey.test).toEqual(undefined)
-    expect(defaultObj.singleForeignKey.notInForeignKey).toEqual(undefined)
-  })
 
-  it('clears pages after router location changes', () => {
-    const testData = [{ id: 1, test: true }, { id: 2, test: false }]
-    store.dispatch(api.actions.entityManager.testModel.updateData(
-      testData,
-      1,
-      10,
-      2,
-      {},
-      undefined,
-      {},
-      false,
-      {},
-    ))
-    let state = store.getState()
-    const testArray = api.selectors.entityManager.testModel.getEntities(state).getArray()
-    expect(removePrivateFields(testArray)).toEqual(testData)
-    store.dispatch({
-      type: ROUTER_LOCATION_CHANGE_ACTION,
-      payload: {
-        action: 'PUSH',
-      },
+    it('clears pages after router location changes', () => {
+      const testData = [{ id: 1, test: true }, { id: 2, test: false }]
+      store.dispatch(api.actions.entityManager.testModel.updateData(
+        testData,
+        1,
+        10,
+        2,
+        {},
+        undefined,
+        {},
+        false,
+        {},
+      ))
+      let state = store.getState()
+      const testArray = api.selectors.entityManager.testModel.getEntities(state).getArray()
+      expect(removePrivateFields(testArray)).toEqual(testData)
+      store.dispatch({
+        type: ROUTER_LOCATION_CHANGE_ACTION,
+        payload: {
+          action: 'PUSH',
+        },
+      })
+      state = store.getState()
+      expect(state.api.entityManager.testModel.pages).toEqual({})
+      expect(state.api.entityManager.testModel.singleEntities).not.toEqual({})
     })
-    state = store.getState()
-    expect(state.api.entityManager.testModel.pages).toEqual({})
-    expect(state.api.entityManager.testModel.singleEntities).not.toEqual({})
-  })
 
-  it('clears all data after router location changes', () => {
-    const testData = [{ id: 1, test: true }, { id: 2, test: false }]
-    store.dispatch(api.actions.entityManager.testModelOtherId.updateData(
-      testData,
-      1,
-      10,
-      2,
-      {},
-      undefined,
-      {},
-      false,
-    ))
-    let state = store.getState()
-    store.dispatch({
-      type: ROUTER_LOCATION_CHANGE_ACTION,
-      payload: {
-        action: 'PUSH',
-      },
+    it('clears all data after router location changes', () => {
+      const testData = [{ id: 1, test: true }, { id: 2, test: false }]
+      store.dispatch(api.actions.entityManager.testModelOtherId.updateData(
+        testData,
+        1,
+        10,
+        2,
+        {},
+        undefined,
+        {},
+        false,
+      ))
+      let state = store.getState()
+      store.dispatch({
+        type: ROUTER_LOCATION_CHANGE_ACTION,
+        payload: {
+          action: 'PUSH',
+        },
+      })
+      state = store.getState()
+      expect(state.api.entityManager.testModelOtherId.pages).toEqual({})
+      expect(state.api.entityManager.testModelOtherId.singleEntities).toEqual({})
     })
-    state = store.getState()
-    expect(state.api.entityManager.testModelOtherId.pages).toEqual({})
-    expect(state.api.entityManager.testModelOtherId.singleEntities).toEqual({})
-  })
 
-  it('returns endpoint', () => {
-    const endpoint = api.selectors.entityManager.testModel.getEndpoint()
-    expect(endpoint).toEqual({
-      apiHost: TEST_API_HOST,
-      apiPrefix: TEST_API_PREFIX,
-      endpoint: TEST_MODEL_ENDPOINT,
+    it('returns endpoint', () => {
+      const endpoint = api.selectors.entityManager.testModel.getEndpoint()
+      expect(endpoint).toEqual({
+        apiHost: TEST_API_HOST,
+        apiPrefix: TEST_API_PREFIX,
+        endpoint: TEST_MODEL_ENDPOINT,
+      })
     })
   })
 
@@ -234,6 +236,7 @@ describe('api', () => {
   }
   describe('Server interactions', () => {
     beforeEach(() => {
+      beforeEachFunc()
       jasmine.Ajax.install()
     })
 
@@ -1260,6 +1263,32 @@ describe('api', () => {
             done()
           })
       })
+    })
+  })
+
+  describe('Retries', () => {
+    beforeEach(() => {
+      beforeEachFunc({
+        options: {
+          retries: 3,
+          retryTimeoutMs: 0,
+        },
+      })
+    })
+
+    it('Can retry a request', (done) => {
+      setTimeout(() => {
+        // Install jasmine ajax after timeout, so we can simulate network problems
+        jasmine.Ajax.install()
+        mockRequest(testServerArrayResponse.results[0], { url: `${modelUrl}1/` })
+      }, 0)
+      const state = store.getState()
+      api.selectors.entityManager.testModel.getEntities(state).asyncGetById(1)
+        .then(model => {
+          expect(model).toEqual(testServerArrayRestifyModels[0])
+          jasmine.Ajax.uninstall()
+          done()
+        })
     })
   })
 })
