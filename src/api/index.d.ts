@@ -3,7 +3,7 @@ import { ActionCreatorsMapObject } from 'redux'
 import { ApiCallConfig } from './adapters'
 import { RestifyId, RestifyModelConfig } from './modelConfig'
 import { CrudAction, RestifyQuery, RestifyEndpointInfo } from './constants'
-import { RestifyEntityList } from './models'
+import { GetByIdConfig, RestifyEntityList } from './models'
 
 
 export * from './models'
@@ -29,10 +29,8 @@ export interface LoadDataConfig {
   urlHash?: string;
 }
 
-export interface LoadByIdConfig {
-  query?: RestifyQuery;
+export interface LoadByIdConfig extends GetByIdConfig {
   urlHash?: string;
-  useModelEndpoint?: boolean;
   apiName?: string;
 }
 
