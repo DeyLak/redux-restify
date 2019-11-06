@@ -25,7 +25,7 @@ const objectToCase = convertingFunc => (obj, config = {}) => {
     let convertingArray = obj
     if (orderArrays) {
       convertingArray = sortBy(convertingArray, (item) => {
-        if (typeof item === 'object') return item[orderField]
+        if (item && typeof item === 'object') return item[orderField]
         return ''
       })
     }
