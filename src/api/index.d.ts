@@ -52,11 +52,11 @@ export interface ApiActions extends ActionCreatorsMapObject {
   ): any;
   clearPages(): any;
   clearData(): any;
-  updateById<T>(id: RestifyId, data: Partial<T>, query: RestifyQuery, allowClearPages?: boolean): any;
-  updateFromRawData<T>(id: RestifyId, data: Partial<T>, query: RestifyQuery, allowClearPages?: boolean): any;
-  updateOptimisticById<T>(id: RestifyId, data: Partial<T>, query: RestifyQuery): any;
+  updateById<T>(id: RestifyId, data: Partial<T>, query?: RestifyQuery, allowClearPages?: boolean): any;
+  updateFromRawData<T>(id: RestifyId, data: Partial<T>, query?: RestifyQuery, allowClearPages?: boolean): any;
+  updateOptimisticById<T>(id: RestifyId, data: Partial<T>, query?: RestifyQuery): any;
   discardOptimisticUpdateById(id: RestifyId): any;
-  setLoadErrorForId(id: RestifyId, error: any, query: RestifyQuery): any;
+  setLoadErrorForId(id: RestifyId, error: any, query?: RestifyQuery): any;
   loadData<T>(config: LoadDataConfig): any;
   loadNextPage<T>(config: LoadDataConfig): any;
   loadById(id: RestifyId, config?: LoadByIdConfig): any;
