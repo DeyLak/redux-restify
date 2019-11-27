@@ -51,6 +51,7 @@ module.exports = {
     filename: 'index.js',
     libraryTarget: 'umd',
     library: 'redux-restify',
+    globalObject: 'this',
   },
   mode: env.prod ? 'production' : 'development',
   node: env.test ? {
