@@ -94,6 +94,14 @@ const globalActions = {
     if (currentFormConfig.validate && currentFormConfig.validateOnFieldChange) {
       dispatch(globalActions.validate(formType)())
     }
+
+    if (currentFormConfig.trackDirtyFields) {
+      const currentDirtyFields = selectors.getDirtyFields(formType)(state)
+      const firstDepthName = Array.isArray(name) ? name[0] : name
+      if (!currentDirtyFields[firstDepthName]) {
+        dispatch(globalActions.setFieldDirtyState(formType)(name, true))
+      }
+    }
   },
 
   changeSomeFields: (formType) => (fieldsObject = {}, forceUndefines = false) => (dispatch, getState) => {
@@ -101,6 +109,7 @@ const globalActions = {
     const currentFormConfig = selectors.getFormConfig(formType)(state)
 
     const valuesObj = {}
+    const setDirtyObj = {}
     const orderFieldName = RESTIFY_CONFIG.options.orderableFormFieldName
     Object.keys(fieldsObject).forEach(key => {
       let currentValue = fieldsObject[key]
@@ -111,6 +120,7 @@ const globalActions = {
           currentValue = currentValue.map((item, order) => ({ ...item, [orderFieldName]: order }))
         }
       }
+      setDirtyObj[key] = true
       if (forceUndefines || currentValue !== undefined) {
         valuesObj[key] = currentValue
       }
@@ -124,6 +134,10 @@ const globalActions = {
 
     if (currentFormConfig.validate && currentFormConfig.validateOnFieldChange) {
       dispatch(globalActions.validate(formType)())
+    }
+
+    if (currentFormConfig.trackDirtyFields) {
+      dispatch(globalActions.setDirtyState(formType)(setDirtyObj))
     }
   },
 
@@ -366,6 +380,34 @@ const globalActions = {
     dispatch(globalActions.replaceInArray(formType)(arrayName, newValue, index))
   },
 
+  setDirtyState: (formType) => (value) => ({
+    type: getActionType(formType).setDirtyState,
+    value,
+    formType,
+  }),
+
+  resetDirtyState: (formType) => () => ({
+    type: getActionType(formType).setDirtyState,
+    value: {},
+    formType,
+  }),
+
+  setFieldDirtyState: (formType) => (name, value) => (dispatch, getState) => {
+    const firstDepthName = Array.isArray(name) ? name[0] : name
+    return dispatch({
+      type: getActionType(formType).setDirtyState,
+      value: {
+        ...selectors.getDirtyFields(formType)(getState()),
+        [firstDepthName]: value,
+      },
+      formType,
+    })
+  },
+
+  resetFieldDirtyState: (formType) => (name) => (dispatch) => {
+    return dispatch(globalActions.setFieldDirtyState(formType)(name, false))
+  },
+
   setErrors: (formType) => (value) => ({
     type: getActionType(formType).setErrors,
     value,
@@ -492,41 +534,53 @@ const globalActions = {
 
   submit: (formType) => () => (dispatch, getState) => {
     let state = getState()
-    const currentForm = selectors.getFormConfig(formType)(state)
+    const currentFormConfig = selectors.getFormConfig(formType)(state)
     let currentModel
-    if (currentForm.model) {
-      currentModel = RESTIFY_CONFIG.registeredModels[currentForm.model]
+    if (currentFormConfig.model) {
+      currentModel = RESTIFY_CONFIG.registeredModels[currentFormConfig.model]
     }
     let idField = 'id'
     let currentApiName
-    if (currentForm.apiName) {
-      currentApiName = currentForm.apiName
+    if (currentFormConfig.apiName) {
+      currentApiName = currentFormConfig.apiName
     } else if (currentModel) {
       idField = currentModel.idField
       currentApiName = currentModel.apiName
     }
     const currentApi = currentApiName && RESTIFY_CONFIG.registeredApies[currentApiName]
-    if (currentForm.validate && currentForm.validateOnSubmit) {
+    if (currentFormConfig.validate && currentFormConfig.validateOnSubmit) {
       const errors = dispatch(globalActions.validate(formType)())
       if (!checkErrors(errors)) {
         return Promise.reject(errors)
       }
     }
-    if (!currentForm.endpoint && !currentForm.model) {
+    if (!currentFormConfig.endpoint && !currentFormConfig.model) {
       console.warn(`Submitting a form ${formType} has no effect, cause it doesn't have endpoint or model`)
       return Promise.resolve()
     }
     const currentValues = selectors.getFormWithNulls(formType)(state)
 
-    let submitExcludeFunc = currentForm.submitExclude
-    if (typeof currentForm.submitExclude === 'object') {
+    // If we have submitOnlyDirtyFields option, we should get dirty fields and exclude those, which are not dirty
+    let currentDirtyFields = {}
+    if (currentFormConfig.submitOnlyDirtyFields) {
+      currentDirtyFields = selectors.getDirtyFields(formType)(state)
+    }
+
+    let submitExcludeFunc = currentFormConfig.submitExclude
+    if (typeof currentFormConfig.submitExclude === 'object') {
       submitExcludeFunc = (key, values, keyParentPath) => {
-        return getNestedObjectField(currentForm.submitExclude, keyParentPath.concat(key)) === true
+        return getNestedObjectField(currentFormConfig.submitExclude, keyParentPath.concat(key)) === true
       }
     }
     let data = mutateObject(
       (key, value, obj, keyParentPath) => {
         if (submitExcludeFunc(key, currentValues, keyParentPath)) return true
+
+        // Check dirty fields
+        if (currentFormConfig.submitOnlyDirtyFields && Array.isArray(keyParentPath) && !keyParentPath.length) {
+          return !currentDirtyFields[key]
+        }
+
         // fakeId plugin checks for fake uuids(string, instead of number) not to send them
         let parentConfig
         if (Array.isArray(keyParentPath)) {
@@ -537,9 +591,9 @@ const globalActions = {
               return currentObj[index === keyParentPath.length - 1 ? ARRAY_CONFIG_INDEX : ARRAY_DEFAULTS_INDEX]
             }
             return currentObj
-          }, currentForm.defaults)
+          }, currentFormConfig.defaults)
         } else {
-          parentConfig = currentForm.defaults[keyParentPath]
+          parentConfig = currentFormConfig.defaults[keyParentPath]
           if (Array.isArray(parentConfig)) {
             parentConfig = parentConfig[ARRAY_CONFIG_INDEX]
           }
@@ -553,45 +607,45 @@ const globalActions = {
       () => undefined,
     )(currentValues)
 
-    if (typeof currentForm.transformBeforeSubmit === 'function') {
-      data = currentForm.transformBeforeSubmit(currentValues, data)
-    } else if (typeof currentForm.transformBeforeSubmit === 'object') {
-      Object.keys(currentForm.transformBeforeSubmit).forEach(key => {
-        data[key] = currentForm.transformBeforeSubmit[key](key, data[key], currentValues, data)
+    if (typeof currentFormConfig.transformBeforeSubmit === 'function') {
+      data = currentFormConfig.transformBeforeSubmit(currentValues, data)
+    } else if (typeof currentFormConfig.transformBeforeSubmit === 'object') {
+      Object.keys(currentFormConfig.transformBeforeSubmit).forEach(key => {
+        data[key] = currentFormConfig.transformBeforeSubmit[key](key, data[key], currentValues, data)
       })
     }
     return new Promise((resolve, reject) => {
       const successCallbacks = []
       const errorCallbacks = []
-      if (currentForm.deleteOnSubmit) {
+      if (currentFormConfig.deleteOnSubmit) {
         successCallbacks.push(generalActions.deleteForm(formType))
       }
-      if (currentForm.resetOnSubmit) {
+      if (currentFormConfig.resetOnSubmit) {
         successCallbacks.push(generalActions.resetForm(formType))
       }
-      if (currentForm.onSuccess) {
-        successCallbacks.push(currentForm.onSuccess)
+      if (currentFormConfig.onSuccess) {
+        successCallbacks.push(currentFormConfig.onSuccess)
       }
 
-      let url = currentForm.endpoint
+      let url = currentFormConfig.endpoint
       if (typeof url === 'function') {
         url = url(currentValues)
       }
-      let currentFormApiName = currentForm.apiName
-      const currentId = data.id || currentForm.id || currentValues.id
+      let currentFormApiName = currentFormConfig.apiName
+      const currentId = data.id || currentFormConfig.id || currentValues.id
       if (currentModel) {
         url = currentModel.endpoint
         currentFormApiName = currentModel.apiName
-        if (currentId && currentForm.useOptimisticUpdate) {
-          dispatch(api.actions.entityManager[currentForm.model].updateOptimisticById(currentId, data))
-          errorCallbacks.push(api.actions.entityManager[currentForm.model].discardOptimisticUpdateById(currentId))
+        if (currentId && currentFormConfig.useOptimisticUpdate) {
+          dispatch(api.actions.entityManager[currentFormConfig.model].updateOptimisticById(currentId, data))
+          errorCallbacks.push(api.actions.entityManager[currentFormConfig.model].discardOptimisticUpdateById(currentId))
         }
         const actionType = currentId ? ACTION_UPDATE : ACTION_CREATE
-        successCallbacks.push(() => api.actions.entityManager[currentForm.model].showEntityAlert(actionType))
+        successCallbacks.push(() => api.actions.entityManager[currentFormConfig.model].showEntityAlert(actionType))
         // TODO by @deylak rework alerts api, so we don't need this hacks
         if (
-          Object.prototype.hasOwnProperty.call(currentForm, 'SECRET_SHOW_ALERTS') &&
-          !currentForm.SECRET_SHOW_ALERTS
+          Object.prototype.hasOwnProperty.call(currentFormConfig, 'SECRET_SHOW_ALERTS') &&
+          !currentFormConfig.SECRET_SHOW_ALERTS
         ) {
           successCallbacks.pop()
         }
@@ -603,16 +657,16 @@ const globalActions = {
                                         currentApi && currentApi.transformEntityResponse ||
                                         defaulTransformEntityResponse
 
-        const transformed = transformEntityResponse(res, resApi, currentForm.model).data
-        if (transformed && currentModel && currentForm.updateEntity) {
+        const transformed = transformEntityResponse(res, resApi, currentFormConfig.model).data
+        if (transformed && currentModel && currentFormConfig.updateEntity) {
           dispatch(
-            api.actions.entityManager[currentForm.model].updateById(transformed[idField], transformed),
+            api.actions.entityManager[currentFormConfig.model].updateById(transformed[idField], transformed),
           )
         }
-        if (transformed && currentForm.model && transformed[idField]) {
+        if (transformed && currentFormConfig.model && transformed[idField]) {
           state = getState()
           resolve({
-            data: api.selectors.entityManager[currentForm.model].getEntities(state).getById(transformed[idField]),
+            data: api.selectors.entityManager[currentFormConfig.model].getEntities(state).getById(transformed[idField]),
             status,
           })
         } else {
@@ -625,33 +679,33 @@ const globalActions = {
         const transformErrorResponse = currentModel && currentModel.transformErrorResponse ||
           currentApi && currentApi.transformErrorResponse ||
           defaulTransformErrorResponse
-        const transformed = transformErrorResponse(res, resApi, currentForm.model).errors
+        const transformed = transformErrorResponse(res, resApi, currentFormConfig.model).errors
         return globalActions.setErrors(formType)(transformed, status, resApi)
       })
 
       const defaultMethod = currentId ? 'patch' : 'post'
       const currentCrudAction = currentId ? CRUD_ACTIONS.update : CRUD_ACTIONS.create
-      let isConvertToSnakeCase = currentForm.convertToSnakeCaseBeforeSend
+      let isConvertToSnakeCase = currentFormConfig.convertToSnakeCaseBeforeSend
       if (isConvertToSnakeCase === undefined) {
         isConvertToSnakeCase = currentApi ? currentApi.useSnakeCase : DEFAULT_USE_SNAKE_CASE
       }
       dispatch(api.actions.callApi(defaultMethod)({
         apiName: currentFormApiName,
         id: currentId,
-        crudAction: currentForm.crudAction || currentCrudAction,
+        crudAction: currentFormConfig.crudAction || currentCrudAction,
         url,
-        specialAction: currentForm.specialAction,
-        getEntityUrl: currentForm.getEntityUrl || currentModel && currentModel.getEntityUrl,
-        forceMethod: currentForm.method,
-        query: currentForm.query,
+        specialAction: currentFormConfig.specialAction,
+        getEntityUrl: currentFormConfig.getEntityUrl || currentModel && currentModel.getEntityUrl,
+        forceMethod: currentFormConfig.method,
+        query: currentFormConfig.query,
 
         onError: errorCallbacks,
         onSuccess: successCallbacks,
         data: isConvertToSnakeCase ? objectToLowerSnake(data) : data,
-        convertToCamelCase: currentForm.convertResultToCamelCase,
-        removeNulls: currentForm.resultRemoveNulls,
-        orderArrays: currentForm.resultOrderArrays,
-        withoutPrefix: currentForm.withoutPrefix,
+        convertToCamelCase: currentFormConfig.convertResultToCamelCase,
+        removeNulls: currentFormConfig.resultRemoveNulls,
+        orderArrays: currentFormConfig.resultOrderArrays,
+        withoutPrefix: currentFormConfig.withoutPrefix,
       }))
     })
   },

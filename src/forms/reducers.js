@@ -55,6 +55,11 @@ const getRestifyFormReducer = () => {
             $edit: newEdit,
           }
         }
+        case ACTIONS_TYPES[formType].setDirtyState:
+          return {
+            ...state,
+            $dirty: action.value,
+          }
         case ROUTER_LOCATION_CHANGE_ACTION:
           if (action.payload.action === 'REPLACE') return state
           return {
@@ -174,6 +179,15 @@ const getRestifyFormReducer = () => {
           [action.formType]: {
             ...nextState[action.formType],
             $errors: action.value,
+          },
+        }
+      case ACTIONS_TYPES[GENERAL_FORMS_ACTIONS].setDirtyState:
+        if (!nextState[action.formType]) return nextState
+        return {
+          ...nextState,
+          [action.formType]: {
+            ...nextState[action.formType],
+            $dirty: action.value,
           },
         }
       case ACTIONS_TYPES[GENERAL_FORMS_ACTIONS].rememberFieldState:

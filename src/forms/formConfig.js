@@ -63,6 +63,8 @@ export const DEFAULT_FORM_OBJECT = {
   validateOnSubmit: true, // Should form be validated before submitting
   allowSendInvalid: false, // Allow to send form with errors to server
   mapServerDataToIds: false, // When mapping server data to form, it maps foreign keys to ids
+  trackDirtyFields: false, // Auto-set dirty state for fields, that are changed
+  submitOnlyDirtyFields: false, // Exclude not marked as dirty fields from form submission
   // Passed to model getEntityUrl function and used for defining some urls
   // Can be detected automatically between create and update, based on id field
   crudAction: undefined,
@@ -175,6 +177,7 @@ export const getDefaultFormObject = (config) => {
     ...composedConfig.values,
     $errors: {},
     $edit: {},
+    $dirty: {},
   }
 }
 

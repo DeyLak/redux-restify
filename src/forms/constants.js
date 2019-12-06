@@ -13,6 +13,7 @@ const actionsTypesForms = [
   'SET_IS_VALID',
   'REMEMBER_FIELD_STATE',
   'SAVE_EDITING_FIELD',
+  'SET_DIRTY_STATE',
 ]
 
 const actionsTypesGeneralForms = actionsTypesForms.concat([

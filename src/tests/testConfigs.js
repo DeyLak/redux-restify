@@ -356,6 +356,15 @@ export const formsDefinitions = {
       },
     },
   },
+  testDirtyForm: {
+    model: 'testModel',
+    defaults: {
+      test: undefined,
+      testDirty: undefined,
+    },
+    trackDirtyFields: true,
+    submitOnlyDirtyFields: true,
+  },
   testRequestFormId: {
     model: 'testModel',
     defaults: {

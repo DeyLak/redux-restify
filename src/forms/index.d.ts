@@ -2,7 +2,9 @@ import { ActionCreatorsMapObject } from 'redux'
 
 import { RestifyFormConfig } from './formConfig'
 
-import { RestifyEndpointInfo } from '../api'
+import { RestifyEndpointInfo, RestifyModel } from '../api'
+
+import { ThunkActionResult } from '../constants'
 
 
 export { RestifyFormConfig } from './formConfig'
@@ -11,37 +13,46 @@ export * from './validation'
 
 export type FormPath = string | number | (string | number)[]
 
-export interface RestifyFormActions<T = any> extends ActionCreatorsMapObject {
-  deleteForm(): any;
-  resetForm(): any;
-  renameForm(formName: string): any;
-  changeField(name: FormPath, newValue: any): any;
-  changeSomeFields(fieldsObject: Partial<T>, forceUndefines?: boolean): any;
-  applyServerData(data: any): any;
-  resetField(name: FormPath): any;
-  insertToArray(arrayName: FormPath, value?: any, insertingIndex?: number): any;
-  insertToArrayAndEdit(arrayName: FormPath, value?: any, index?: number): any;
-  manageSavedFieldArrayDeletion(arrayName: FormPath, index: number): any;
-  manageSavedFieldArrayInsertion(arrayName: FormPath, index: number, insertedField: any): any;
-  removeFromArray(arrayName: FormPath, index?: number, count?: number): any;
-  replaceInArray(arrayName: FormPath, value: any, index: number): any;
-  moveInArray(arrayName: FormPath, movingIndex: number, insertingIndex: number): any;
-  moveInArrayUp(arrayName: FormPath, movingIndex: number): any;
-  moveInArrayDown(arrayName: FormPath, movingIndex: number): any;
-  changeInArray(arrayName: FormPath, name: string, value: any, index: number): any;
-  setErrors(value: any): any;
-  resetErrors(): any;
-  setFieldError(name: FormPath, value: any): any;
-  resetFieldError(name: FormPath): any;
-  resetArrayErrors(arrayName: FormPath, index: number): any;
-  setArrayFieldErrors(arrayName: FormPath, name: string, value: any, index: number): any;
-  resetArrayFieldErrors(arrayName: FormPath, name: string, index: number): any;
-  rememberFieldState(name: FormPath, value: any): any;
-  enableFieldEditMode(name: FormPath): any;
-  saveEditingField(name: FormPath): any;
-  validate(): any;
-  cancelFieldEdit(name: FormPath): any;
-  submit(): any;
+export interface FormSubmitResult<T> {
+  data: T;
+  status: number;
+}
+
+export interface RestifyFormActions<T = any, LinkedModel = T> extends ActionCreatorsMapObject {
+  deleteForm(): ThunkActionResult<void>;
+  resetForm(): ThunkActionResult<void>;
+  renameForm(formName: string): ThunkActionResult<void>;
+  changeField(name: FormPath, newValue: any): ThunkActionResult<void>;
+  changeSomeFields(fieldsObject: Partial<T>, forceUndefines?: boolean): ThunkActionResult<void>;
+  applyServerData(data: any): ThunkActionResult<void>;
+  resetField(name: FormPath): ThunkActionResult<void>;
+  insertToArray(arrayName: FormPath, value?: any, insertingIndex?: number): ThunkActionResult<void>;
+  insertToArrayAndEdit(arrayName: FormPath, value?: any, index?: number): ThunkActionResult<void>;
+  manageSavedFieldArrayDeletion(arrayName: FormPath, index: number): ThunkActionResult<void>;
+  manageSavedFieldArrayInsertion(arrayName: FormPath, index: number, insertedField: any): ThunkActionResult<void>;
+  removeFromArray(arrayName: FormPath, index?: number, count?: number): ThunkActionResult<void>;
+  replaceInArray(arrayName: FormPath, value: any, index: number): ThunkActionResult<void>;
+  moveInArray(arrayName: FormPath, movingIndex: number, insertingIndex: number): ThunkActionResult<void>;
+  moveInArrayUp(arrayName: FormPath, movingIndex: number): ThunkActionResult<void>;
+  moveInArrayDown(arrayName: FormPath, movingIndex: number): ThunkActionResult<void>;
+  changeInArray(arrayName: FormPath, name: string, value: any, index: number): ThunkActionResult<void>;
+  setDirtyState(value: Partial<Record<keyof T, boolean>>): ThunkActionResult<void>;
+  resetDirtyState(): ThunkActionResult<void>;
+  setFieldDirtyState(name: FormPath, value: boolean): ThunkActionResult<void>;
+  resetFieldDirtyState(name: FormPath): ThunkActionResult<void>;
+  setErrors(value: any): ThunkActionResult<void>;
+  resetErrors(): ThunkActionResult<void>;
+  setFieldError(name: FormPath, value: any): ThunkActionResult<void>;
+  resetFieldError(name: FormPath): ThunkActionResult<void>;
+  resetArrayErrors(arrayName: FormPath, index: number): ThunkActionResult<void>;
+  setArrayFieldErrors(arrayName: FormPath, name: string, value: any, index: number): ThunkActionResult<void>;
+  resetArrayFieldErrors(arrayName: FormPath, name: string, index: number): ThunkActionResult<void>;
+  rememberFieldState(name: FormPath, value: any): ThunkActionResult<void>;
+  enableFieldEditMode(name: FormPath): ThunkActionResult<void>;
+  saveEditingField(name: FormPath): ThunkActionResult<void>;
+  validate(): ThunkActionResult<any>;
+  cancelFieldEdit(name: FormPath): ThunkActionResult<void>;
+  submit(): ThunkActionResult<Promise<FormSubmitResult<RestifyModel<LinkedModel>>>>;
 }
 
 export type RestifyFormErrors<T> = any
@@ -57,26 +68,34 @@ type GetSavedField = <T>(name: string) => (state: any) => T;
 type GetErrors = <T>(state: any) => RestifyFormErrors<T>;
 type GetIsValid = (state: any) => boolean;
 type GetEditingFields = <T>(state: any) => Partial<T>;
+type GetDirtyFields = <T>(state: any) => Record<keyof T, boolean>;
+type GetIsDirty = <T>(state: any) => boolean;
 
 export interface FormSelectors {
-  getIsFormExist: GetIsFormExist,
-  getEndpoint: GetEndpoint,
-  getForm: GetForm,
-  getFormWithNulls: GetFormWithNulls,
-  getField: GetField,
-  getSavedField: GetSavedField,
-  getErrors: GetErrors,
-  getIsValid: GetIsValid,
-  getEditingFields: GetEditingFields,
+  getIsFormExist: GetIsFormExist;
+  getEndpoint: GetEndpoint;
+  getForm: GetForm;
+  getFormWithNulls: GetFormWithNulls;
+  getField: GetField;
+  getSavedField: GetSavedField;
+  getErrors: GetErrors;
+  getIsValid: GetIsValid;
+  getDirtyFields: GetDirtyFields;
+  getIsDirty: GetIsDirty;
+  getEditingFields: GetEditingFields;
 }
 
 export namespace forms {
   export const actions: {
-    deleteForm(formType: string): any;
-    resetForm(formType: string): any;
-    renameForm(formType: string, formName: string): any;
-    createForm<T>(formType: string, config: Partial<RestifyFormConfig<T>>, allowRecreate?: boolean): any;
-    sendQuickForm<T>(config: Partial<RestifyFormConfig<T>>): any;
+    deleteForm(formType: string): ThunkActionResult<void>;
+    resetForm(formType: string): ThunkActionResult<void>;
+    renameForm(formType: string, formName: string): ThunkActionResult<void>;
+    createForm<T>(
+      formType: string,
+      config: Partial<RestifyFormConfig<T>>,
+      allowRecreate?: boolean,
+    ): ThunkActionResult<void>;
+    sendQuickForm<T>(config: Partial<RestifyFormConfig<T>>): ThunkActionResult<Promise<FormSubmitResult<T>>>;
   } & {
     [key: string]: RestifyFormActions;
   };
@@ -99,6 +118,8 @@ export namespace forms {
     getSavedField: (formType: FormTypeSelector) => GetSavedField;
     getErrors: (formType: FormTypeSelector) => GetErrors;
     getIsValid: (formType: FormTypeSelector) => GetIsValid;
+    getDirtyFields: (formType: FormTypeSelector) => GetDirtyFields;
+    getIsDirty: (formType: FormTypeSelector) => GetIsDirty;
     getEditingFields: (formType: FormTypeSelector) => GetEditingFields;
   } & {
     [key: string]: FormSelectors;

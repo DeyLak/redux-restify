@@ -132,6 +132,25 @@ const globalSelectors = {
       },
     )
   },
+  getDirtyFields: (formType) => {
+    return getFormsMap(
+      formType,
+      stringType => state => state.forms[stringType],
+      (selectedForm) => {
+        return (selectedForm && selectedForm.$dirty) || {}
+      },
+    )
+  },
+  getIsDirty: (formType) => {
+    return getFormsMap(
+      formType,
+      () => state => state,
+      (state, stringType) => {
+        const dirtyFields = globalSelectors.getDirtyFields(stringType)(state)
+        return Object.values(dirtyFields).some(isDirty => isDirty)
+      },
+    )
+  },
   getEditingFields: (formType) => {
     return getFormsMap(
       formType,

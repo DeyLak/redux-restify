@@ -52,6 +52,8 @@ export interface RestifyFormConfig<T> {
   validateOnSubmit: boolean;
   allowSendInvalid: boolean;
   mapServerDataToIds: boolean;
+  trackDirtyFields: boolean;
+  submitOnlyDirtyFields: boolean;
   crudAction: CrudAction,
   query: {
     [key: string]: any;

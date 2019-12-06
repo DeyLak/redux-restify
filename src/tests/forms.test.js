@@ -54,6 +54,51 @@ describe('forms', () => {
     })
   })
 
+  it('Marks field as dirty on changeField', () => {
+    const fieldName = 'testDirty'
+    const fieldValue = 'fieldValue'
+
+    let state = store.getState()
+    let isDirty = forms.selectors.testDirtyForm.getIsDirty(state)
+    let dirtyFields = forms.selectors.testDirtyForm.getDirtyFields(state)
+    expect(isDirty).toBe(false)
+    expect(dirtyFields).toEqual({})
+
+    store.dispatch(forms.actions.testDirtyForm.changeField(fieldName, fieldValue))
+
+    state = store.getState()
+    isDirty = forms.selectors.testDirtyForm.getIsDirty(state)
+    dirtyFields = forms.selectors.testDirtyForm.getDirtyFields(state)
+    expect(isDirty).toBe(true)
+    expect(dirtyFields).toEqual({
+      [fieldName]: true,
+    })
+  })
+
+  it('Marks field as dirty on changeSomeFields', () => {
+    const fieldsObject = {
+      test: 'test',
+      testDirty: 2,
+    }
+
+    let state = store.getState()
+    let isDirty = forms.selectors.testDirtyForm.getIsDirty(state)
+    let dirtyFields = forms.selectors.testDirtyForm.getDirtyFields(state)
+    expect(isDirty).toBe(false)
+    expect(dirtyFields).toEqual({})
+
+    store.dispatch(forms.actions.testDirtyForm.changeSomeFields(fieldsObject))
+
+    state = store.getState()
+    isDirty = forms.selectors.testDirtyForm.getIsDirty(state)
+    dirtyFields = forms.selectors.testDirtyForm.getDirtyFields(state)
+    expect(isDirty).toBe(true)
+    expect(dirtyFields).toEqual(Object.keys(fieldsObject).reduce((memo, key) => ({
+      ...memo,
+      [key]: true,
+    }), {}))
+  })
+
   it('can return forms by RegExp', () => {
     const formRegExp = /^test/
     const state = store.getState()
@@ -61,6 +106,7 @@ describe('forms', () => {
     const formsObjects = forms.selectors.getForm(formRegExp)(state)
     expect(Object.keys(formsObjects)).toEqual([
       'testForm',
+      'testDirtyForm',
       'testRequestFormId',
       'testRequestFormOtherId',
     ])
@@ -182,6 +228,49 @@ describe('forms', () => {
       test_array: [],
     })
   })
+
+  it('Can exclude not dirty fields from request', () => {
+    jasmine.Ajax.stubRequest(modelUrl).andReturn({
+      status: 200,
+      responseText: JSON.stringify({}),
+      responseHeaders: [
+        {
+          name: 'Content-type',
+          value: 'application/json',
+        },
+      ],
+    })
+    store.dispatch(forms.actions.testDirtyForm.changeField('test', true))
+    store.dispatch(forms.actions.testDirtyForm.resetDirtyState())
+    store.dispatch(forms.actions.testDirtyForm.changeField('testDirty', true))
+    store.dispatch(forms.actions.testDirtyForm.submit())
+    const request = jasmine.Ajax.requests.mostRecent()
+    expect(request.data()).toEqual({
+      test_dirty: true,
+    })
+  })
+
+  it('Marks field as dirty on changeField', () => {
+    const fieldName = 'testDirty'
+    const fieldValue = 'fieldValue'
+
+    let state = store.getState()
+    let isDirty = forms.selectors.testDirtyForm.getIsDirty(state)
+    let dirtyFields = forms.selectors.testDirtyForm.getDirtyFields(state)
+    expect(isDirty).toBe(false)
+    expect(dirtyFields).toEqual({})
+
+    store.dispatch(forms.actions.testDirtyForm.changeField(fieldName, fieldValue))
+
+    state = store.getState()
+    isDirty = forms.selectors.testDirtyForm.getIsDirty(state)
+    dirtyFields = forms.selectors.testDirtyForm.getDirtyFields(state)
+    expect(isDirty).toBe(true)
+    expect(dirtyFields).toEqual({
+      [fieldName]: true,
+    })
+  })
+
 
   it('Can send form without api and convert to snake_case', done => {
     jasmine.Ajax.stubRequest(modelUrl).andReturn({

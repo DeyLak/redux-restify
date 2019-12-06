@@ -96,6 +96,10 @@ Simple forms config is a javascript object like
   Overrides previous behaviour of not sending invalid form, so the form with errors can be send.
 * **mapServerDataToIds** (default: false)
   When mapping server data to form(see `applyServerData` action), it maps foreign keys restify fields to ids
+* **trackDirtyFields** (default: false)
+  Restify automatically sets dirty state for fields, when form changing actions are called
+* **submitOnlyDirtyFields** (default: false)
+  Restify excludes not-dirty fields from form submission
 
 ### Form defaults
 Defaults object is used to define some form structure, so we should not check it every time, or to fill some fields for user. For example, arrays will be empty arrays(or can contain some default elements), selects will be already pre-selected with default choice etc.
@@ -198,6 +202,8 @@ To create a runtime form you should call an action `createForm`(see below).
 * **getErrors** - get form errors object. It has the same strucure, as form, but contains arrays of error messages, instead of values.
 * **getIsValid** - get is form valid
 * **getEditingFields** - get object of saved fields states. It have the save structure, as form, but containes saved values of fields, that were marked editable(see below)
+* **getDirtyFields** - get dict of form fields(only of first nest level) with boolean values, representing, if the field is dirty or not
+* **getIsDirty** - returns boolean, if any field in the form is dirty
 
 ## Actions
 * **forms.actions.createForm(formType, formConfig, allowRecreate=false)** - register new form in redux store. `allowRecreate` flag is used to show, if we allow to rewrite already existing config.
@@ -216,6 +222,10 @@ To create a runtime form you should call an action `createForm`(see below).
 * **moveInArray(arrayPath, movingIndex, insertingIndex)** - Move an array element to a new position
 * **moveInArrayUp(arrayPath, movingIndex)** - Move element one index up
 * **moveInArrayDown(arrayPath, movingIndex)** - Move element one index down
+* **setDirtyState(fieldsDict)** - Sets dirty state of the form fields, accepts dict of fields and dirty values like `{ field: true }`
+* **resetDirtyState()** - Resets all dirty field states, form is considered clean
+* **setFieldDirtyState(fieldPath, dirtyState)** - Sets field dirty state to some value
+* **resetFieldDirtyState(fieldPath)** - Resets field dirty state to false
 * **setFieldError(fieldPath, error)** - Sets field error message. Affects `getIsValid` and `getErrors` selectors
 * **resetFieldError(fieldPath)** - Resets field error message. Affects `getIsValid` and `getErrors` selectors
 * **enableFieldEditMode(fieldPath)** - Saves field current state, so it can be easily rolled back. From this point the field will be marked as editing. It can be treated same, as others and will be send in it's last state, even if edit mode will not be switched off.
@@ -223,6 +233,5 @@ To create a runtime form you should call an action `createForm`(see below).
 * **cancelFieldEdit()** - Cancels field edit, so the field state is returned to saved state and editable mark is switched off.
 * **validate()** - Returns errors object from form validation
 * **submit()** - Submits a form, according to all config rules. Returnes a promise, resolving with server result, ot restify model, if the form is linked to restify.
-
 
 

@@ -137,3 +137,6 @@ Check out the [docs](./docs) for more info.
 
 ### 24.10.2019
  1. Added `retries` `retryTimeoutMs` options to restify config, so user can define default reties behaviour
+
+### 06.12.2019
+ 1. Added `trackDirtyFields` and `submitOnlyDirtyFields` options to form config (see docs)
