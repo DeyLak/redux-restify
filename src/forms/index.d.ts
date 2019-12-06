@@ -95,7 +95,9 @@ export namespace forms {
       config: Partial<RestifyFormConfig<T>>,
       allowRecreate?: boolean,
     ): ThunkActionResult<void>;
-    sendQuickForm<T>(config: Partial<RestifyFormConfig<T>>): ThunkActionResult<Promise<FormSubmitResult<T>>>;
+    sendQuickForm<T, LinkedModel = T>(
+      config: Partial<RestifyFormConfig<T>>,
+    ): ThunkActionResult<Promise<FormSubmitResult<LinkedModel>>>;
   } & {
     [key: string]: RestifyFormActions;
   };
@@ -104,7 +106,7 @@ export namespace forms {
   };
   export function getRestifyFormReducer(): any;
   export function createFormConfig<T>(config: Partial<RestifyFormConfig<T>>): RestifyFormConfig<T>;
-  export function getFormActions(formType: string): RestifyFormActions;
+  export function getFormActions<T>(formType: string): RestifyFormActions<T>;
   export function checkErrors(errors: any, form: any, validateAll: boolean): boolean;
   export const selectors: {
     getFormsMap(formType: FormTypeSelector, state: any, mapFunction: (key: string, state: any) => any): any;
