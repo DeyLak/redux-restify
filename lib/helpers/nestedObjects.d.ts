@@ -1,0 +1,11 @@
+export function getRecursiveObjectReplacement(obj: any, name: any, value: any): any;
+export function mergeAndReplaceArrays(...args: any[]): any;
+export function getNestedObjectField(obj: any, name: any): any;
+export function reduceObject(predicate: any, recursive?: boolean): (obj: any) => any;
+export function mutateObject(predicate: any, transformFunc: any, keyParentPath?: any[]): (obj: any) => any;
+export function removePrivateFields(obj: any): any;
+export function removeUndefinedKeys(obj: any): any;
+export function removeFunctionsKeys(obj: any): any;
+export function updateUuuids(obj: any): any;
+export function replaceNulls(obj: any): any;
+export function deepEqualWithUndefines(a: any, b: any): any;

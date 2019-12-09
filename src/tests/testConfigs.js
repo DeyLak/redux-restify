@@ -120,6 +120,16 @@ export const modelsDefinitions = {
       notInForeignKey: undefined,
     },
   },
+  testCacheModel: {
+    apiName: 'testApi',
+    endpoint: TEST_MODEL_ENDPOINT,
+    name: 'Test model',
+    defaults: {
+      id: undefined,
+      test: undefined,
+      notInForeignKey: undefined,
+    },
+  },
   testChild1Model: {
     apiName: 'testApi',
     parent: 'testModel',

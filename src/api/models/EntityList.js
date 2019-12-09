@@ -161,9 +161,8 @@ class EntityList {
           // Creating nested object from normalized data
           if (currentField instanceof RestifyForeignKeysArray) {
             normalizedIdField = normalizedIdField || []
-          } else {
-            // normalizedIdField = normalizedIdField || undefined
           }
+
           mappedFields = {
             [modelIdField]: normalizedIdField,
             [key]: () => {
@@ -514,11 +513,11 @@ class EntityList {
       [pageConfig]: Object.keys(pages[pageConfig]).reduce((currentArray, page) => {
         return currentArray.concat(
           pages[pageConfig][page]
-                .map(item => {
-                  if (typeof item !== 'object') return this.getById(item)
-                  return item
-                })
-                .filter(item => item && !item.$deleted),
+            .map(item => {
+              if (typeof item !== 'object') return this.getById(item)
+              return item
+            })
+            .filter(item => item && !item.$deleted),
         )
       }, []),
     }), {})
@@ -526,7 +525,7 @@ class EntityList {
 
   get oldArrays() {
     if (!this.$oldArrays) {
-      this.$oldArrays = this.getCalculatedArray(this.pages)
+      this.$oldArrays = this.getCalculatedArray(this.oldPages)
     }
     return this.$oldArrays
   }

@@ -200,6 +200,11 @@ describe('api', () => {
     $modelType: 'testModel',
   }))
 
+  const testServerArrayCachedRestifyModels = testServerArrayResponse.results.map(item => ({
+    ...item,
+    $modelType: 'testCacheModel',
+  }))
+
   const testServerArrayRestifyChild1Models = testServerArrayResponse.results.map(item => ({
     ...item,
     $modelType: 'testChild1Model',
@@ -442,6 +447,27 @@ describe('api', () => {
       })
         .then(array => {
           expect(array).toEqual(testServerArrayRestifyModels.slice(0, maxItems - 1))
+          done()
+        })
+    })
+
+    it('can cache old pages, while navigating between routes', (done) => {
+      mockRequest(testServerArrayResponse, {
+        url: `${modelUrl}?page=1&page_size=10`,
+      })
+      let state = store.getState()
+      api.selectors.entityManager.testCacheModel.getEntities(state).asyncGetArray()
+        .then(array => {
+          expect(array).toEqual(testServerArrayCachedRestifyModels)
+          store.dispatch({
+            type: ROUTER_LOCATION_CHANGE_ACTION,
+            payload: {
+              actions: 'PUSH',
+            },
+          })
+          state = store.getState()
+          const cachedArray = api.selectors.entityManager.testCacheModel.getEntities(state).getArray()
+          expect(cachedArray).toEqual(testServerArrayCachedRestifyModels)
           done()
         })
     })
