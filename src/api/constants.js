@@ -83,7 +83,11 @@ export const getCacheValidationHashForId = (id, asyncGetters) => {
 export const getUrlWithParents = (url, currentModel, parentEntities) => {
   const parents = Array.isArray(currentModel.parent) ? currentModel.parent : [currentModel.parent]
   return parents.reverse().filter(p => p).reduce((memo, item) => {
+    if (parentEntities[item] === undefined) {
+      return memo
+    }
     const currentParent = RESTIFY_CONFIG.registeredModels[item]
+    // For empty ids
     const currentId = parentEntities[item] ? `${parentEntities[item]}/` : ''
     return currentParent.endpoint + currentId + memo
   }, url)
