@@ -353,6 +353,7 @@ const globalActions = {
       getEntityUrl: currentModel.getEntityUrl,
       id,
       crudAction: CRUD_ACTIONS.delete,
+      convertToCamelCase: currentModel.convertToCamelCase,
       onSuccess: [
         () => globalActions.updateById(modelType)(id, { $deleted: true }),
         () => globalActions.showEntityAlert(modelType)(ACTION_DELETE),
