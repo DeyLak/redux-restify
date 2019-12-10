@@ -156,7 +156,7 @@ const getEntityManagerReducer = (modelTypes = []) => {
           break
         }
         case ACTIONS_TYPES[modelType].updateById: {
-          const specialId = getSpecialIdWithQuery(action.id, action.query)
+          const specialId = getSpecialIdWithQuery(action.id, action.query, action.parentEntities)
           const { model, normalized } = mapDataToRestifyModel(action.data, modelType)
           // Side effect of updating linked models in other model states
           Object.keys(normalized).forEach(modelName => {
@@ -168,7 +168,7 @@ const getEntityManagerReducer = (modelTypes = []) => {
           break
         }
         case ACTIONS_TYPES[modelType].updateOptimisticById: {
-          const specialId = getSpecialIdWithQuery(action.id, action.query)
+          const specialId = getSpecialIdWithQuery(action.id, action.query, action.parentEntities)
           const currentEntity = currentModelState.singleEntities[specialId]
           const addOptimisticCount = action.addOptimisticCount || 1
           newModelState = {
@@ -185,7 +185,7 @@ const getEntityManagerReducer = (modelTypes = []) => {
           break
         }
         case ACTIONS_TYPES[modelType].setLoadErrorForId: {
-          const specialId = getSpecialIdWithQuery(action.id, action.query)
+          const specialId = getSpecialIdWithQuery(action.id, action.query, action.parentEntities)
           newModelState = {
             ...currentModelState,
             loadErrorEntities: {

@@ -125,12 +125,13 @@ const globalActions = {
    * @param {Boolean} [allowClearPages] - should we reset pages, after updating entity(usually for some sorting configs)
    * @return {Object} Redux action to dispatch
    */
-  updateById: (modelType) => (id, data, query, allowClearPages = true) => {
+  updateById: (modelType) => (id, data, query, parentEntities, allowClearPages = true) => {
     return {
       type: ACTIONS_TYPES[modelType].updateById,
       id,
       data,
       query,
+      parentEntities,
       allowClearPages,
     }
   },
@@ -143,14 +144,14 @@ const globalActions = {
    * @param {Boolean} [allowClearPages] - should we reset pages, after updating entity(usually for some sorting configs)
    * @return {Object} Redux action to dispatch
    */
-  updateFromRawData: (modelType) => (id, data, query, allowClearPages = true, api) => {
+  updateFromRawData: (modelType) => (id, data, query, parentEntities, allowClearPages = true, api) => {
     const currentModel = RESTIFY_CONFIG.registeredModels[modelType]
     const currentApi = RESTIFY_CONFIG.registeredApies[currentModel.apiName]
     const transformEntityResponse = currentModel && currentModel.transformEntityResponse ||
                                     currentApi && currentApi.transformEntityResponse ||
                                     defaulTransformEntityResponse
     const transformedData = transformEntityResponse(data, api, modelType).data
-    return globalActions.updateById(modelType)(id, transformedData, query, allowClearPages)
+    return globalActions.updateById(modelType)(id, transformedData, query, parentEntities, allowClearPages)
   },
 
   updateOptimisticById: (modelType) => (id, data, query) => ({
@@ -318,7 +319,7 @@ const globalActions = {
       apiName: config.apiName || currentModel.apiName,
       url: urlToLoad,
       onSuccess: (data, status, api) => () =>
-        dispatch(globalActions.updateFromRawData(modelType)(id, data, query, undefined, api)),
+        dispatch(globalActions.updateFromRawData(modelType)(id, data, query, parentEntities, undefined, api)),
       onError: globalActions.setLoadErrorForId(modelType)(id, true, query),
       query,
       urlHash,
