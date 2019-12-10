@@ -320,7 +320,7 @@ const globalActions = {
       url: urlToLoad,
       onSuccess: (data, status, api) => () =>
         dispatch(globalActions.updateFromRawData(modelType)(id, data, query, parentEntities, undefined, api)),
-      onError: globalActions.setLoadErrorForId(modelType)(id, true, query),
+      onError: globalActions.setLoadErrorForId(modelType)(id, true, query, parentEntities),
       query,
       urlHash,
       id,

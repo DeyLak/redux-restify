@@ -4,6 +4,7 @@ import api from '../api'
 import { removePrivateFields } from '~/helpers/nestedObjects'
 
 import EntityList from '../api/models/EntityList'
+import { getSpecialIdWithQuery } from '../api/constants'
 
 import { ROUTER_LOCATION_CHANGE_ACTION } from '../constants'
 
@@ -412,6 +413,60 @@ describe('api', () => {
         .then(array => {
           expect(array).toEqual(testServerArrayRestifyChild2Models)
           done()
+        })
+    })
+
+    it('can get a child model array asynchronously on first parent level without second one', (done) => {
+      mockRequest(testServerArrayResponse, {
+        url: `${modelUrl}1/${TEST_MODEL_ENDPOINT}?page=1&page_size=10`,
+      })
+      const state = store.getState()
+      api.selectors.entityManager.testChild2Model.getEntities(state).asyncGetArray({
+        parentEntities: {
+          testModel: 1,
+        },
+      })
+        .then(array => {
+          expect(array).toEqual(testServerArrayRestifyChild2Models)
+          done()
+        })
+    })
+
+    it('can store same child model ids for different parentEntities', (done) => {
+      mockRequest(testServerArrayResponse.results[0], {
+        url: `${modelUrl}1/${TEST_MODEL_ENDPOINT}1/`,
+      })
+      let state = store.getState()
+      const apiConfig = {
+        parentEntities: {
+          testModel: 1,
+        },
+      }
+      const apiConfig2 = {
+        parentEntities: {
+          testChild1Model: 1,
+        },
+      }
+      api.selectors.entityManager.testChild2Model.getEntities(state).asyncGetById(1, apiConfig)
+        .then(model => {
+          expect(model).toEqual(testServerArrayRestifyChild2Models[0])
+          const currentEntitiesState = store.getState().api.entityManager.testChild2Model.singleEntities
+          const expectedId = getSpecialIdWithQuery(1, undefined, apiConfig.parentEntities)
+          expect(Object.keys(currentEntitiesState)).toEqual([expectedId])
+          state = store.getState()
+          const syncModel = api.selectors.entityManager.testChild2Model.getEntities(state).getById(1, apiConfig)
+          expect(syncModel).toEqual(testServerArrayRestifyChild2Models[0])
+
+          mockRequest(testServerArrayResponse.results[0], {
+            url: `${modelUrl}1/${TEST_MODEL_ENDPOINT}1/`,
+          })
+          const notInStoreModel = api.selectors.entityManager.testChild2Model.getEntities(state).getById(1, apiConfig2)
+          expect(notInStoreModel.$loading).toBe(true)
+          api.selectors.entityManager.testChild2Model.getEntities(state).asyncGetById(1, apiConfig2)
+            .then(newModel => {
+              expect(newModel).toEqual(testServerArrayRestifyChild2Models[0])
+              done()
+            })
         })
     })
 

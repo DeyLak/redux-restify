@@ -67,13 +67,19 @@ export const getQueryHash = (query) => {
 }
 
 export const getSpecialIdWithQuery = (id, query, parentEntities) => {
-  if (!query) return id
+  if (!query && !parentEntities) {
+    return id
+  }
+  let queryAddition = ''
+  if (query) {
+    queryAddition = queryFormat(query)
+  }
   let parentEntitiesAddition = ''
   if (parentEntities) {
     parentEntitiesAddition = `/${hash(parentEntities)}`
   }
 
-  return `${id}/?${queryFormat(query)}${parentEntitiesAddition}`
+  return `${id}/?${queryAddition}${parentEntitiesAddition}`
 }
 
 export const getCacheValidationHashForId = (id, asyncGetters) => {
@@ -83,7 +89,7 @@ export const getCacheValidationHashForId = (id, asyncGetters) => {
 export const getUrlWithParents = (url, currentModel, parentEntities) => {
   const parents = Array.isArray(currentModel.parent) ? currentModel.parent : [currentModel.parent]
   return parents.reverse().filter(p => p).reduce((memo, item) => {
-    if (parentEntities[item] === undefined) {
+    if (!parentEntities || parentEntities[item] === undefined) {
       return memo
     }
     const currentParent = RESTIFY_CONFIG.registeredModels[item]
