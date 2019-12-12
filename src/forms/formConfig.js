@@ -70,6 +70,7 @@ export const DEFAULT_FORM_OBJECT = {
   crudAction: undefined,
   // Query params for request
   query: undefined,
+  apiConfig: {}, // Overriding fields from api config
 }
 
 export const getFormObjectConfig = (formType, name, config) => {

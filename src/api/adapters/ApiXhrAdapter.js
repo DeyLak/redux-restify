@@ -226,8 +226,9 @@ class ApiXhrAdapter {
         }
 
         let token
-        if (typeof this.getToken === 'function') {
-          token = this.getToken()
+        const getToken = config.getToken || this.getToken
+        if (typeof getToken === 'function') {
+          token = getToken()
         }
         if (token instanceof Promise) {
           token = await token
@@ -266,7 +267,8 @@ class ApiXhrAdapter {
         // Hack for some browsers sending wrong accept headers, causing DRF to return browsable api
         api.setRequestHeader(ACCEPT_HEADER, '*/*')
         if (token) {
-          api.setRequestHeader(AUTH_HEADER, `${this.authMethod || ''}${this.authMethod ? ' ' : ''}${token}`)
+          const authMethod = config.authMethod === undefined ? this.authMethod : config.authMethod
+          api.setRequestHeader(AUTH_HEADER, `${authMethod || ''}${authMethod ? ' ' : ''}${token}`)
         }
         if (CSRFToken) {
           api.setRequestHeader(CSRF_HEADER, CSRFToken)

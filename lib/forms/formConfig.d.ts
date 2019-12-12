@@ -38,6 +38,7 @@ export namespace DEFAULT_FORM_OBJECT {
     export const submitOnlyDirtyFields: boolean;
     export const crudAction: undefined;
     export const query: undefined;
+    export const apiConfig: {};
 }
 export function getFormObjectConfig(formType: any, name: any, config: any): any;
 export const ARRAY_DEFAULTS_INDEX: 0;

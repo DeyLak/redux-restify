@@ -140,3 +140,6 @@ Check out the [docs](./docs) for more info.
 
 ### 06.12.2019
  1. Added `trackDirtyFields` and `submitOnlyDirtyFields` options to form config (see docs)
+
+### 12.12.2019
+ 1. Added `apiConfig` field to form config, allowing to override api settings, like `getToken` etc.

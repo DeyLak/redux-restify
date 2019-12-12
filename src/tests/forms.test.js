@@ -346,6 +346,32 @@ describe('forms', () => {
     })
   })
 
+  it('Can send form with token override', () => {
+    const testToken = 'SUPER_SECRET_TOKEN'
+    jasmine.Ajax.stubRequest(modelUrl).andReturn({
+      status: 200,
+      responseText: JSON.stringify({}),
+      responseHeaders: [
+        {
+          name: 'Content-type',
+          value: 'application/json',
+        },
+      ],
+    })
+    store.dispatch(forms.actions.sendQuickForm({
+      endpoint: TEST_MODEL_ENDPOINT,
+      apiName: 'testApi',
+      apiConfig: {
+        getToken: () => testToken,
+        authMethod: '',
+      },
+      values: {
+        test: true,
+      },
+    }))
+    const request = jasmine.Ajax.requests.mostRecent()
+    expect(request.requestHeaders.Authorization).toEqual(testToken)
+  })
 
   it('Can send array, by using transform function', () => {
     jasmine.Ajax.stubRequest(modelUrl).andReturn({

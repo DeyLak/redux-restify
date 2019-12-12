@@ -2,6 +2,7 @@ import {
   RestifyId,
   CrudAction,
   HttpMethod,
+  ApiXhrAdapterConfig,
 } from '../api'
 
 import {
@@ -58,4 +59,5 @@ export interface RestifyFormConfig<T> {
   query: {
     [key: string]: any;
   },
+  apiConfig: Partial<ApiXhrAdapterConfig>;
 }

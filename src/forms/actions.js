@@ -706,6 +706,7 @@ const globalActions = {
         removeNulls: currentFormConfig.resultRemoveNulls,
         orderArrays: currentFormConfig.resultOrderArrays,
         withoutPrefix: currentFormConfig.withoutPrefix,
+        ...currentFormConfig.apiConfig,
       }))
     })
   },
