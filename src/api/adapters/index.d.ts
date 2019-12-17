@@ -1,12 +1,16 @@
+import { Dispatch } from 'redux'
+
 import { RestifyId } from '../modelConfig'
 import { HttpMethod, CrudAction } from '../constants'
 
 
-export type GetToken = () => string | null | undefined
+type Token = string | null | undefined
+export type GetToken = (dispatch: Dispatch<any>) => Token | Promise<Token>
 
-export type GetHeaders = () => {
+interface Headers {
   [key: string]: string | null | undefined;
-};
+}
+export type GetHeaders = () => Headers | Promise<Headers>;
 
 export type AllowedNoTokenEndpoints = Array<string | RegExp>
 

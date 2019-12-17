@@ -219,7 +219,7 @@ class ApiXhrAdapter {
 
         let CSRFToken
         if (typeof this.getCSRFToken === 'function') {
-          CSRFToken = this.getCSRFToken()
+          CSRFToken = this.getCSRFToken(this.dispatch)
         }
         if (CSRFToken instanceof Promise) {
           CSRFToken = await CSRFToken
@@ -228,7 +228,7 @@ class ApiXhrAdapter {
         let token
         const getToken = config.getToken || this.getToken
         if (typeof getToken === 'function') {
-          token = getToken()
+          token = getToken(this.dispatch)
         }
         if (token instanceof Promise) {
           token = await token
