@@ -143,3 +143,16 @@ Check out the [docs](./docs) for more info.
 
 ### 12.12.2019
  1. Added `apiConfig` field to form config, allowing to override api settings, like `getToken` etc.
+
+### 13.01.2020
+ 1. Added `updateRestify` for dynamic add models and forms
+ ```
+  updateRestify({
+    apiDefinitions,
+    modelsDefinitions,
+    formsDefinitions,
+    onUpdateRestify: () => {
+      RESTIFY_CONFIG.store.replaceReducer(getReducer())
+    },
+  })
+ ```
