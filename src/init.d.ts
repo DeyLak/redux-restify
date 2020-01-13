@@ -19,3 +19,15 @@ export function initRestify(config?: {
   }
   options?: Partial<RestifyOptions>,
 })
+export function updateRestify(config?: {
+    apiDefinitions?: {
+        [apiName: string]: ApiXhrAdapterConfig;
+    };
+    modelsDefinitions?: {
+        [modelName: string]: RestifyModelConfig;
+    }
+    formsDefinitions?: {
+        [formName: string]: RestifyFormConfig<any>;
+    }
+    onUpdateRestify?: (() => void) | undefined,
+})

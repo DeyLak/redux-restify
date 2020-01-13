@@ -1,7 +1,6 @@
 import { makeActionsBundle } from '~/helpers/actions'
 
 import { MODULE_NAME } from '../constants'
-import { RESTIFY_CONFIG } from '../config'
 import { onInitRestify } from '../init'
 
 
@@ -31,8 +30,8 @@ export const ACTIONS_TYPES = {
   entityManager: makeActionsBundle(prefixName, 'entityManager', actionsTypesEntityManager),
 }
 
-onInitRestify(() => {
-  RESTIFY_CONFIG.modelsTypes.forEach(modelType => {
+onInitRestify(({ modelKeys = {} } = {}) => {
+  modelKeys.forEach(modelType => {
     ACTIONS_TYPES[modelType] = makeActionsBundle(prefixName, modelType, actionsTypesEntityManager)
   })
 })

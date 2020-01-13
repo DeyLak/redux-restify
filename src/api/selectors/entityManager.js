@@ -119,8 +119,8 @@ const getModelSelectors = getModelSelectorsFromDict(globalSelectors)
 
 // This way we avoid recreating selectors(makes them useless),
 // opposite to using getModelSelectors function directly every time
-onInitRestify(() => {
-  RESTIFY_CONFIG.modelsTypes.forEach(modelType => {
+onInitRestify(({ modelKeys = {} } = {}) => {
+  modelKeys.forEach(modelType => {
     entityManager[modelType] = getModelSelectors(modelType)
   })
 })

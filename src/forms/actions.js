@@ -744,8 +744,8 @@ const forms = {
   },
 }
 
-onInitRestify(() => {
-  RESTIFY_CONFIG.formsTypes.forEach(formType => {
+onInitRestify(({ formKeys = {} } = {}) => {
+  formKeys.forEach(formType => {
     forms[formType] = getFormActions(formType)
   })
 })
