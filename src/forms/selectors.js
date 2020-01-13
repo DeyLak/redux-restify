@@ -181,8 +181,8 @@ if (typeof window !== 'undefined') {
 // eslint-disable-next-line no-underscore-dangle
 const forms = typeof window === 'undefined' ? restifyForms : window.__RESTIFY_FORMS__
 
-onInitRestify(() => {
-  RESTIFY_CONFIG.formsTypes.forEach(formType => {
+onInitRestify(({ formKeys = {} } = {}) => {
+  formKeys.forEach(formType => {
     forms[formType] = getFormSelectors(formType)
   })
 })

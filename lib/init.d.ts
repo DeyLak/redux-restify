@@ -12,3 +12,9 @@ export function initRestify({ apiDefinitions, modelsDefinitions, formsDefinition
     formsDefinitions?: {} | undefined;
     options?: {} | undefined;
 }): void;
+export function updateRestify({ apiDefinitions, modelsDefinitions, formsDefinitions, onUpdateRestify, }?: {
+    apiDefinitions?: {} | undefined;
+    modelsDefinitions?: {} | undefined;
+    formsDefinitions?: {} | undefined;
+    onUpdateRestify?: (() => void) | undefined;
+}): void;

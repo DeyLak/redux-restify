@@ -88,8 +88,36 @@ export const initRestify = ({
   RESTIFY_CONFIG.registeredModels = {}
   RESTIFY_CONFIG.registeredForms = {}
   RESTIFY_CONFIG.options = defaults(options, RESTIFY_DEFAULT_OPTIONS)
-  Object.keys(apiDefinitions).forEach(key => registerApi(key, apiDefinitions[key]))
-  Object.keys(modelsDefinitions).forEach(key => registerModel(key, modelsDefinitions[key]))
-  Object.keys(formsDefinitions).forEach(key => registerForm(key, formsDefinitions[key]))
-  invokeCallbacks(initRestifyCallbacks)
+  const apiKeys = Object.keys(apiDefinitions)
+  apiKeys.forEach(key => registerApi(key, apiDefinitions[key]))
+  const modelKeys = Object.keys(modelsDefinitions)
+  modelKeys.forEach(key => registerModel(key, modelsDefinitions[key]))
+  const formKeys = Object.keys(formsDefinitions)
+  formKeys.forEach(key => registerForm(key, formsDefinitions[key]))
+  invokeCallbacks(initRestifyCallbacks, { apiKeys, modelKeys, formKeys })
+}
+
+export const updateRestify = ({
+  apiDefinitions = {},
+  modelsDefinitions = {},
+  formsDefinitions = {},
+  onUpdateRestify = () => {},
+} = {}) => {
+  const apiKeys = Object.keys(apiDefinitions)
+  apiKeys.forEach(key => registerApi(key, apiDefinitions[key]))
+  const modelKeys = Object.keys(modelsDefinitions)
+  modelKeys.forEach(key => registerModel(key, modelsDefinitions[key]))
+  const formKeys = Object.keys(formsDefinitions)
+  formKeys.forEach(key => registerForm(key, formsDefinitions[key]))
+  invokeCallbacks(
+    [
+      ...initRestifyCallbacks,
+      onUpdateRestify,
+    ],
+    {
+      apiKeys,
+      modelKeys,
+      formKeys,
+    },
+  )
 }

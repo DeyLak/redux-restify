@@ -377,8 +377,8 @@ const getModelsActions = (modelType) => {
 const entityManager = {}
 
 // Here we can use getModelsActions directly, but using events for consistents and backward compatibility
-onInitRestify(() => {
-  RESTIFY_CONFIG.modelsTypes.forEach(modelType => {
+onInitRestify(({ modelKeys = {} } = {}) => {
+  modelKeys.forEach(modelType => {
     entityManager[modelType] = getModelsActions(modelType)
   })
 })
