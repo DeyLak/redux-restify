@@ -80,8 +80,8 @@ const getEntityManagerReducer = (modelTypes = []) => {
     Object.freeze(initState)
   }
 
-  return (state = initState, action) => {
-    const newState = { ...state }
+  return (state, action) => {
+    const newState = { ...initState, ...state }
     const newModelStates = modelTypes.reduce((memo, type) => {
       memo[type] = { ...newState[type] }
       return memo
