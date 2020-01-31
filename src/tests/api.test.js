@@ -127,6 +127,7 @@ describe('api', () => {
         undefined,
         {},
         false,
+        {},
       ))
       let state = store.getState()
       store.dispatch({
@@ -151,6 +152,7 @@ describe('api', () => {
         undefined,
         {},
         false,
+        {},
       ))
       let state = store.getState()
 
@@ -158,6 +160,8 @@ describe('api', () => {
       state = store.getState()
       expect(state.api.entityManager.testModelOtherId.pages).toEqual({})
       expect(state.api.entityManager.testModelOtherId.oldPages).not.toEqual({})
+      const entities = api.selectors.entityManager.testModelOtherId.getEntities(state)
+      expect(entities.getArray().length).toEqual(testData.length)
 
       store.dispatch(api.actions.entityManager.testModelOtherId.clearPages())
       state = store.getState()

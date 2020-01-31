@@ -157,5 +157,5 @@ Check out the [docs](./docs) for more info.
   })
  ```
 
-### 31.01.2020
+### 31.01.2020 (0.5.0)
 1. Added boolean `clearOldPages` parameter(default - true) to clearPages actions. If passed false, oldPages are not cleared by this actions, so data can still be displayed, while loading new one.
