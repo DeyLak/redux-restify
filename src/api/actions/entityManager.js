@@ -109,8 +109,9 @@ const globalActions = {
     }
   },
 
-  clearPages: (modelType) => () => ({
+  clearPages: (modelType) => (clearOldPages = true) => ({
     type: ACTIONS_TYPES[modelType].clearPages,
+    clearOldPages,
   }),
 
   clearData: (modelType) => () => ({

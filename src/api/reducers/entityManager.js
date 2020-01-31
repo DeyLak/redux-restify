@@ -102,7 +102,7 @@ const getEntityManagerReducer = (modelTypes = []) => {
           newModelState = {
             ...currentModelState,
             pages: {},
-            oldPages: {},
+            oldPages: action.clearOldPages ? {} : currentModelState.oldPages,
           }
           break
         }

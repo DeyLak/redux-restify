@@ -20,7 +20,7 @@ const actionsTypesEntityManager = [
   'UPDATE_OPTIMISTIC_BY_ID',
   'SET_LOAD_ERROR_FOR_ID',
   'SET_LOAD_ERROR_FOR_PAGE',
-  'SET_LOAD_FINISH_',
+  'SET_LOAD_FINISH',
 ]
 
 const prefixName = `${MODULE_NAME}/${NAME}`
