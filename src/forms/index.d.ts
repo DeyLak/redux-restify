@@ -11,9 +11,7 @@ export { RestifyFormConfig } from './formConfig'
 
 export * from './validation'
 
-export type FormPath<T = any> = T extends object
-  ? keyof T | (keyof T | number)[]
-  : string | number | (string | number)[]
+export type FormPath<T = any> = string | number | (string | number)[]
 
 export interface FormSubmitResult<T> {
   data: T;
