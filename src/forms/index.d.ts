@@ -11,7 +11,9 @@ export { RestifyFormConfig } from './formConfig'
 
 export * from './validation'
 
-export type FormPath = string | number | (string | number)[]
+export type FormPath<T = any> = T extends object
+  ? keyof T | (keyof T | number)[]
+  : string | number | (string | number)[]
 
 export interface FormSubmitResult<T> {
   data: T;
@@ -22,36 +24,36 @@ export interface RestifyFormActions<T = any, LinkedModel = T> extends ActionCrea
   deleteForm(): ThunkActionResult<void>;
   resetForm(): ThunkActionResult<void>;
   renameForm(formName: string): ThunkActionResult<void>;
-  changeField(name: FormPath, newValue: any): ThunkActionResult<void>;
+  changeField(name: FormPath<T>, newValue: any): ThunkActionResult<void>;
   changeSomeFields(fieldsObject: Partial<T>, forceUndefines?: boolean): ThunkActionResult<void>;
   applyServerData(data: any): ThunkActionResult<void>;
-  resetField(name: FormPath): ThunkActionResult<void>;
-  insertToArray(arrayName: FormPath, value?: any, insertingIndex?: number): ThunkActionResult<void>;
-  insertToArrayAndEdit(arrayName: FormPath, value?: any, index?: number): ThunkActionResult<void>;
-  manageSavedFieldArrayDeletion(arrayName: FormPath, index: number): ThunkActionResult<void>;
-  manageSavedFieldArrayInsertion(arrayName: FormPath, index: number, insertedField: any): ThunkActionResult<void>;
-  removeFromArray(arrayName: FormPath, index?: number, count?: number): ThunkActionResult<void>;
-  replaceInArray(arrayName: FormPath, value: any, index: number): ThunkActionResult<void>;
-  moveInArray(arrayName: FormPath, movingIndex: number, insertingIndex: number): ThunkActionResult<void>;
-  moveInArrayUp(arrayName: FormPath, movingIndex: number): ThunkActionResult<void>;
-  moveInArrayDown(arrayName: FormPath, movingIndex: number): ThunkActionResult<void>;
-  changeInArray(arrayName: FormPath, name: string, value: any, index: number): ThunkActionResult<void>;
+  resetField(name: FormPath<T>): ThunkActionResult<void>;
+  insertToArray(arrayName: FormPath<T>, value?: any, insertingIndex?: number): ThunkActionResult<void>;
+  insertToArrayAndEdit(arrayName: FormPath<T>, value?: any, index?: number): ThunkActionResult<void>;
+  manageSavedFieldArrayDeletion(arrayName: FormPath<T>, index: number): ThunkActionResult<void>;
+  manageSavedFieldArrayInsertion(arrayName: FormPath<T>, index: number, insertedField: any): ThunkActionResult<void>;
+  removeFromArray(arrayName: FormPath<T>, index?: number, count?: number): ThunkActionResult<void>;
+  replaceInArray(arrayName: FormPath<T>, value: any, index: number): ThunkActionResult<void>;
+  moveInArray(arrayName: FormPath<T>, movingIndex: number, insertingIndex: number): ThunkActionResult<void>;
+  moveInArrayUp(arrayName: FormPath<T>, movingIndex: number): ThunkActionResult<void>;
+  moveInArrayDown(arrayName: FormPath<T>, movingIndex: number): ThunkActionResult<void>;
+  changeInArray(arrayName: FormPath<T>, name: string, value: any, index: number): ThunkActionResult<void>;
   setDirtyState(value: Partial<Record<keyof T, boolean>>): ThunkActionResult<void>;
   resetDirtyState(): ThunkActionResult<void>;
-  setFieldDirtyState(name: FormPath, value: boolean): ThunkActionResult<void>;
-  resetFieldDirtyState(name: FormPath): ThunkActionResult<void>;
+  setFieldDirtyState(name: FormPath<T>, value: boolean): ThunkActionResult<void>;
+  resetFieldDirtyState(name: FormPath<T>): ThunkActionResult<void>;
   setErrors(value: any): ThunkActionResult<void>;
   resetErrors(): ThunkActionResult<void>;
-  setFieldError(name: FormPath, value: any): ThunkActionResult<void>;
-  resetFieldError(name: FormPath): ThunkActionResult<void>;
-  resetArrayErrors(arrayName: FormPath, index: number): ThunkActionResult<void>;
-  setArrayFieldErrors(arrayName: FormPath, name: string, value: any, index: number): ThunkActionResult<void>;
-  resetArrayFieldErrors(arrayName: FormPath, name: string, index: number): ThunkActionResult<void>;
-  rememberFieldState(name: FormPath, value: any): ThunkActionResult<void>;
-  enableFieldEditMode(name: FormPath): ThunkActionResult<void>;
-  saveEditingField(name: FormPath): ThunkActionResult<void>;
+  setFieldError(name: FormPath<T>, value: any): ThunkActionResult<void>;
+  resetFieldError(name: FormPath<T>): ThunkActionResult<void>;
+  resetArrayErrors(arrayName: FormPath<T>, index: number): ThunkActionResult<void>;
+  setArrayFieldErrors(arrayName: FormPath<T>, name: string, value: any, index: number): ThunkActionResult<void>;
+  resetArrayFieldErrors(arrayName: FormPath<T>, name: string, index: number): ThunkActionResult<void>;
+  rememberFieldState(name: FormPath<T>, value: any): ThunkActionResult<void>;
+  enableFieldEditMode(name: FormPath<T>): ThunkActionResult<void>;
+  saveEditingField(name: FormPath<T>): ThunkActionResult<void>;
   validate(): ThunkActionResult<any>;
-  cancelFieldEdit(name: FormPath): ThunkActionResult<void>;
+  cancelFieldEdit(name: FormPath<T>): ThunkActionResult<void>;
   submit(): ThunkActionResult<Promise<FormSubmitResult<RestifyModel<LinkedModel>>>>;
 }
 
