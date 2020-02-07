@@ -23,7 +23,7 @@ export interface GetArrayConfig {
     [key: string]: RestifyId;
   };
   specialConfig?: boolean;
-  modelConfig?: RestifyModelConfig;
+  modelConfig?: Partial<RestifyModelConfig>;
 }
 
 export interface RestifyModelDefaults {
