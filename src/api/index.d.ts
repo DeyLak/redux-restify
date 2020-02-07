@@ -57,8 +57,8 @@ export interface ApiActions extends ActionCreatorsMapObject {
   updateOptimisticById<T>(id: RestifyId, data: Partial<T>, query?: RestifyQuery): any;
   discardOptimisticUpdateById(id: RestifyId): any;
   setLoadErrorForId(id: RestifyId, error: any, query?: RestifyQuery): any;
-  loadData<T>(config: LoadDataConfig): any;
-  loadNextPage<T>(config: LoadDataConfig): any;
+  loadData<T>(config?: LoadDataConfig): any;
+  loadNextPage<T>(config?: LoadDataConfig): any;
   loadById(id: RestifyId, config?: LoadByIdConfig): any;
   deleteById(id: RestifyId, config?: DeleteByIdConfig): any;
 }
