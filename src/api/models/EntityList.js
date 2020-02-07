@@ -561,7 +561,7 @@ class EntityList {
     modelConfig = {},
   } = {}) {
     const pageSizeNew = modelConfig.pageSize || pageSize
-    if (!this.modelConfig.pagination) return undefined
+    if (!this.modelConfig.pagination && !modelConfig.pagination) return undefined
     const currentConfig = getPagesConfigHash(filter, sort, parentEntities, specialConfig, pageSizeNew, modelConfig)
     const currentPages = Object.keys(this.pages[currentConfig] || {})
     const currentCount = this.count[currentConfig] || 0
