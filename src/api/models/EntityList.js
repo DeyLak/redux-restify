@@ -118,6 +118,14 @@ class EntityList {
     }
   }
 
+  checkShouldLoadById(preventLoad, specialId) {
+    let shouldLoad = !preventLoad && !this.idLoaded[specialId] && this.modelConfig.allowIdRequests
+    if (!this.modelConfig.pagination) {
+      shouldLoad = shouldLoad && !Object.keys(this.arrayLoaded).some(key => !!this.arrayLoaded[key])
+    }
+    return shouldLoad
+  }
+
   getRestifyModel(normalized, {
     isNestedModel = false,
     asyncGetters,
@@ -287,11 +295,9 @@ class EntityList {
         const autoGetter = () => {
           let returnValue = defaultValue
           if (
-            !preventLoad &&
             isDefAndNotNull(result.id) &&
             RESTIFY_CONFIG.options.autoPropertiesIdRequests &&
-            !this.idLoaded[result.id] &&
-            this.modelConfig.allowIdRequests
+            this.checkShouldLoadById(preventLoad, result.id)
           ) {
             this.idLoaded[result.id] = this.asyncDispatch(entityManager[this.modelType]
               .loadById(result.id, {
@@ -394,10 +400,7 @@ class EntityList {
       return result
     }
 
-    let shouldLoad = !preventLoad && !this.idLoaded[specialId] && this.modelConfig.allowIdRequests
-    if (!this.modelConfig.pagination) {
-      shouldLoad = shouldLoad && !Object.keys(this.arrayLoaded).some(key => !!this.arrayLoaded[key])
-    }
+    const shouldLoad = this.checkShouldLoadById(preventLoad, specialId)
     if (shouldLoad) {
       this.idLoaded[specialId] = this
         .asyncDispatch(entityManager[this.modelType]

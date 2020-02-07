@@ -45,6 +45,7 @@ declare class EntityList {
     $oldArrays: {} | undefined;
     precalculatedSingles: {};
     setDispatch(dispatch: any): void;
+    checkShouldLoadById(preventLoad: any, specialId: any): any;
     getRestifyModel(normalized: any, { isNestedModel, asyncGetters, parentEntities, preventLoad, }?: {
         isNestedModel?: boolean | undefined;
         asyncGetters: any;
