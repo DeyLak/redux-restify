@@ -16,7 +16,7 @@ export type AllowedNoTokenEndpoints = Array<string | RegExp>
 
 export type HttpCodesCallbacks = {
   [key: number]: any;
-} | ((code: number) => any)
+} | ((code: number, makeRetry: () => void) => any)
 
 export type TransformArrayResponse = (response: any, pagination: boolean, api: any, modelName: string) => {
   data: any[];

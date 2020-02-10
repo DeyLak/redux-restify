@@ -169,10 +169,10 @@ class ApiXhrAdapter {
     })
   }
 
-  httpCallBackInvoke(api) {
+  httpCallBackInvoke(api, makeRetry) {
     let currentCodes = this.httpCodesCallbacks
     if (typeof this.httpCodesCallbacks === 'function') {
-      currentCodes = this.httpCodesCallbacks(api.status)
+      currentCodes = this.httpCodesCallbacks(api.status, makeRetry)
     }
 
     if (typeof currentCodes === 'function') {
@@ -215,6 +215,10 @@ class ApiXhrAdapter {
     let retriesLeft = config.retries || DEFAULT_RETIRES_COUNT
     return new Promise((res, rej) => {
       const createXhrInstanse = async (isRetry) => {
+        const makeRetry = () => {
+          createXhrInstanse(true)
+        }
+
         const api = new XMLHttpRequest()
 
         let CSRFToken
@@ -338,7 +342,7 @@ class ApiXhrAdapter {
           if (!config.skipLoadsManager) {
             this.asyncDispatch(removeLoadAct(baseUrl, urlQuery))
           }
-          this.httpCallBackInvoke(api)
+          this.httpCallBackInvoke(api, makeRetry)
           res({
             status: api.status,
             data: checkStatus(api, config),
@@ -348,9 +352,10 @@ class ApiXhrAdapter {
         api.onerror = (e) => {
           if (api.status === 0 && retriesLeft > 0) {
             retriesLeft -= 1
-            setTimeout(() => {
-              createXhrInstanse(true)
-            }, config.retryTimeoutMs === undefined ? DEFAULT_RETIRES_TIMEOUT : config.retryTimeoutMs)
+            setTimeout(
+              makeRetry,
+              config.retryTimeoutMs === undefined ? DEFAULT_RETIRES_TIMEOUT : config.retryTimeoutMs,
+            )
           } else {
             this.dispatch(removeLoadAct(baseUrl, urlQuery))
             this.dispatch(actions.setLoadingError(e.error))
