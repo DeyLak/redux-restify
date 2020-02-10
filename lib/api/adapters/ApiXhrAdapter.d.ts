@@ -71,7 +71,7 @@ declare class ApiXhrAdapter {
     useSnakeCase: any;
     alertAction: any;
     asyncDispatch(...args: any[]): Promise<any>;
-    httpCallBackInvoke(api: any, makeRetry: any): void;
+    httpCallBackInvoke(api: any): any;
     /**
      * Make a call to some url, wrapper for xhr
      * @param  {string} baseUrl   base url, like api host

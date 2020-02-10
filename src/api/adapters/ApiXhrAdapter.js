@@ -169,17 +169,19 @@ class ApiXhrAdapter {
     })
   }
 
-  httpCallBackInvoke(api, makeRetry) {
+  httpCallBackInvoke(api) {
     let currentCodes = this.httpCodesCallbacks
     if (typeof this.httpCodesCallbacks === 'function') {
-      currentCodes = this.httpCodesCallbacks(api.status, makeRetry)
+      currentCodes = this.httpCodesCallbacks(api.status)
     }
 
     if (typeof currentCodes === 'function') {
-      this.dispatch(currentCodes())
-    } else if (typeof currentCodes === 'object' && currentCodes[api.status]) {
-      this.dispatch(currentCodes[api.status]())
+      return this.dispatch(currentCodes())
     }
+    if (typeof currentCodes === 'object' && currentCodes[api.status]) {
+      return this.dispatch(currentCodes[api.status]())
+    }
+    return Promise.resolve(false)
   }
 
   /**
@@ -338,40 +340,50 @@ class ApiXhrAdapter {
           }
         }
         api.onloadstart = fireLoadActIfNotfiredMutex
-        api.onload = () => {
+        api.onload = async () => {
+          const shouldRetry = await this.httpCallBackInvoke(api)
+          if (shouldRetry) {
+            makeRetry()
+            return
+          }
+
           if (!config.skipLoadsManager) {
             this.asyncDispatch(removeLoadAct(baseUrl, urlQuery))
           }
-          this.httpCallBackInvoke(api, makeRetry)
           res({
             status: api.status,
             data: checkStatus(api, config),
             api,
           })
         }
-        api.onerror = (e) => {
+        api.onerror = async (e) => {
           if (api.status === 0 && retriesLeft > 0) {
             retriesLeft -= 1
             setTimeout(
               makeRetry,
               config.retryTimeoutMs === undefined ? DEFAULT_RETIRES_TIMEOUT : config.retryTimeoutMs,
             )
-          } else {
-            this.dispatch(removeLoadAct(baseUrl, urlQuery))
-            this.dispatch(actions.setLoadingError(e.error))
-            this.httpCallBackInvoke(api)
-
-            let responseText = api.responseText
-            if (api.status < 100) {
-              responseText = ''
-            }
-
-            rej({
-              status: api.status,
-              data: JSON.parse(responseText || '{}'),
-              api,
-            })
+            return
           }
+          const shouldRetry = await this.httpCallBackInvoke(api)
+          if (shouldRetry) {
+            makeRetry()
+            return
+          }
+
+          this.dispatch(removeLoadAct(baseUrl, urlQuery))
+          this.dispatch(actions.setLoadingError(e.error))
+
+          let responseText = api.responseText
+          if (api.status < 100) {
+            responseText = ''
+          }
+
+          rej({
+            status: api.status,
+            data: JSON.parse(responseText || '{}'),
+            api,
+          })
         }
         if (config.isBinary) {
           api.responseType = 'arraybuffer'
