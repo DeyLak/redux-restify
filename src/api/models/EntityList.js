@@ -565,9 +565,11 @@ class EntityList {
     const currentConfig = getPagesConfigHash(filter, sort, parentEntities, specialConfig, pageSizeNew, modelConfig)
     const currentPages = Object.keys(this.pages[currentConfig] || {})
     const currentCount = this.count[currentConfig] || 0
-    const lastPage = currentPages.map(x => +x).sort((a, b) => b - a)[0] || 0
+    const lastPage = currentPages.map(x => +x).sort((a, b) => b - a)[0]
 
-    return currentPages.length < currentCount / pageSizeNew ? lastPage + 1 : undefined
+    return (currentPages.length < currentCount / pageSizeNew) && lastPage
+      ? lastPage + 1
+      : undefined
   }
 
   getCount({
