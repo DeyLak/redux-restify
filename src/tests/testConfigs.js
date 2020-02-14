@@ -177,6 +177,30 @@ export const modelsDefinitions = {
     },
     pagination: false,
   },
+  testModelNested3: {
+    apiName: 'testApi',
+    endpoint: TEST_MODEL_ENDPOINT,
+    name: 'Test model nested 3',
+    defaults: {
+      id: undefined,
+      test: new RestifyField({
+        defaults: {
+          foreignKey: new RestifyForeignKey('testModel'),
+        },
+      }),
+    },
+  },
+  testModelNested4: {
+    apiName: 'testApi',
+    endpoint: TEST_MODEL_ENDPOINT,
+    name: 'Test model nested 4',
+    defaults: {
+      id: undefined,
+      test: {
+        foreignKey: new RestifyForeignKey('testModel'),
+      },
+    },
+  },
   testModelOtherId: {
     clearDataOnRouteChange: true,
     apiName: 'testApi',

@@ -2,6 +2,7 @@ import set from 'lodash/set'
 import unset from 'lodash/unset'
 
 import {
+  RestifyField,
   RestifyArray,
   RestifyLinkedModel,
   RestifyGenericForeignKey,
@@ -40,7 +41,7 @@ export const mapDataToRestifyModel = (data, modelType) => {
 
   const normalizeKeys = (configPath = [], defaults = currentModel.defaults) => key => {
     const currentConfigPath = configPath.concat(key)
-    const currentFieldDefault = defaults[key]
+    let currentFieldDefault = defaults[key]
     const currentField = getNestedObjectField(resultModel, currentConfigPath)
     if (currentFieldDefault instanceof RestifyLinkedModel) {
       const modelTypes = (
@@ -116,7 +117,13 @@ export const mapDataToRestifyModel = (data, modelType) => {
           normalizeKeys(currentConfigPath.concat(index), currentFieldDefault.defaults),
         )
       })
-    } else if (isPureObject(currentFieldDefault) && !Array.isArray(currentFieldDefault)) {
+    } else if (
+      (isPureObject(currentFieldDefault) && !Array.isArray(currentFieldDefault)) ||
+      (currentFieldDefault instanceof RestifyField && isPureObject(currentFieldDefault.defaults))
+    ) {
+      if (currentFieldDefault instanceof RestifyField) {
+        currentFieldDefault = currentFieldDefault.defaults
+      }
       Object.keys(currentFieldDefault).forEach(normalizeKeys(currentConfigPath, currentFieldDefault))
     } else if (currentModel.removeNulls && currentField === null) {
       set(resultModel, currentConfigPath, undefined)
