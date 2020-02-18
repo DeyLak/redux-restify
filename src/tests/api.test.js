@@ -693,6 +693,15 @@ describe('api', () => {
       notInForeignKey: true,
       singleForeignKey: null,
       notInArray: testServerArrayResponse.results,
+      nestedRestifyField: {
+        singleForeignKey: { ...modelResponse },
+        moreNested: {
+          foreignKeysArray: testServerArrayResponse.results,
+        },
+      },
+      nestedSimpleObject: {
+        singleForeignKey: { ...modelResponse },
+      },
     }
 
     const modelGenericResponse = {
@@ -1169,15 +1178,25 @@ describe('api', () => {
     it('can apply server data to a form and use foreign keys as ids', (done) => {
       mockRequest(modelWithForeignKeyResponseWithNull, { url: `${modelUrl}1/` })
       let state = store.getState()
-      api.selectors.entityManager.testModelWithForeignKey.getEntities(state).asyncGetById(1)
+      api.selectors.entityManager.testNestedModelWithForeignKey.getEntities(state).asyncGetById(1)
         .then(model => {
           store.dispatch(forms.actions.foreignKeyTestForm.applyServerData(model))
           state = store.getState()
-          const form = forms.selectors.foreignKeyTestForm.getForm(state)
+          const form = forms.selectors.foreignKeyTestForm.getFormWithNulls(state)
           expect(form).toEqual({
-            ...modelWithForeignKeyResponse,
-            // Null is converted to undefined by getForm
-            singleForeignKey: undefined,
+            id: 1,
+            test: true,
+            notInForeignKey: true,
+            singleForeignKey: null,
+            nestedRestifyField: {
+              singleForeignKey: 1,
+              moreNested: {
+                foreignKeysArray: [1, 2, 3],
+              },
+            },
+            nestedSimpleObject: {
+              singleForeignKey: 1,
+            },
             notInArray: [1, 2, 3],
           })
           done()

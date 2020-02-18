@@ -258,6 +258,32 @@ export const modelsDefinitions = {
       notInForeignKey: undefined,
     },
   },
+  testNestedModelWithForeignKey: {
+    apiName: 'testApi',
+    endpoint: TEST_MODEL_ENDPOINT,
+    name: 'Test model with foreign key',
+    pagination: false,
+    defaults: {
+      id: undefined,
+      test: undefined,
+      singleForeignKey: new RestifyForeignKey('testModel'),
+      notInArray: new RestifyForeignKeysArray('testModel'),
+      notInForeignKey: undefined,
+      nestedRestifyField: new RestifyField({
+        defaults: {
+          singleForeignKey: new RestifyForeignKey('testModel'),
+          moreNested: new RestifyField({
+            defaults: {
+              foreignKeysArray: new RestifyForeignKeysArray('testModel'),
+            },
+          }),
+        },
+      }),
+      nestedSimpleObject: {
+        singleForeignKey: new RestifyForeignKey('testModel'),
+      },
+    },
+  },
   testModelWithoutRequests: {
     apiName: 'testApi',
     endpoint: TEST_MODEL_ENDPOINT,
@@ -412,9 +438,18 @@ export const formsDefinitions = {
     },
   },
   foreignKeyTestForm: {
-    model: 'testModelWithForeignKey',
+    model: 'testNestedModelWithForeignKey',
     defaults: {
       test: undefined,
+      singleForeignKey: undefined,
+      notInArray: [],
+      notInForeignKey: undefined,
+      nestedRestifyField: {
+        singleForeignKey: undefined,
+      },
+      nestedSimpleObject: {
+        singleForeignKey: undefined,
+      },
     },
     mapServerDataToIds: true,
   },

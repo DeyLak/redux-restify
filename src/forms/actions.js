@@ -148,26 +148,28 @@ const globalActions = {
     if (currentFormConfig.model) {
       currentModel = RESTIFY_CONFIG.registeredModels[currentFormConfig.model]
     }
-    // Technical fields, that should not be included in form, cause they are used only for restify models
-    let keysToPass = []
-    if (currentFormConfig.mapServerDataToIds) {
-      keysToPass = Object.keys(currentModel.defaults).reduce((memo, key) => {
-        const currentField = currentModel.defaults[key]
-        if (currentField instanceof RestifyLinkedModel) {
-          let result = memo.concat(currentField.getIdField(key))
-          if (currentField instanceof RestifyGenericForeignKey) {
-            result = result.concat(currentField.getTypeField(key))
-          }
-          return result
-        }
-        return memo
-      }, [])
-    }
     const dataReduceFunc = (prevName, prevModelDefaults) => (obj) => {
       if (typeof obj !== 'object' || obj === null) return obj
       const getDefaults = (defaults, key) => {
         return getNestedObjectField(defaults, [key, 'defaults']) || defaults
       }
+
+      // Technical fields, that should not be included in form, cause they are used only for restify models
+      let keysToPass = []
+      if (currentFormConfig.mapServerDataToIds) {
+        keysToPass = Object.keys(prevModelDefaults).reduce((memo, key) => {
+          const currentField = prevModelDefaults[key]
+          if (currentField instanceof RestifyLinkedModel) {
+            let result = memo.concat(currentField.getIdField(key))
+            if (currentField instanceof RestifyGenericForeignKey) {
+              result = result.concat(currentField.getTypeField(key))
+            }
+            return result
+          }
+          return memo
+        }, [])
+      }
+
       if (Array.isArray(obj)) {
         const arrayConfig = getFormArrayConfig(formType, prevName, currentFormConfig)
         const resultObj = obj.map((item, index) => {
