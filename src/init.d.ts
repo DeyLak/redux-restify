@@ -18,7 +18,7 @@ export function initRestify(config?: {
     [formName: string]: RestifyFormConfig<any>;
   }
   options?: Partial<RestifyOptions>,
-})
+}): void;
 export function updateRestify(config?: {
     apiDefinitions?: {
         [apiName: string]: ApiXhrAdapterConfig;
@@ -30,4 +30,4 @@ export function updateRestify(config?: {
         [formName: string]: RestifyFormConfig<any>;
     }
     onUpdateRestify?: (() => void) | undefined,
-})
+}): void;
