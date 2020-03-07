@@ -32,6 +32,7 @@ declare class EntityList {
     pages: any;
     oldPages: any;
     singles: any;
+    oldSingles: any;
     errors: any;
     errorsPages: any;
     urls: any;
@@ -71,7 +72,7 @@ declare class EntityList {
     getCalculatedArray(pages: any): {};
     get oldArrays(): {};
     get arrays(): {};
-    setSource(pages: any, oldPages: any, singles: any, errors: any, errorsPages: any, count: any, urls: any, linkedModelsDict: any): void;
+    setSource(pages: any, oldPages: any, singles: any, oldSingles: any, errors: any, errorsPages: any, count: any, urls: any, linkedModelsDict: any): void;
     getNextPage({ filter, sort, parentEntities, specialConfig, pageSize, modelConfig, }?: {
         filter?: {} | undefined;
         sort: any;

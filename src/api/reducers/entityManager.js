@@ -64,6 +64,7 @@ const updateByIdInState = (state, id, data, allowClearPages = false) => {
 const modelInitState = {
   count: {},
   singleEntities: {},
+  oldSingleEntities: {},
   loadErrorEntities: {},
   loadErrorPages: {},
   pages: {},
@@ -95,7 +96,10 @@ const getEntityManagerReducer = (modelTypes = []) => {
       let newModelState = currentModelState
       switch (action.type) {
         case ACTIONS_TYPES[modelType].clearData: {
-          newModelState = modelInitState
+          newModelState = {
+            ...modelInitState,
+            oldSingleEntities: action.clearOldSingleEntities ? {} : currentModelState.singleEntities,
+          }
           break
         }
         case ACTIONS_TYPES[modelType].clearPages: {

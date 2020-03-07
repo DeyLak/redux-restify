@@ -162,3 +162,6 @@ Check out the [docs](./docs) for more info.
 
 ### 10.02.2020 (0.6.0)
 1. Return a Promise resolving to `true` from httpCodesCallback to retry a request
+
+### 07.03.2020 (0.7.0)
+1. Added boolean `clearOldSingleEntities` parameter(default - true) to clearData actions. If passed false, oldSingleEntities are not cleared by this actions, so data can still be displayed, while loading new one.

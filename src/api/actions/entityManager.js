@@ -114,8 +114,9 @@ const globalActions = {
     clearOldPages,
   }),
 
-  clearData: (modelType) => () => ({
+  clearData: (modelType) => (clearOldSingleEntities = true) => ({
     type: ACTIONS_TYPES[modelType].clearData,
+    clearOldSingleEntities,
   }),
 
   /**

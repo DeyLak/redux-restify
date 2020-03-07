@@ -58,6 +58,7 @@ class EntityList {
       this.pages = modelType.pages
       this.oldPages = modelType.oldPages
       this.singles = modelType.singles
+      this.oldSingles = modelType.oldSingles
       this.errors = modelType.errors
       this.errorsPages = modelType.errorsPages
       this.urls = modelType.urls
@@ -79,6 +80,7 @@ class EntityList {
       this.pages = {}
       this.oldPages = {}
       this.singles = {}
+      this.oldSingles = {}
       this.errors = {}
       this.errorsPages = {}
       this.urls = {}
@@ -418,6 +420,17 @@ class EntityList {
           return result
         })
     }
+
+    const oldEntity = this.oldSingles[specialId]
+
+    // This is previous entity state, shown while loading new entities into store,
+    if (oldEntity) {
+      return this.getRestifyModel(getOptimisticEntity(oldEntity), {
+        isNestedModel,
+        asyncGetters,
+        parentEntities,
+      })
+    }
     return this.getDefaulObject(id, {
       $loading: true,
     })
@@ -540,10 +553,11 @@ class EntityList {
     return this.$arrays
   }
 
-  setSource(pages, oldPages, singles, errors, errorsPages, count, urls, linkedModelsDict) {
+  setSource(pages, oldPages, singles, oldSingles, errors, errorsPages, count, urls, linkedModelsDict) {
     this.pages = pages
     this.oldPages = oldPages
     this.singles = singles
+    this.oldSingles = oldSingles
     this.errors = errors
     this.errorsPages = errorsPages
     this.count = count

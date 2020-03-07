@@ -216,6 +216,39 @@ describe('api', () => {
       expect(state.api.entityManager.testModelOtherId.oldPages).toEqual({})
     })
 
+    it('can clear data with and without oldSingleEntities', () => {
+      const testData = [{ id: 1, test: true }, { id: 2, test: false }]
+      store.dispatch(api.actions.entityManager.testModelForClearData.updateData(
+        testData,
+        1,
+        10,
+        2,
+        {},
+        undefined,
+        {},
+        false,
+        {},
+      ))
+      let state = store.getState()
+
+      store.dispatch(api.actions.entityManager.testModelForClearData.clearData(false))
+      state = store.getState()
+      expect(state.api.entityManager.testModelForClearData.pages).toEqual({})
+      expect(state.api.entityManager.testModelForClearData.oldPages).toEqual({})
+      expect(state.api.entityManager.testModelForClearData.singleEntities).toEqual({})
+      expect(state.api.entityManager.testModelForClearData.oldSingleEntities).not.toEqual({})
+      const entities = api.selectors.entityManager.testModelForClearData.getEntities(state)
+      expect(entities.getById(1)).toEqual({
+        ...testData[0],
+        $modelType: 'testModelForClearData',
+      })
+
+      store.dispatch(api.actions.entityManager.testModelForClearData.clearData())
+      state = store.getState()
+      expect(state.api.entityManager.testModelForClearData.singleEntities).toEqual({})
+      expect(state.api.entityManager.testModelForClearData.oldSingleEntities).toEqual({})
+    })
+
     it('returns endpoint', () => {
       const endpoint = api.selectors.entityManager.testModel.getEndpoint()
       expect(endpoint).toEqual({

@@ -212,6 +212,15 @@ export const modelsDefinitions = {
       test: undefined,
     },
   },
+  testModelForClearData: {
+    apiName: 'testApi',
+    endpoint: TEST_MODEL_ENDPOINT,
+    name: 'Test model for clear data',
+    defaults: {
+      id: undefined,
+      test: undefined,
+    },
+  },
   testModelWithForeignKey: {
     apiName: 'testApi',
     endpoint: TEST_MODEL_ENDPOINT,
