@@ -51,7 +51,7 @@ export interface ApiActions extends ActionCreatorsMapObject {
     modelConfig: RestifyModelConfig,
   ): any;
   clearPages(clearOldPages?: boolean): any;
-  clearData(): any;
+  clearData(clearOldSingleEntities?: boolean): any;
   updateById<T>(id: RestifyId, data: Partial<T>, query?: RestifyQuery, allowClearPages?: boolean): any;
   updateFromRawData<T>(id: RestifyId, data: Partial<T>, query?: RestifyQuery, allowClearPages?: boolean): any;
   updateOptimisticById<T>(id: RestifyId, data: Partial<T>, query?: RestifyQuery): any;
