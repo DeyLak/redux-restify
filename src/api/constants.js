@@ -95,7 +95,9 @@ export const getUrlWithParents = (url, currentModel, parentEntities) => {
     const currentParent = RESTIFY_CONFIG.registeredModels[item]
     // For empty ids
     const currentId = parentEntities[item] ? `${parentEntities[item]}/` : ''
-    return currentParent.endpoint + currentId + memo
+    // For non-registered parents
+    const parentEndpoint = currentParent ? currentParent.endpoint : `${item}/`
+    return parentEndpoint + currentId + memo
   }, url)
 }
 

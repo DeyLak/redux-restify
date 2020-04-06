@@ -492,6 +492,26 @@ describe('api', () => {
         })
     })
 
+    it('can get an unregistered child model asynchronously by id on first parent level', (done) => {
+      const ungeristeredModelEndpoint = 'unregistered-model'
+      mockRequest(testServerArrayResponse.results[0], {
+        url: `${TEST_API_HOST}${TEST_API_PREFIX}${ungeristeredModelEndpoint}/1/${TEST_MODEL_ENDPOINT}1/`,
+      })
+      const state = store.getState()
+      api.selectors.entityManager.testChildUnregisteredModel.getEntities(state).asyncGetById(1, {
+        parentEntities: {
+          [ungeristeredModelEndpoint]: 1,
+        },
+      })
+        .then(model => {
+          expect(model).toEqual({
+            ...testServerArrayRestifyChild1Models[0],
+            $modelType: 'testChildUnregisteredModel',
+          })
+          done()
+        })
+    })
+
     it('can get a child model array asynchronously on first parent level', (done) => {
       mockRequest(testServerArrayResponse, {
         url: `${modelUrl}1/${TEST_MODEL_ENDPOINT}?page=1&page_size=10`,

@@ -140,6 +140,16 @@ export const modelsDefinitions = {
       test: undefined,
     },
   },
+  testChildUnregisteredModel: {
+    apiName: 'testApi',
+    parent: 'unregistered-model',
+    endpoint: TEST_MODEL_ENDPOINT,
+    name: 'Test child 1 model',
+    defaults: {
+      id: undefined,
+      test: undefined,
+    },
+  },
   testChild2Model: {
     apiName: 'testApi',
     parent: ['testChild1Model', 'testModel'],
