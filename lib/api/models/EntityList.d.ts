@@ -17,6 +17,7 @@ export default EntityList;
  * API-framework related fields, that can be presented in objects:
  * bool: $loading - entity is loading now
  * bool: $error - there is an error, while loading entity. For now, these use cases are not well-documented
+ * bool: $old - data is loading at the moment, but model has old data available in it
  * str: $modelType - model name, to determine, wich model object is related to, can be usefull for abstract components
 */
 declare class EntityList {
@@ -52,7 +53,7 @@ declare class EntityList {
         asyncGetters: any;
         parentEntities: any;
         preventLoad?: boolean | undefined;
-    }): any;
+    }, fields?: {}): any;
     getDefaulObject(id: any, fields?: {}): any;
     hasById(id: any, config?: {}): boolean;
     getById(id: any, config?: {}): any;

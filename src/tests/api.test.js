@@ -241,6 +241,7 @@ describe('api', () => {
       expect(entities.getById(1)).toEqual({
         ...testData[0],
         $modelType: 'testModelForClearData',
+        $old: true,
       })
 
       store.dispatch(api.actions.entityManager.testModelForClearData.clearData())

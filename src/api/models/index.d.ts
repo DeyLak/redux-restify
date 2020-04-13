@@ -90,6 +90,7 @@ export type RestifyEntitiesArray<T> = Array<WithId<T>>
 export type RestifyModel<T> = T & {
   $loading: boolean;
   $error: boolean;
+  $old: boolean;
   $modelType: string;
 }
 

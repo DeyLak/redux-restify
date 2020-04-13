@@ -42,6 +42,7 @@ const getOptimisticEntity = (entity) => {
  * API-framework related fields, that can be presented in objects:
  * bool: $loading - entity is loading now
  * bool: $error - there is an error, while loading entity. For now, these use cases are not well-documented
+ * bool: $old - data is loading at the moment, but model has old data available in it
  * str: $modelType - model name, to determine, wich model object is related to, can be usefull for abstract components
 */
 class EntityList {
@@ -128,12 +129,16 @@ class EntityList {
     return shouldLoad
   }
 
-  getRestifyModel(normalized, {
-    isNestedModel = false,
-    asyncGetters,
-    parentEntities,
-    preventLoad = false,
-  } = {}) {
+  getRestifyModel(
+    normalized,
+    {
+      isNestedModel = false,
+      asyncGetters,
+      parentEntities,
+      preventLoad = false,
+    } = {},
+    fields = {},
+  ) {
     // Connected models keys, wich are not stored in store and can be misrecognized as missing keys
     const modelKeys = {}
     // Id properties for connected models, so we don't assign them lazy getters
@@ -274,6 +279,7 @@ class EntityList {
     }
     const result = Object.keys(this.modelConfig.defaults).reduce(mapDefaultKeysToModel(), {
       $modelType: this.modelType,
+      ...fields,
     })
     Object.keys(normalized).forEach(key => {
       if (!Object.prototype.hasOwnProperty.call(result, key)) {
@@ -425,11 +431,17 @@ class EntityList {
 
     // This is previous entity state, shown while loading new entities into store,
     if (oldEntity) {
-      return this.getRestifyModel(getOptimisticEntity(oldEntity), {
-        isNestedModel,
-        asyncGetters,
-        parentEntities,
-      })
+      return this.getRestifyModel(
+        getOptimisticEntity(oldEntity),
+        {
+          isNestedModel,
+          asyncGetters,
+          parentEntities,
+        },
+        {
+          $old: true,
+        },
+      )
     }
     return this.getDefaulObject(id, {
       $loading: true,

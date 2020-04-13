@@ -165,3 +165,9 @@ Check out the [docs](./docs) for more info.
 
 ### 07.03.2020 (0.7.0)
 1. Added boolean `clearOldSingleEntities` parameter(default - true) to clearData actions. If passed false, oldSingleEntities are not cleared by this actions, so data can still be displayed, while loading new one.
+
+### 06.04.2020 (0.8.0)
+1. Added support for unregistered parents for models
+
+### 13.04.2020 (0.9.0)
+1. Added $old key to RestifyModel, for detecting old data being updated at the moment
