@@ -1,4 +1,5 @@
 import forms from '../forms'
+import { checkErrors } from '../forms/selectors'
 
 import { getNestedObjectField } from '~/helpers/nestedObjects'
 
@@ -52,6 +53,21 @@ describe('forms', () => {
       const form = forms.selectors.testForm.getForm(state)
       expect(getNestedObjectField(form, name)).toEqual(fieldValue)
     })
+  })
+
+  it('Can check errors with nulls', () => {
+    let isValid = checkErrors(
+      { field: { 0: ['error'] } },
+      { field: [null] },
+      true,
+    )
+    expect(isValid).toBe(false)
+    isValid = checkErrors(
+      { field: { 0: {} } },
+      { field: [null] },
+      true,
+    )
+    expect(isValid).toBe(true)
   })
 
   it('Marks field as dirty on changeField', () => {

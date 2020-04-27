@@ -106,7 +106,7 @@ export namespace forms {
   };
   export function getRestifyFormReducer(): any;
   export function createFormConfig<T>(config: Partial<RestifyFormConfig<T>>): RestifyFormConfig<T>;
-  export function getFormActions<T>(formType: string): RestifyFormActions<T>;
+  export function getFormActions<T, LinkedModel = T>(formType: string): RestifyFormActions<T, LinkedModel>;
   export function checkErrors(errors: any, form: any, validateAll: boolean): boolean;
   export const selectors: {
     getFormsMap(formType: FormTypeSelector, state: any, mapFunction: (key: string, state: any) => any): any;

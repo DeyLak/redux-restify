@@ -7,9 +7,9 @@ import { onInitRestify } from '../init'
 import { getComposedConfig } from './formConfig'
 
 
-export const checkErrors = (errors = {}, form = {}, validateAll) => {
+export const checkErrors = (errors = {}, form, validateAll) => {
   const errorsObj = (typeof errors === 'object' && errors !== null) ? errors : {}
-  const formFields = Object.keys(form)
+  const formFields = Object.keys(form || {})
   return Object.keys(errorsObj).every(key => {
     if (!validateAll && formFields.length && !formFields.some(field => field === key)) return true
     const currentErrors = errorsObj[key]
