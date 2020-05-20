@@ -48,7 +48,7 @@ export interface ApiActions extends ActionCreatorsMapObject {
     sort: any,
     parentEntities: string[],
     specialConfig: boolean,
-    modelConfig: RestifyModelConfig,
+    modelConfig: Partial<RestifyModelConfig>,
   ): any;
   clearPages(clearOldPages?: boolean): any;
   clearData(clearOldSingleEntities?: boolean): any;
