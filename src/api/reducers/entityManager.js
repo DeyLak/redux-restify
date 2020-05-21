@@ -7,12 +7,13 @@ import { mapDataToRestifyModel } from '../modelsRelations'
 import { RESTIFY_CONFIG } from '../../config'
 
 
-const makeEntityObject = obj => ({
+const makeEntityObject = (obj, loadedById = false) => ({
   actual: { ...obj },
   optimistic: {},
   // Counter to prevent updateById, if too many forms were sent and entity is in inconsistent state with backend
   // Waits, for all responses and updates, when only one update is pending
   $optimisticCount: 0,
+  $loadedById: loadedById,
 })
 
 const makeIdObj = obj => ({
@@ -25,7 +26,7 @@ const makeIdMap = items => items.reduce((memo, item) => ({
 }), {})
 
 // This function mutates state parameter, so we can use it in other states
-const updateByIdInState = (state, id, data, allowClearPages = false) => {
+const updateByIdInState = (state, id, data, allowClearPages = false, loadedById = false) => {
   const currentEntity = state.singleEntities[id]
   if (currentEntity && currentEntity.$optimisticCount > 1) {
     state.singleEntities = {
@@ -53,8 +54,9 @@ const updateByIdInState = (state, id, data, allowClearPages = false) => {
           actual: (currentEntity && currentEntity.actual) || {},
           optimistic: {},
           $optimisticCount: (currentEntity && currentEntity.$optimisticCount) || 0,
+          $loadedById: (currentEntity && currentEntity.$loadedById) || false,
         },
-        makeEntityObject(data),
+        makeEntityObject(data, loadedById),
       ),
     }
   }
@@ -168,7 +170,8 @@ const getEntityManagerReducer = (modelTypes = []) => {
               updateByIdInState(newModelStates[modelName], normalizedModel.id, normalizedModel)
             })
           })
-          newModelState = updateByIdInState({ ...currentModelState }, specialId, model, action.allowClearPages)
+          newModelState =
+            updateByIdInState({ ...currentModelState }, specialId, model, action.allowClearPages, action.loadedById)
           break
         }
         case ACTIONS_TYPES[modelType].updateOptimisticById: {

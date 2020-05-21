@@ -40,3 +40,4 @@ export function callDel({ apiName, url, onSuccess, onError, ...other }: {
     onSuccess: any;
     onError: any;
 }): (dispatch: any) => any;
+export function resetEntityManager(): (dispatch: any) => any;
