@@ -250,6 +250,41 @@ describe('api', () => {
       expect(state.api.entityManager.testModelForClearData.oldSingleEntities).toEqual({})
     })
 
+    it('can reset entity manager', () => {
+      const testData = [{ id: 1, test: true }, { id: 2, test: false }]
+      const testModels = ['testModel', 'testModelForClearData']
+      testModels.forEach(model => {
+        store.dispatch(api.actions.entityManager[model].updateData(
+          testData,
+          1,
+          10,
+          2,
+          {},
+          undefined,
+          {},
+          false,
+          {},
+        ))
+      })
+
+      let state = store.getState()
+
+      testModels.forEach(model => {
+        expect(state.api.entityManager[model].pages).not.toEqual({})
+        expect(state.api.entityManager[model].oldPages).not.toEqual({})
+        expect(state.api.entityManager[model].singleEntities).not.toEqual({})
+      })
+
+      store.dispatch(api.actions.resetEntityManager())
+      state = store.getState()
+
+      testModels.forEach(model => {
+        expect(state.api.entityManager[model].pages).toEqual({})
+        expect(state.api.entityManager[model].oldPages).toEqual({})
+        expect(state.api.entityManager[model].singleEntities).toEqual({})
+      })
+    })
+
     it('returns endpoint', () => {
       const endpoint = api.selectors.entityManager.testModel.getEndpoint()
       expect(endpoint).toEqual({
