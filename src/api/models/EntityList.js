@@ -309,7 +309,7 @@ class EntityList {
           ) {
             this.idLoaded[result.id] = this.asyncDispatch((dispatch, getState) => {
               const state = getState()
-              const { $loadedById } = state.api.entityManager[this.modelType].singleEntities[result.id]
+              const { $loadedById } = state.api.entityManager[this.modelType].singleEntities[result.id] || {}
               if ($loadedById) {
                 return Promise.resolve({
                   [key]: undefined,

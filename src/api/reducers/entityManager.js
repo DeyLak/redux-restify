@@ -186,6 +186,7 @@ const getEntityManagerReducer = (modelTypes = []) => {
                 actual: (currentEntity && currentEntity.actual) || {},
                 optimistic: action.data,
                 $optimisticCount: (currentEntity && currentEntity.$optimisticCount || 0) + addOptimisticCount,
+                $loadedById: (currentEntity && currentEntity.$loadedById) || false,
               },
             },
           }
