@@ -1,5 +1,6 @@
 import { RESTIFY_CONFIG } from '../../config'
 import { DEFAULT_API_NAME } from '../constants'
+import { ACTIONS_TYPES } from '../actionsTypes'
 
 
 const invokeCallback = (dispatch, callback, res) => {
@@ -59,3 +60,7 @@ export const callPost = callApi('post')
 export const callPut = callApi('put')
 export const callPatch = callApi('patch')
 export const callDel = callApi('delete')
+
+export const resetEntityManager = () => dispatch => dispatch({
+  type: ACTIONS_TYPES.entityManager.clearData,
+})
