@@ -127,7 +127,7 @@ const globalActions = {
    * @param {Boolean} [allowClearPages] - should we reset pages, after updating entity(usually for some sorting configs)
    * @return {Object} Redux action to dispatch
    */
-  updateById: (modelType) => (id, data, query, parentEntities, allowClearPages = true, loadedById) => {
+  updateById: (modelType) => (id, data, query, parentEntities, allowClearPages = true, loadedById = false) => {
     return {
       type: ACTIONS_TYPES[modelType].updateById,
       id,
