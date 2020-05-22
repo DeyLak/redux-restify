@@ -307,12 +307,21 @@ class EntityList {
             RESTIFY_CONFIG.options.autoPropertiesIdRequests &&
             this.checkShouldLoadById(preventLoad, result.id)
           ) {
-            this.idLoaded[result.id] = this.asyncDispatch(entityManager[this.modelType]
-              .loadById(result.id, {
+            this.idLoaded[result.id] = this.asyncDispatch((dispatch, getState) => {
+              const state = getState()
+              const { $loadedById } = state.api.entityManager[this.modelType].singleEntities[result.id] || {}
+              if ($loadedById) {
+                return Promise.resolve({
+                  [key]: undefined,
+                })
+              }
+              return dispatch(entityManager[this.modelType].loadById(result.id, {
                 urlHash: getSpecialIdWithQuery(result.id, undefined, parentEntities).toString(),
                 asyncGetters: true,
                 parentEntities,
-              })).then((res) => {
+              }))
+            })
+              .then((res) => {
                 this.idLoaded[result.id] = false
                 if (!Object.keys(res).includes(key)) {
                   console.warn(`
