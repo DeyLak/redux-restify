@@ -13,7 +13,9 @@ export const checkErrors = (errors = {}, form, validateAll) => {
   return Object.keys(errorsObj).every(key => {
     if (!validateAll && formFields.length && !formFields.some(field => field === key)) return true
     const currentErrors = errorsObj[key]
-    if (typeof currentErrors === 'object' && !Array.isArray(currentErrors)) return checkErrors(currentErrors, form[key])
+    if (typeof currentErrors === 'object' && !Array.isArray(currentErrors)) {
+      return checkErrors(currentErrors, form && form[key])
+    }
     return !currentErrors || (Array.isArray(currentErrors) && !currentErrors.length)
   })
 }
