@@ -90,7 +90,7 @@ export interface ApiCallConfig {
   urlHash?: string;
   skipLoadsManager?: boolean;
   isBinary?: boolean;
-  onXhrReady?: (xhr: XMLHttpRequest) => void;
+  onXhrReady?: (xhr: XMLHttpRequest) => void | Promise<void>;
 }
 
 export class ApiXhrAdapter {

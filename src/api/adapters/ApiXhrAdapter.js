@@ -388,9 +388,15 @@ class ApiXhrAdapter {
         if (config.isBinary) {
           api.responseType = 'arraybuffer'
         }
-        api.send(form)
+        const sendRequest = () => api.send(form)
+        let xhrResult
         if (typeof config.onXhrReady === 'function') {
-          config.onXhrReady(api)
+          xhrResult = config.onXhrReady(api)
+        }
+        if (xhrResult instanceof Promise) {
+          xhrResult.then(sendRequest)
+        } else {
+          sendRequest()
         }
       }
       createXhrInstanse(false)

@@ -171,3 +171,6 @@ Check out the [docs](./docs) for more info.
 
 ### 13.04.2020 (0.9.0)
 1. Added $old key to RestifyModel, for detecting old data being updated at the moment
+
+### 04.06.2020 (0.10.0)
+1. Added opportunity to return promise from onXhrReady
