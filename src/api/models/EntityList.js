@@ -412,6 +412,7 @@ class EntityList {
         isNestedModel,
         asyncGetters,
         parentEntities,
+        preventLoad,
       })
       this.precalculatedSingles[cacheId] = result
       return result
@@ -446,6 +447,7 @@ class EntityList {
           isNestedModel,
           asyncGetters,
           parentEntities,
+          preventLoad,
         },
         {
           $old: true,
