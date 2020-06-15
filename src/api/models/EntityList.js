@@ -219,6 +219,13 @@ class EntityList {
           if (modelKeys[key]) {
             modelKeysReverse[modelIdField] = key
           }
+        } else if (currentField instanceof RestifyGenericForeignKey && normalizedIdField === null) {
+          // Creating nested object for null generic
+          mappedFields = {
+            [modelIdField]: normalizedIdField,
+            [key]: () => null,
+          }
+          modelKeys[key] = modelIdField === null ? undefined : modelIdField
         } else {
           // Nested model calculation not allowed, so not include this field
           mappedFields = {
