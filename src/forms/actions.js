@@ -534,7 +534,7 @@ const globalActions = {
     }
   },
 
-  submit: (formType) => () => (dispatch, getState) => {
+  submit: (formType) => () => async (dispatch, getState) => {
     let state = getState()
     const currentFormConfig = selectors.getFormConfig(formType)(state)
     let currentModel
@@ -610,7 +610,7 @@ const globalActions = {
     )(currentValues)
 
     if (typeof currentFormConfig.transformBeforeSubmit === 'function') {
-      data = currentFormConfig.transformBeforeSubmit(currentValues, data)
+      data = await currentFormConfig.transformBeforeSubmit(currentValues, data)
     } else if (typeof currentFormConfig.transformBeforeSubmit === 'object') {
       Object.keys(currentFormConfig.transformBeforeSubmit).forEach(key => {
         data[key] = currentFormConfig.transformBeforeSubmit[key](key, data[key], currentValues, data)
