@@ -198,9 +198,12 @@ const globalActions = {
         if (currentField &&
           (currentField instanceof RestifyLinkedModel)) {
           if (currentField instanceof RestifyGenericForeignKey) {
-            const currentFieldModel = RESTIFY_CONFIG.registeredModels[obj[currentField.getTypeField(key)]]
-            const currentApi = RESTIFY_CONFIG.registeredApies[currentFieldModel.apiName]
-            keyValue = currentApi.getGenericFormField(obj[key])
+            const typeKey = currentField.getTypeField(key)
+            if (obj[key] && obj[typeKey]) {
+              const currentFieldModel = RESTIFY_CONFIG.registeredModels[obj[currentField.getTypeField(key)]]
+              const currentApi = RESTIFY_CONFIG.registeredApies[currentFieldModel.apiName]
+              keyValue = currentApi.getGenericFormField(obj[key])
+            }
           } else {
             keyValue = obj[currentField.getIdField(key)]
           }
