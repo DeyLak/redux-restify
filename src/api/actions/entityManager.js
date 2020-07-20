@@ -44,11 +44,16 @@ export const defaulTransformErrorResponse = (response) => ({
   errors: response,
 })
 
-export const defaultGetPaginationQuery = (initialQuery, page, pageSize) => ({
-  page,
-  pageSize,
-  ...initialQuery,
-})
+export const defaultGetPaginationQuery = (initialQuery, page, pageSize, pagination) => {
+  if (!pagination) {
+    return initialQuery
+  }
+  return {
+    page,
+    pageSize,
+    ...initialQuery,
+  }
+}
 
 const globalActions = {
   updateData: (modelType) => (
@@ -213,13 +218,11 @@ const globalActions = {
                                     currentApi && currentApi.transformArrayResponse ||
                                     defaultTransformArrayResponse
 
-    if (currentModel.pagination) {
-      const getPaginationQuery = modelConfig.getPaginationQuery ||
-                                  currentModel && currentModel.getPaginationQuery ||
-                                  currentApi && currentApi.getPaginationQuery ||
-                                  defaultGetPaginationQuery
-      query = getPaginationQuery(query, page, pageSize)
-    }
+    const getPaginationQuery = modelConfig.getPaginationQuery ||
+                                currentModel && currentModel.getPaginationQuery ||
+                                currentApi && currentApi.getPaginationQuery ||
+                                defaultGetPaginationQuery
+    query = getPaginationQuery(query, page, pageSize, currentModel.pagination)
 
     const onSuccess = (data, status, api) => {
       const transformedData = transformArrayResponse(data, currentModel.pagination, api, modelType)

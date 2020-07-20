@@ -174,3 +174,6 @@ Check out the [docs](./docs) for more info.
 
 ### 04.06.2020 (0.10.0)
 1. Added opportunity to return promise from onXhrReady
+
+### 20.07.2020 (0.11.0)
+1. Added pagination parameter to `getPaginationQuery` option

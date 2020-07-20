@@ -49,7 +49,7 @@ export type GetEntityUrl = (config: {
 }) => string;
 
 
-export type GetPaginationQuery = (userQuery: any, page: number, pageSize: number) => {
+export type GetPaginationQuery = (userQuery: any, page: number, pageSize: number, pagination: boolean) => {
   [key: string]: any;
 }
 

@@ -613,7 +613,10 @@ const globalActions = {
     )(currentValues)
 
     if (typeof currentFormConfig.transformBeforeSubmit === 'function') {
-      data = await currentFormConfig.transformBeforeSubmit(currentValues, data)
+      data = currentFormConfig.transformBeforeSubmit(currentValues, data)
+      if (data instanceof Promise) {
+        data = await data
+      }
     } else if (typeof currentFormConfig.transformBeforeSubmit === 'object') {
       Object.keys(currentFormConfig.transformBeforeSubmit).forEach(key => {
         data[key] = currentFormConfig.transformBeforeSubmit[key](key, data[key], currentValues, data)
