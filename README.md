@@ -177,3 +177,6 @@ Check out the [docs](./docs) for more info.
 
 ### 20.07.2020 (0.11.0)
 1. Added pagination parameter to `getPaginationQuery` option
+
+### 27.07.2020 (0.11.2)
+1. Added request data to code callbacks function call
