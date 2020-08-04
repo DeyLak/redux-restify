@@ -222,7 +222,8 @@ const globalActions = {
                                 currentModel && currentModel.getPaginationQuery ||
                                 currentApi && currentApi.getPaginationQuery ||
                                 defaultGetPaginationQuery
-    query = getPaginationQuery(query, page, pageSize, currentModel.pagination)
+    const modelPagination = modelConfig.pagination === undefined ? currentModel.pagination : modelConfig.pagination
+    query = getPaginationQuery(query, page, pageSize, modelPagination)
 
     const onSuccess = (data, status, api) => {
       const transformedData = transformArrayResponse(data, currentModel.pagination, api, modelType)
