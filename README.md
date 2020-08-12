@@ -180,3 +180,6 @@ Check out the [docs](./docs) for more info.
 
 ### 27.07.2020 (0.11.2)
 1. Added request data to code callbacks function call
+
+### 12.08.2020 (0.12.0)
+1. Added `preventAutoGetters` option to `getById`

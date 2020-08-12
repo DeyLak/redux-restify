@@ -6,6 +6,7 @@ export interface GetByIdConfig {
   query?: RestifyQuery;
   isNestedModel?: boolean;
   preventLoad?: boolean;
+  preventAutoGetters?: boolean;
   forceLoad?: boolean;
   asyncGetters?: boolean;
   useModelEndpoint?: boolean;

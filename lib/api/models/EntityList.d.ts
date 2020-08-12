@@ -48,13 +48,14 @@ declare class EntityList {
     precalculatedSingles: {};
     setDispatch(dispatch: any): void;
     checkShouldLoadById(preventLoad: any, specialId: any): any;
-    getRestifyModel(normalized: any, { isNestedModel, asyncGetters, parentEntities, preventLoad, }?: {
+    getRestifyModel(normalized: any, { isNestedModel, asyncGetters, parentEntities, preventLoad, preventAutoGetters, }?: {
         isNestedModel?: boolean | undefined;
         asyncGetters: any;
         parentEntities: any;
         preventLoad?: boolean | undefined;
+        preventAutoGetters?: boolean | undefined;
     }, fields?: {}): any;
-    getDefaulObject(id: any, fields?: {}): any;
+    getDefaulObject(id: any, fields?: {}, config?: {}): any;
     hasById(id: any, config?: {}): boolean;
     getById(id: any, config?: {}): any;
     /**

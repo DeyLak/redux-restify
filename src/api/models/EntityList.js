@@ -136,6 +136,7 @@ class EntityList {
       asyncGetters,
       parentEntities,
       preventLoad = false,
+      preventAutoGetters = false,
     } = {},
     fields = {},
   ) {
@@ -192,6 +193,7 @@ class EntityList {
                     ...currentField.fetchConfig,
                     preventLoad: true,
                     asyncGetters,
+                    preventAutoGetters,
                   })
                 })
               } else if (normalizedIdField === null) {
@@ -202,6 +204,7 @@ class EntityList {
                   ...currentField.fetchConfig,
                   asyncGetters,
                   preventLoad,
+                  preventAutoGetters,
                 }
                 if (asyncGetters && !linkedModel.hasById(normalizedIdField)) {
                   denormalized = linkedModel.asyncGetById(normalizedIdField, getByIdConfig)
@@ -312,7 +315,7 @@ class EntityList {
           if (
             isDefAndNotNull(result.id) &&
             RESTIFY_CONFIG.options.autoPropertiesIdRequests &&
-            this.checkShouldLoadById(preventLoad, result.id)
+            this.checkShouldLoadById(preventAutoGetters, result.id)
           ) {
             this.idLoaded[result.id] = this.asyncDispatch((dispatch, getState) => {
               const state = getState()
@@ -367,8 +370,17 @@ class EntityList {
     return result
   }
 
-  getDefaulObject(id, fields = {}) {
-    const result = this.getRestifyModel({ id }, { preventLoad: fields.$error })
+  getDefaulObject(id, fields = {}, config = {}) {
+    const {
+      preventAutoGetters,
+    } = config
+    const result = this.getRestifyModel(
+      { id },
+      {
+        preventLoad: fields.$error || fields.$loading,
+        preventAutoGetters,
+      },
+    )
     result.id = id
     result.$modelType = this.modelType
     Object.keys(fields).forEach(key => {
@@ -393,6 +405,7 @@ class EntityList {
       query,
       isNestedModel,
       preventLoad = false,
+      preventAutoGetters = false,
       forceLoad = false,
       asyncGetters = false,
       parentEntities,
@@ -420,6 +433,7 @@ class EntityList {
         asyncGetters,
         parentEntities,
         preventLoad,
+        preventAutoGetters,
       })
       this.precalculatedSingles[cacheId] = result
       return result
@@ -461,9 +475,15 @@ class EntityList {
         },
       )
     }
-    return this.getDefaulObject(id, {
-      $loading: true,
-    })
+    return this.getDefaulObject(
+      id,
+      {
+        $loading: true,
+      },
+      {
+        preventAutoGetters,
+      },
+    )
   }
 
   /**
