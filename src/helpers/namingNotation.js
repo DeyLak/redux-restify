@@ -2,14 +2,24 @@ import sortBy from 'lodash/sortBy'
 
 import { isPureObject } from '~/helpers/def'
 
-
-const camelToSnake = s => s.replace(/([a-z])([A-Z]+)/g, '$1_$2')
-export const camelToLowerSnake = s => camelToSnake(s).toLowerCase()
-export const camelToUpperSnake = s => camelToSnake(s).toUpperCase()
-// Using camel to snake for exclude camelCase parts from converting to lower case
-export const snakeToCamel = s => {
-  return camelToSnake(s).toLowerCase().replace(/(.)_+(.)/g, (match, g1, g2) => g1 + g2.toUpperCase())
+const memoFunc = f => {
+  const memo = {}
+  return s => {
+    if (s in memo) {
+      return memo[s]
+    }
+    memo[s] = f(s)
+    return memo[s]
+  }
 }
+
+const camelToSnake = memoFunc(s => s.replace(/([a-z])([A-Z]+)/g, '$1_$2'))
+export const camelToLowerSnake = memoFunc(s => camelToSnake(s).toLowerCase())
+export const camelToUpperSnake = memoFunc(s => camelToSnake(s).toUpperCase())
+// Using camel to snake for exclude camelCase parts from converting to lower case
+export const snakeToCamel = memoFunc(s => {
+  return camelToSnake(s).toLowerCase().replace(/(.)_+(.)/g, (match, g1, g2) => g1 + g2.toUpperCase())
+})
 
 const objectToCase = convertingFunc => (obj, config = {}) => {
   const {
@@ -34,10 +44,9 @@ const objectToCase = convertingFunc => (obj, config = {}) => {
   return Object.keys(obj || []).reduce((memo, key) => {
     const currentObj = obj[key]
     const currentKey = convertingFunc(key)
-    return {
-      ...memo,
-      [currentKey]: objectToCase(convertingFunc)(currentObj, config),
-    }
+    // eslint-disable-next-line no-param-reassign
+    memo[currentKey] = objectToCase(convertingFunc)(currentObj, config)
+    return memo
   }, {})
 }
 
