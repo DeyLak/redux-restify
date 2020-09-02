@@ -169,10 +169,10 @@ class ApiXhrAdapter {
     })
   }
 
-  httpCallBackInvoke(api, data) {
-    let currentCodes = this.httpCodesCallbacks
-    if (typeof this.httpCodesCallbacks === 'function') {
-      currentCodes = this.httpCodesCallbacks(api.status, data)
+  httpCallBackInvoke(api, data, config) {
+    let currentCodes = config.httpCodesCallbacks || this.httpCodesCallbacks
+    if (typeof currentCodes === 'function') {
+      currentCodes = currentCodes(api.status, data)
     }
 
     if (typeof currentCodes === 'function') {
@@ -342,7 +342,7 @@ class ApiXhrAdapter {
         api.onloadstart = fireLoadActIfNotfiredMutex
         api.onload = async () => {
           const loadedData = checkStatus(api, config)
-          const shouldRetry = await this.httpCallBackInvoke(api, loadedData)
+          const shouldRetry = await this.httpCallBackInvoke(api, loadedData, config)
           if (shouldRetry) {
             makeRetry()
             return
@@ -367,7 +367,7 @@ class ApiXhrAdapter {
             return
           }
           const loadedData = checkStatus(api, config)
-          const shouldRetry = await this.httpCallBackInvoke(api, loadedData)
+          const shouldRetry = await this.httpCallBackInvoke(api, loadedData, config)
           if (shouldRetry) {
             makeRetry()
             return
