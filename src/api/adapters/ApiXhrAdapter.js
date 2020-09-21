@@ -172,7 +172,14 @@ class ApiXhrAdapter {
   httpCallBackInvoke(api, data, config) {
     let currentCodes = config.httpCodesCallbacks || this.httpCodesCallbacks
     if (typeof currentCodes === 'function') {
-      currentCodes = currentCodes(api.status, data)
+      const invokeBaseCallbacks = () => {
+        const newConfig = {
+          ...config,
+          httpCodesCallbacks: this.httpCodesCallbacks,
+        }
+        return this.httpCallBackInvoke(api, data, newConfig)
+      }
+      currentCodes = currentCodes(api.status, data, invokeBaseCallbacks)
     }
 
     if (typeof currentCodes === 'function') {
@@ -186,7 +193,7 @@ class ApiXhrAdapter {
 
   /**
    * Make a call to some url, wrapper for xhr
-   * @param  {string} baseUrl   base url, like api host
+   * @param  {string} baseUrl base url, like api host
    * @param  {HttpMethod} argMethod HTTP method
    * @param  {{
       getEntityUrl: ({

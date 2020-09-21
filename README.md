@@ -183,3 +183,6 @@ Check out the [docs](./docs) for more info.
 
 ### 12.08.2020 (0.12.0)
 1. Added `preventAutoGetters` option to `getById`
+
+### 21.09.2020 (0.13.0)
+1. Added `invokeBaseCallbacks` to `httpCodesCallbacks` api config option for easier overrides

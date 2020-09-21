@@ -74,7 +74,7 @@ declare class ApiXhrAdapter {
     httpCallBackInvoke(api: any, data: any, config: any): any;
     /**
      * Make a call to some url, wrapper for xhr
-     * @param  {string} baseUrl   base url, like api host
+     * @param  {string} baseUrl base url, like api host
      * @param  {HttpMethod} argMethod HTTP method
      * @param  {{
         getEntityUrl: ({

@@ -16,7 +16,7 @@ export type AllowedNoTokenEndpoints = Array<string | RegExp>
 
 export type HttpCodesCallbacks = {
   [key: number]: any;
-} | ((code: number, data: any) => any)
+} | ((code: number, data: any, invokeBaseCallbacks: () => any) => any)
 
 export type TransformArrayResponse = (response: any, pagination: boolean, api: any, modelName: string) => {
   data: any[];
