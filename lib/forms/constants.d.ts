@@ -4,3 +4,4 @@ export namespace ACTIONS_TYPES {
     export const $general: any;
 }
 export function getActionType(formType: any): any;
+export function calculateValidationResult(values: any, validationConfig: any, deperecatedGetState: any): {};

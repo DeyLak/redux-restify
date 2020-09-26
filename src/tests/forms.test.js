@@ -14,6 +14,8 @@ import {
 } from './testConfigs'
 
 import { queryFormat } from '../api/constants'
+import ValidationPresetRequired from '../forms/validation/ValidationPresetRequired'
+import { calculateValidationResult } from '../forms/constants'
 
 import { ACTIONS_TYPES } from '../api/actionsTypes'
 
@@ -29,6 +31,23 @@ describe('forms', () => {
   beforeEach(() => {
     jasmine.addCustomEqualityTester(functionEquality)
     beforeEachFunc()
+  })
+
+  it('calculates correct form errors', () => {
+    const validationConfig = {
+      value: new ValidationPresetRequired(),
+      secondValue: value => !value,
+    }
+    const data = {
+      value: undefined,
+      secondValue: undefined,
+    }
+    const errors = calculateValidationResult(data, validationConfig)
+    expect(errors).toEqual({
+      $global: undefined,
+      value: true,
+      secondValue: true,
+    })
   })
 
   it('returns endpoint', () => {

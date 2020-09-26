@@ -1,6 +1,10 @@
-import { makeActionsBundle } from '~/helpers/actions'
 import { RESTIFY_CONFIG } from '../config'
 import { onRegisterForm } from '../init'
+import { ValidationPreset } from './validation'
+
+import { makeActionsBundle } from '~/helpers/actions'
+import { isPureObject } from '~/helpers/def'
+import { getRecursiveObjectReplacement } from '~/helpers/nestedObjects'
 
 
 export const NAME = 'forms'
@@ -34,5 +38,33 @@ onRegisterForm(() => {
 })
 
 export const getActionType = formType => ACTIONS_TYPES[formType] || ACTIONS_TYPES[GENERAL_FORMS_ACTIONS]
+
+export const calculateValidationResult = (values, validationConfig, deperecatedGetState) => {
+  let validationResult = {}
+  const addToValidationResult = (value, field) => {
+    let fieldKey = field
+    if (!fieldKey.length && !isPureObject(value)) {
+      fieldKey = '$global'
+    }
+    validationResult = getRecursiveObjectReplacement(validationResult, fieldKey, value)
+  }
+  const calucalateCurrentLevelValidate = (currentLevelValues, validationField, currentPath = []) => {
+    if (validationField instanceof ValidationPreset) {
+      addToValidationResult(validationField.validate(currentLevelValues, values), currentPath)
+    } else if (typeof validationField === 'function') {
+      addToValidationResult(validationField(currentLevelValues, values, deperecatedGetState), currentPath)
+    } else if (validationField !== null && typeof validationField === 'object') {
+      Object.keys(validationField).forEach(key => {
+        addToValidationResult(calucalateCurrentLevelValidate(
+          currentLevelValues && currentLevelValues[key],
+          validationField[key],
+          currentPath.concat(key),
+        ), currentPath)
+      })
+    }
+  }
+  calucalateCurrentLevelValidate(values, validationConfig)
+  return validationResult
+}
 
 export { DEFAULT_FIELD_FUNCTIONS } from './formConfig'

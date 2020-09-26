@@ -186,3 +186,6 @@ Check out the [docs](./docs) for more info.
 
 ### 21.09.2020 (0.13.0)
 1. Added `invokeBaseCallbacks` to `httpCodesCallbacks` api config option for easier overrides
+
+### 26.09.2020 (0.13.1)
+1. Export low-level api `calculateValidationResult` for validation customisation

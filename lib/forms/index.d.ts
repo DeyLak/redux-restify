@@ -7,6 +7,7 @@ declare namespace _default {
     export { createFormConfig };
     export { getFormActions };
     export { checkErrors };
+    export const calculateValidationResult: (values: any, validationConfig: any, deperecatedGetState: any) => {};
 }
 export default _default;
 import actions from "./actions";

@@ -15,6 +15,10 @@ export type FormError = string | string[] | object | object[] | boolean;
 
 export type FormTransformationFunction = (key: string, value: any, formValues: any) => any;
 
+export type ValidationConfig = Partial<{
+  [key in keyof T]: ValidationPreset | ValidateFunction;
+}> | ValidateFunction
+
 export interface RestifyFormConfig<T> {
   baseConfig: string;
   apiName: string;
@@ -45,9 +49,7 @@ export interface RestifyFormConfig<T> {
   convertResultToCamelCase: boolean;
   resultRemoveNulls: boolean;
   resultOrderArrays: boolean;
-  validate: Partial<{
-    [key in keyof T]: ValidationPreset | ValidateFunction;
-  }> | ValidateFunction;
+  validate: ValidationConfig;
   validateOnFieldChange: boolean;
   validateAll: boolean;
   validateOnSubmit: boolean;

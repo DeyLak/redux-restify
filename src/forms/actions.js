@@ -17,10 +17,8 @@ import createFormConfig, {
   updateDefaultValue,
 } from './formConfig'
 import selectors, { checkErrors } from './selectors'
-import { ValidationPreset } from './validation'
 
 import { objectToLowerSnake } from '~/helpers/namingNotation'
-import { isPureObject } from '~/helpers/def'
 import { mutateObject, getRecursiveObjectReplacement, getNestedObjectField } from '~/helpers/nestedObjects'
 
 import api, {
@@ -32,7 +30,11 @@ import api, {
 import { defaulTransformEntityResponse, defaulTransformErrorResponse } from '../api/actions/entityManager'
 import { RESTIFY_CONFIG } from '../config'
 import { onInitRestify } from '../init'
-import { ACTION_UPDATE, ACTION_CREATE } from '../constants'
+import {
+  ACTION_UPDATE,
+  ACTION_CREATE,
+  calculateValidationResult,
+} from '../constants'
 
 
 const generalActions = {
@@ -490,30 +492,8 @@ const globalActions = {
 
     const currentValues = selectors.getForm(formType)(state)
 
-    let validationResult = {}
-    const addToValidationResult = (value, field) => {
-      let fieldKey = field
-      if (!fieldKey.length && !isPureObject(value)) {
-        fieldKey = '$global'
-      }
-      validationResult = getRecursiveObjectReplacement(validationResult, fieldKey, value)
-    }
-    const calucalateCurrentLevelValidate = (currentLevelValues, validationField, currentPath = []) => {
-      if (validationField instanceof ValidationPreset) {
-        addToValidationResult(validationField.validate(currentLevelValues, currentValues), currentPath)
-      } else if (typeof validationField === 'function') {
-        addToValidationResult(validationField(currentLevelValues, currentValues, getState), currentPath)
-      } else if (validationField !== null && typeof validationField === 'object') {
-        Object.keys(validationField).forEach(key => {
-          addToValidationResult(calucalateCurrentLevelValidate(
-            currentLevelValues && currentLevelValues[key],
-            validationField[key],
-            currentPath.concat(key),
-          ), currentPath)
-        })
-      }
-    }
-    calucalateCurrentLevelValidate(currentValues, currentForm.validate)
+    const validationResult = calculateValidationResult(currentValues, currentForm.validate, getState)
+
     const currentErrors = selectors.getErrors(formType)(state)
     // Validation result should prevaluate under current errors,
     // but we should also not remove errors, which are not included in validation function

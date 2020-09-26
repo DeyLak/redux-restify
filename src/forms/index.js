@@ -6,4 +6,13 @@ import createFormConfig from './formConfig'
 
 export * from './validation'
 
-export default { actions, constants, getRestifyFormReducer, selectors, createFormConfig, getFormActions, checkErrors }
+export default {
+  actions,
+  constants,
+  getRestifyFormReducer,
+  selectors,
+  createFormConfig,
+  getFormActions,
+  checkErrors,
+  calculateValidationResult: constants.calculateValidationResult,
+}

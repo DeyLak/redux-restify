@@ -1,6 +1,6 @@
 import { ActionCreatorsMapObject } from 'redux'
 
-import { RestifyFormConfig } from './formConfig'
+import { ValidationConfig, RestifyFormConfig } from './formConfig'
 
 import { RestifyEndpointInfo, RestifyModel } from '../api'
 
@@ -108,6 +108,10 @@ export namespace forms {
   export function createFormConfig<T>(config: Partial<RestifyFormConfig<T>>): RestifyFormConfig<T>;
   export function getFormActions<T, LinkedModel = T>(formType: string): RestifyFormActions<T, LinkedModel>;
   export function checkErrors(errors: any, form: any, validateAll: boolean): boolean;
+  export function calculateValidationResult<T, ValidationSchema = T>(
+    values: T,
+    validationConfig: ValidationConfig,
+  ): RestifyFormErrors<ValidationSchema>;
   export const selectors: {
     getFormsMap(formType: FormTypeSelector, state: any, mapFunction: (key: string, state: any) => any): any;
     getFormConfig(formType: FormTypeSelector): any;
