@@ -7,6 +7,7 @@ import { batchActions } from 'redux-batched-actions'
 import {
   ACTIONS_TYPES,
   getActionType,
+  calculateValidationResult,
   GENERAL_FORMS_ACTIONS,
 } from './constants'
 import createFormConfig, {
@@ -33,7 +34,6 @@ import { onInitRestify } from '../init'
 import {
   ACTION_UPDATE,
   ACTION_CREATE,
-  calculateValidationResult,
 } from '../constants'
 
 
@@ -488,9 +488,9 @@ const globalActions = {
   validate: (formType) => () => (dispatch, getState) => {
     const state = getState()
     const currentForm = selectors.getFormConfig(formType)(state)
+    const currentValues = selectors.getForm(formType)(state)
     if (!currentForm.validate) return {}
 
-    const currentValues = selectors.getForm(formType)(state)
 
     const validationResult = calculateValidationResult(currentValues, currentForm.validate, getState)
 
