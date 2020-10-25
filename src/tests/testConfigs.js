@@ -19,8 +19,10 @@ export const TEST_API_PREFIX = 'test-api/v1.0/'
 export const OTHER_TEST_API_PREFIX = 'other-test-api/v2.0/'
 export const CUSTOM_TEST_API_PREFIX = 'custom-test-api/data/'
 export const TEST_MODEL_ENDPOINT = 'test-model/'
+export const TEST_MODEL_2_ENDPOINT = 'test-model-2/'
 
 export const modelUrl = `${TEST_API_HOST}${TEST_API_PREFIX}${TEST_MODEL_ENDPOINT}`
+export const model2Url = `${TEST_API_HOST}${TEST_API_PREFIX}${TEST_MODEL_2_ENDPOINT}`
 export const customModelBulkUrl = `${TEST_API_HOST}${CUSTOM_TEST_API_PREFIX}bulk/${TEST_MODEL_ENDPOINT}`
 export const customModelSingleUrl = `${TEST_API_HOST}${CUSTOM_TEST_API_PREFIX}single/${TEST_MODEL_ENDPOINT}`
 
@@ -150,11 +152,30 @@ export const modelsDefinitions = {
       test: undefined,
     },
   },
+  testOtherEndpointModel: {
+    apiName: 'testApi',
+    endpoint: TEST_MODEL_2_ENDPOINT,
+    name: 'Test other endpoint model',
+    defaults: {
+      id: undefined,
+      test: undefined,
+    },
+  },
   testChild2Model: {
     apiName: 'testApi',
     parent: ['testChild1Model', 'testModel'],
     endpoint: TEST_MODEL_ENDPOINT,
     name: 'Test child 2 model',
+    defaults: {
+      id: undefined,
+      test: undefined,
+    },
+  },
+  testChild3Model: {
+    apiName: 'testApi',
+    parent: ['testOtherEndpointModel', 'testModel'],
+    endpoint: TEST_MODEL_ENDPOINT,
+    name: 'Test child 3 model',
     defaults: {
       id: undefined,
       test: undefined,

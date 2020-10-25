@@ -88,8 +88,8 @@ export const getCacheValidationHashForId = (id, asyncGetters) => {
 
 export const getUrlWithParents = (url, currentModel, parentEntities) => {
   const parents = Array.isArray(currentModel.parent) ? currentModel.parent : [currentModel.parent]
-  return parents.reverse().filter(p => p).reduce((memo, item) => {
-    if (!parentEntities || parentEntities[item] === undefined) {
+  return parents.reduceRight((memo, item) => {
+    if (!item || !parentEntities || parentEntities[item] === undefined) {
       return memo
     }
     const currentParent = RESTIFY_CONFIG.registeredModels[item]

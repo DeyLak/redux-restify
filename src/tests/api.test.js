@@ -4,6 +4,8 @@ import api from '../api'
 import { removePrivateFields } from '~/helpers/nestedObjects'
 
 import EntityList from '../api/models/EntityList'
+import RestifyForeignKeysArray from '../api/models/RestifyForeignKeysArray'
+import RestifyForeignKey from '../api/models/RestifyForeignKey'
 import { getSpecialIdWithQuery } from '../api/constants'
 
 import { ROUTER_LOCATION_CHANGE_ACTION } from '../constants'
@@ -19,6 +21,7 @@ import {
   responseHeaders,
 
   modelUrl,
+  model2Url,
   customModelBulkUrl,
   customModelSingleUrl,
 } from './testConfigs'
@@ -285,6 +288,40 @@ describe('api', () => {
       })
     })
 
+    it('can update data in entity manager with custom model config', () => {
+      const testData = {
+        results: {
+          testModel: { id: 1, test: true },
+          customModel: [
+            { id: 1, test: false },
+            { id: 2, test: false },
+          ],
+        },
+      }
+      const testModels = ['testModel', 'customModel']
+      const testConfig = {
+        defaults: {
+          results: {
+            testModel: new RestifyForeignKey('testModel'),
+            customModel: new RestifyForeignKeysArray('customModel'),
+          },
+        },
+      }
+      store.dispatch(api.actions.updateEntityManagerData(testData, testConfig))
+
+      const state = store.getState()
+      const savedModel = api.selectors.entityManager.testModel.getEntities(state).getById(1)
+
+      expect(savedModel).toEqual({
+        ...testData.results.testModel,
+        $modelType: 'testModel',
+      })
+      testModels.forEach(model => {
+        const objectsCount = Object.keys(state.api.entityManager[model].singleEntities).length
+        expect(objectsCount).toEqual(testData.results[model].length || 1)
+      })
+    })
+
     it('returns endpoint', () => {
       const endpoint = api.selectors.entityManager.testModel.getEndpoint()
       expect(endpoint).toEqual({
@@ -359,6 +396,11 @@ describe('api', () => {
   const testServerArrayRestifyChild2Models = testServerArrayResponse.results.map(item => ({
     ...item,
     $modelType: 'testChild2Model',
+  }))
+
+  const testServerArrayRestifyChild3Models = testServerArrayResponse.results.map(item => ({
+    ...item,
+    $modelType: 'testChild3Model',
   }))
 
   const testGenericServerArrayRestifyModels = testGenericServerArrayResponse.results.map(item => ({
@@ -565,19 +607,30 @@ describe('api', () => {
     })
 
     it('can get a child model array asynchronously on second parent level', (done) => {
-      mockRequest(testServerArrayResponse, {
-        url: `${modelUrl}1/${TEST_MODEL_ENDPOINT}1/${TEST_MODEL_ENDPOINT}?page=1&page_size=10`,
+      const makeMock = () => mockRequest(testServerArrayResponse, {
+        url: `${model2Url}1/${TEST_MODEL_ENDPOINT}1/${TEST_MODEL_ENDPOINT}?page=1&page_size=10`,
       })
-      const state = store.getState()
-      api.selectors.entityManager.testChild2Model.getEntities(state).asyncGetArray({
+      makeMock()
+      let state = store.getState()
+      const apiConfig = {
         parentEntities: {
           testModel: 1,
-          testChild1Model: 1,
+          testOtherEndpointModel: 1,
         },
-      })
+      }
+      api.selectors.entityManager.testChild3Model.getEntities(state).asyncGetArray(apiConfig)
         .then(array => {
-          expect(array).toEqual(testServerArrayRestifyChild2Models)
-          done()
+          expect(array).toEqual(testServerArrayRestifyChild3Models)
+          store.dispatch(api.actions.entityManager.testChild3Model.clearData(false))
+
+          makeMock()
+          state = store.getState()
+          // Check second time for bug with different parents order
+          api.selectors.entityManager.testChild3Model.getEntities(state).asyncGetArray(apiConfig)
+            .then(arr => {
+              expect(arr).toEqual(testServerArrayRestifyChild3Models)
+              done()
+            })
         })
     })
 

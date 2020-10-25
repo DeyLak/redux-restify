@@ -189,3 +189,6 @@ Check out the [docs](./docs) for more info.
 
 ### 26.09.2020 (0.13.1)
 1. Export low-level api `calculateValidationResult` for validation customisation
+
+### 25.10.2020 (0.14.0)
+1. Added `updateEntityManagerData` action

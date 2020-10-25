@@ -61,6 +61,12 @@ export const callPut = callApi('put')
 export const callPatch = callApi('patch')
 export const callDel = callApi('delete')
 
-export const resetEntityManager = () => dispatch => dispatch({
+export const resetEntityManager = () => ({
   type: ACTIONS_TYPES.entityManager.clearData,
+})
+
+export const updateEntityManagerData = (data, modelConfig) => ({
+  type: ACTIONS_TYPES.entityManager.updateData,
+  data,
+  modelConfig,
 })
