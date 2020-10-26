@@ -179,6 +179,7 @@ export namespace modelsDefinitions {
         export namespace defaults_7 {
             const id_7: undefined;
             export { id_7 as id };
+            export const otherField: undefined;
             const test_7: RestifyField;
             export { test_7 as test };
         }

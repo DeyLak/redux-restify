@@ -68,6 +68,28 @@ describe('api', () => {
       })
     })
 
+    it('can update nested fields with nulls', () => {
+      const testData1 = { id: 1, otherField: false, test: { nested: true } }
+      const testData2 = { id: 1, otherField: null, test: { nested: null } }
+      store.dispatch(api.actions.entityManager.testModelNested.updateById(
+        1,
+        testData1,
+      ))
+      let state = store.getState()
+      let testEntities = api.selectors.entityManager.testModelNested.getEntities(state)
+      let testModel = testEntities.getById(1)
+      expect(removePrivateFields(testModel)).toEqual(testData1)
+
+      store.dispatch(api.actions.entityManager.testModelNested.updateById(
+        1,
+        testData2,
+      ))
+      state = store.getState()
+      testEntities = api.selectors.entityManager.testModelNested.getEntities(state)
+      testModel = testEntities.getById(1)
+      expect(removePrivateFields(testModel)).toEqual(testData2)
+    })
+
     it('can nest RestifyFields configs with RestifyForeignKeysArray', () => {
       const state = store.getState()
       const testEntities = api.selectors.entityManager.testModelWithForeignKey.getEntities(state)
@@ -1150,13 +1172,12 @@ describe('api', () => {
           const currentEntity = api.selectors.entityManager.testModelWithForeignKey.getEntities(state).getById(1)
           expect(currentEntity).toEqual({
             ...modelResponseWithNull,
-            notInForeignKey: undefined,
             $modelType: 'testModelWithForeignKey',
           })
 
           mockRequest(modelWithForeignKeyResponse, { url: idUrl })
           const nullFieldValue = currentEntity.notInForeignKey
-          expect(nullFieldValue).toBe(undefined)
+          expect(nullFieldValue).toBe(null)
           setTimeout(() => {
             const newRequest = jasmine.Ajax.requests.mostRecent()
             expect(request).toBe(newRequest)

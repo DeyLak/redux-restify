@@ -187,6 +187,7 @@ export const modelsDefinitions = {
     name: 'Test model nested',
     defaults: {
       id: undefined,
+      otherField: undefined,
       test: new RestifyField({
         defaults: {
           nested: new RestifyField({ verboseName: 'Nested' }),
