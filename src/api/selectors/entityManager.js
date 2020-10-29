@@ -66,7 +66,7 @@ const getModelSelectorsFromDict = (selectorsDict) => (modelType, excludeModels =
     }
     return memo
   }
-  const linkedModelsNames = Object.keys(modelConfig).reduce(getLinkedModels(), [])
+  const linkedModelsNames = [...new Set(Object.keys(modelConfig).reduce(getLinkedModels(), []))]
   return Object.keys(selectorsDict).reduce((memo, key) => ({
     ...memo,
     [key]: selectorsDict[key](modelType, linkedModelsNames, newExcludeModels),

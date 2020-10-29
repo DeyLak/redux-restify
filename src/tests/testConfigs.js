@@ -233,6 +233,17 @@ export const modelsDefinitions = {
       },
     },
   },
+  testModelNested5: {
+    apiName: 'testApi',
+    endpoint: TEST_MODEL_ENDPOINT,
+    name: 'Test model nested 4',
+    defaults: {
+      id: undefined,
+      test: {
+        foreignKey: new RestifyForeignKey('testModelWithForeignKey'),
+      },
+    },
+  },
   testModelOtherId: {
     clearDataOnRouteChange: true,
     apiName: 'testApi',

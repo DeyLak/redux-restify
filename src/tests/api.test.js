@@ -185,6 +185,67 @@ describe('api', () => {
       })
     })
 
+    it('Stores normalized data for deep nested fields', () => {
+      const testData = [{
+        id: 1,
+        test: {
+          foreignKey: {
+            id: 1,
+            test: true,
+            singleForeignKey: {
+              id: 1,
+              test: true,
+            },
+          },
+        },
+      }]
+      const testGetArray = [{
+        ...testData[0],
+        test: {
+          ...testData[0].test,
+          foreignKeyId: 1,
+          foreignKey: {
+            ...testData[0].test.foreignKey,
+            singleForeignKeyId: 1,
+            singleForeignKey: {
+              ...testData[0].test.foreignKey.singleForeignKey,
+              $modelType: 'testModel',
+            },
+            $modelType: 'testModelWithForeignKey',
+          },
+        },
+      }]
+      store.dispatch(api.actions.entityManager.testModelNested5.updateData(
+        testData,
+        1,
+        2,
+        {},
+        undefined,
+        {},
+        false,
+        {},
+      ))
+
+      const state = store.getState()
+      const testArray = api.selectors.entityManager.testModelNested5.getEntities(state).getArray()
+      expect(removePrivateFields(testArray)).toEqual(testGetArray)
+
+      expect(state.api.entityManager.testModel.singleEntities[1].actual).toEqual(
+        testData[0].test.foreignKey.singleForeignKey,
+      )
+      expect(state.api.entityManager.testModelWithForeignKey.singleEntities[1].actual).toEqual({
+        id: 1,
+        test: true,
+        singleForeignKeyId: 1,
+      })
+      expect(state.api.entityManager.testModelNested5.singleEntities[1].actual).toEqual({
+        id: 1,
+        test: {
+          foreignKeyId: 1,
+        },
+      })
+    })
+
     it('clears all data after router location changes', () => {
       const testData = [{ id: 1, test: true }, { id: 2, test: false }]
       store.dispatch(api.actions.entityManager.testModelOtherId.updateData(
