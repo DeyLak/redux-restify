@@ -21,7 +21,7 @@ import { getNestedObjectField } from '~/helpers/nestedObjects'
 // This includes normalizing entities, converting to camelCase and other restify features
 export const mapDataToRestifyModel = (data, modelTypeOrConfig) => {
   let currentModel = modelTypeOrConfig
-  if (typeof currentModel === 'string') {
+  if (typeof currentModel !== 'object') {
     currentModel = RESTIFY_CONFIG.registeredModels[currentModel]
     if (!currentModel) {
       throw new Error(`
@@ -90,8 +90,8 @@ export const mapDataToRestifyModel = (data, modelTypeOrConfig) => {
           let rawModel = field
           let currentModelType = currentFieldDefault.modelType
 
-          const currentGetGenericModel = currentModel.getGenericModel || currentApi.getGenericModel
-          if (currentFieldDefault instanceof RestifyGenericForeignKey) {
+          const currentGetGenericModel = currentModel.getGenericModel || (currentApi && currentApi.getGenericModel)
+          if (currentFieldDefault instanceof RestifyGenericForeignKey && currentGetGenericModel) {
             ({ modelType: currentModelType, model: rawModel } = currentGetGenericModel(field, key, data))
           }
 

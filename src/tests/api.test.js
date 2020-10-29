@@ -397,7 +397,7 @@ describe('api', () => {
       })))
     })
 
-    fit('can update arrays with pagination in entity manager with custom model config', () => {
+    it('can update arrays with pagination in entity manager with custom model config', () => {
       const testData = [
         {
           results: {
