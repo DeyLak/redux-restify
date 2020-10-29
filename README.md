@@ -192,3 +192,6 @@ Check out the [docs](./docs) for more info.
 
 ### 25.10.2020 (0.14.0)
 1. Added `updateEntityManagerData` action
+
+### 29.10.2020 (0.15.0)
+1. Added `withPages` and `apiConfig` options to `RestifyForeignKeysArray` action, allowing to store model fields with links to custom filtering configs

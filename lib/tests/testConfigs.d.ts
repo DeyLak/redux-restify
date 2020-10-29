@@ -180,7 +180,7 @@ export namespace modelsDefinitions {
             const id_7: undefined;
             export { id_7 as id };
             export const otherField: undefined;
-            const test_7: RestifyField;
+            const test_7: any;
             export { test_7 as test };
         }
         export { defaults_7 as defaults };
@@ -648,7 +648,6 @@ export namespace formsDefinitions {
 }
 export let store: any;
 export function beforeEachFunc(config?: {}): void;
-import RestifyField from "../api/models/RestifyField";
 import RestifyForeignKey from "../api/models/RestifyForeignKey";
 import RestifyForeignKeysArray from "../api/models/RestifyForeignKeysArray";
 declare function customGetEntityUrl({ apiHost, apiPrefix, modelEndpoint, entityId, crudAction, }: {

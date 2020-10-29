@@ -42,7 +42,6 @@ export interface ApiActions extends ActionCreatorsMapObject {
   updateData<T> (
     data: T[],
     page: number,
-    pageSize: number,
     count: number,
     filter: any,
     sort: any,

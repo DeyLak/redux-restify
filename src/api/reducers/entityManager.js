@@ -26,8 +26,8 @@ const makeIdMap = items => items.reduce((memo, item) => ({
   ...makeIdObj(item),
 }), {})
 
-// This function mutates state parameter, so we can use it in other states
-const updateByIdInState = (state, id, data, allowClearPages = false, loadedById = false) => {
+// This function mutates first state parameter, so we can use it for side effects in states of other models
+const mutateByIdInState = (state, id, data, allowClearPages = false, loadedById = false) => {
   const currentEntity = state.singleEntities[id]
   if (currentEntity && currentEntity.$optimisticCount > 1) {
     state.singleEntities = {
@@ -64,6 +64,32 @@ const updateByIdInState = (state, id, data, allowClearPages = false, loadedById 
   return state
 }
 
+// This function mutates first state parameter, so we can use it for side effects in states of other models
+const mutatePagesInState = (state, data) => {
+  state.count = {
+    ...state.count,
+    [data.pageHash]: data.count,
+  }
+
+  state.pages = {
+    ...state.pages,
+    [data.pageHash]: {
+      ...(state.pages[data.pageHash] || {}),
+      [data.page || DEFAULT_PAGE_NUMBER]: data.mappedIds,
+    },
+  }
+
+  // Clear old page, if any, cause we already have new info for this config
+  state.oldPages = {
+    ...state.oldPages,
+    [data.pageHash]: {
+      ...(state.oldPages[data.pageHash] || {}),
+      [data.page || DEFAULT_PAGE_NUMBER]: [],
+    },
+  }
+  return state
+}
+
 const modelInitState = {
   count: {},
   singleEntities: {},
@@ -93,14 +119,24 @@ const getEntityManagerReducer = (modelTypes = []) => {
     if (action.type === ACTIONS_TYPES.entityManager.clearData) {
       return initState
     }
-    if (action.type === ACTIONS_TYPES.entityManager.updateData) {
-      const { normalized } = mapDataToRestifyModel(action.data, createModelConfig(action.modelConfig))
-      // Side effect of updating linked models in other model states
+
+    // Used as side effect for updating linked models in other model states
+    const mutateModelsInState = (normalized, pages) => {
       Object.keys(normalized).forEach(modelName => {
         normalized[modelName].forEach(normalizedModel => {
-          updateByIdInState(newModelStates[modelName], normalizedModel.id, normalizedModel)
+          mutateByIdInState(newModelStates[modelName], normalizedModel.id, normalizedModel)
         })
       })
+      Object.keys(pages).forEach(modelName => {
+        pages[modelName].forEach(pageModel => {
+          mutatePagesInState(newModelStates[modelName], pageModel)
+        })
+      })
+    }
+
+    if (action.type === ACTIONS_TYPES.entityManager.updateData) {
+      const { normalized, pages } = mapDataToRestifyModel(action.data, createModelConfig(action.modelConfig))
+      mutateModelsInState(normalized, pages)
     } else {
       for (let i = 0; i < modelTypes.length; i += 1) {
         const modelType = modelTypes[i]
@@ -128,60 +164,44 @@ const getEntityManagerReducer = (modelTypes = []) => {
               action.sort,
               action.parentEntities,
               action.specialConfig,
-              action.pageSize,
               action.modelConfig,
             )
             const normalizedData = action.data.map(item => {
-              const { model, normalized } = mapDataToRestifyModel(item, modelType)
-              // Side effect of updating linked models in other model states
-              Object.keys(normalized).forEach(modelName => {
-                normalized[modelName].forEach(normalizedModel => {
-                  updateByIdInState(newModelStates[modelName], normalizedModel.id, normalizedModel)
-                })
-              })
+              const { model, normalized, pages } = mapDataToRestifyModel(item, modelType)
+              mutateModelsInState(normalized, pages)
               return model
             })
-            newModelState = {
-              ...currentModelState,
-              count: {
-                ...currentModelState.count,
-                [currentConfigHash]: action.count,
+
+            newModelState = mutatePagesInState(
+              {
+                ...currentModelState,
+                singleEntities: mergeAndReplaceArrays(
+                  {},
+                  currentModelState.singleEntities,
+                  (action.specialConfig ? {} : makeIdMap(normalizedData)),
+                ),
               },
-              singleEntities: mergeAndReplaceArrays(
-                {},
-                currentModelState.singleEntities,
-                (action.specialConfig ? {} : makeIdMap(normalizedData)),
-              ),
-              pages: {
-                ...currentModelState.pages,
-                [currentConfigHash]: {
-                  ...(currentModelState.pages[currentConfigHash] || {}),
-                  [action.page || DEFAULT_PAGE_NUMBER]:
-                    (action.specialConfig ? normalizedData : normalizedData.map(item => item.id)),
-                },
+              {
+                mappedIds: action.specialConfig ? normalizedData : normalizedData.map(item => item.id),
+                count: action.count,
+                page: action.page,
+                pageHash: currentConfigHash,
               },
-              // Clear old page, if any, cause we already have new info for this config
-              oldPages: {
-                ...currentModelState.oldPages,
-                [currentConfigHash]: {
-                  ...(currentModelState.oldPages[currentConfigHash] || {}),
-                  [action.page || DEFAULT_PAGE_NUMBER]: [],
-                },
-              },
-            }
+            )
             break
           }
           case ACTIONS_TYPES[modelType].updateById: {
             const specialId = getSpecialIdWithQuery(action.id, action.query, action.parentEntities)
-            const { model, normalized } = mapDataToRestifyModel(action.data, modelType)
-            // Side effect of updating linked models in other model states
-            Object.keys(normalized).forEach(modelName => {
-              normalized[modelName].forEach(normalizedModel => {
-                updateByIdInState(newModelStates[modelName], normalizedModel.id, normalizedModel)
-              })
-            })
-            newModelState =
-              updateByIdInState({ ...currentModelState }, specialId, model, action.allowClearPages, action.loadedById)
+            const { model, normalized, pages } = mapDataToRestifyModel(action.data, modelType)
+            mutateModelsInState(normalized, pages)
+
+            newModelState = mutateByIdInState(
+              { ...currentModelState },
+              specialId,
+              model,
+              action.allowClearPages,
+              action.loadedById,
+            )
             break
           }
           case ACTIONS_TYPES[modelType].updateOptimisticById: {
@@ -219,7 +239,6 @@ const getEntityManagerReducer = (modelTypes = []) => {
               action.sort,
               action.parentEntities,
               action.specialConfig,
-              action.pageSize,
               action.modelConfig,
             )
             newModelState = {

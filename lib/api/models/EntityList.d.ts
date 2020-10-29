@@ -75,28 +75,25 @@ declare class EntityList {
     get oldArrays(): {};
     get arrays(): {};
     setSource(pages: any, oldPages: any, singles: any, oldSingles: any, errors: any, errorsPages: any, count: any, urls: any, linkedModelsDict: any): void;
-    getNextPage({ filter, sort, parentEntities, specialConfig, pageSize, modelConfig, }?: {
+    getNextPage({ filter, sort, parentEntities, specialConfig, modelConfig, }?: {
         filter?: {} | undefined;
         sort: any;
         parentEntities?: {} | undefined;
         specialConfig?: boolean | undefined;
-        pageSize?: any;
         modelConfig?: {} | undefined;
     }): number | undefined;
-    getCount({ filter, sort, parentEntities, specialConfig, pageSize, modelConfig, }?: {
+    getCount({ filter, sort, parentEntities, specialConfig, modelConfig, }?: {
         filter?: {} | undefined;
         sort: any;
         parentEntities?: {} | undefined;
         specialConfig?: boolean | undefined;
-        pageSize?: any;
         modelConfig?: {} | undefined;
     }): any;
-    getArray({ filter, sort, parentEntities, specialConfig, pageSize, modelConfig, forceLoad, }?: {
+    getArray({ filter, sort, parentEntities, specialConfig, modelConfig, forceLoad, }?: {
         filter?: {} | undefined;
         sort: any;
         parentEntities?: {} | undefined;
         specialConfig?: boolean | undefined;
-        pageSize?: any;
         modelConfig?: {} | undefined;
         forceLoad?: boolean | undefined;
     }): any;
@@ -109,17 +106,16 @@ declare class EntityList {
      * @param  {Boolean} [specialConfig=false] - entities from this array should only be available for this config
      * @return {Boolean} Is the array loading.
      */
-    getIsLoadingArray({ filter, sort, parentEntities, specialConfig, pageSize, modelConfig, }?: {
+    getIsLoadingArray({ filter, sort, parentEntities, specialConfig, modelConfig, }?: {
         filter?: Object;
         sort?: string;
         parentEntities?: Object;
     } | undefined): boolean;
-    asyncGetArray({ filter, sort, parentEntities, specialConfig, pageSize, modelConfig, forceLoad, }?: {
+    asyncGetArray({ filter, sort, parentEntities, specialConfig, modelConfig, forceLoad, }?: {
         filter?: {} | undefined;
         sort: any;
         parentEntities?: {} | undefined;
         specialConfig?: boolean | undefined;
-        pageSize?: any;
         modelConfig?: {} | undefined;
         forceLoad?: boolean | undefined;
     }): Promise<any>;

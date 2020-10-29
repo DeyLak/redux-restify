@@ -34,6 +34,12 @@ export interface RestifyModelDefaults {
 export interface RestifyFieldConfig {
   verboseName?: string;
   defaults?: RestifyModelDefaults,
+  transformField?: (data: any) => {
+    data: any;
+    count?: number;
+    page?: number;
+    errors?: any;
+  };
 }
 
 export interface RestifyLinkedModelConfig extends RestifyFieldConfig {
@@ -70,6 +76,8 @@ export class RestifyForeignKey extends RestifyLinkedModel {
 
 export class RestifyForeignKeysArray extends RestifyLinkedModel {
   constructor(modelType: string, config?: RestifyLinkedModelConfig)
+  withPages: boolean;
+  apiConfig?: GetArrayConfig;
   $isRestifyForeignKeysArray: boolean;
 }
 

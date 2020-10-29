@@ -45,7 +45,6 @@ describe('api', () => {
       store.dispatch(api.actions.entityManager.testModelNested.updateData(
         testData,
         1,
-        10,
         2,
         {},
         undefined,
@@ -119,7 +118,6 @@ describe('api', () => {
       store.dispatch(api.actions.entityManager.testModel.updateData(
         testData,
         1,
-        10,
         2,
         {},
         undefined,
@@ -167,7 +165,6 @@ describe('api', () => {
         store.dispatch(api.actions.entityManager[modelName].updateData(
           testData,
           1,
-          10,
           2,
           {},
           undefined,
@@ -193,7 +190,6 @@ describe('api', () => {
       store.dispatch(api.actions.entityManager.testModelOtherId.updateData(
         testData,
         1,
-        10,
         2,
         {},
         undefined,
@@ -218,7 +214,6 @@ describe('api', () => {
       store.dispatch(api.actions.entityManager.testModelOtherId.updateData(
         testData,
         1,
-        10,
         2,
         {},
         undefined,
@@ -246,7 +241,6 @@ describe('api', () => {
       store.dispatch(api.actions.entityManager.testModelForClearData.updateData(
         testData,
         1,
-        10,
         2,
         {},
         undefined,
@@ -282,7 +276,6 @@ describe('api', () => {
         store.dispatch(api.actions.entityManager[model].updateData(
           testData,
           1,
-          10,
           2,
           {},
           undefined,
@@ -310,7 +303,7 @@ describe('api', () => {
       })
     })
 
-    it('can update data in entity manager with custom model config', () => {
+    it('can update single ids data in entity manager with custom model config', () => {
       const testData = {
         results: {
           testModel: { id: 1, test: true },
@@ -341,6 +334,115 @@ describe('api', () => {
       testModels.forEach(model => {
         const objectsCount = Object.keys(state.api.entityManager[model].singleEntities).length
         expect(objectsCount).toEqual(testData.results[model].length || 1)
+      })
+    })
+
+    it('can update arrays with api configs data in entity manager with custom model config', () => {
+      const testData = {
+        results: {
+          testModel1: [
+            { id: 1, test: true },
+            { id: 2, test: false },
+          ],
+          testModel2: {
+            count: 3,
+            results: [
+              { id: 3, test: true },
+              { id: 4, test: false },
+            ],
+          },
+        },
+      }
+      const testApiConfig = {
+        filter: {
+          field: 0,
+        },
+      }
+      const testConfig = {
+        defaults: {
+          results: {
+            testModel1: new RestifyForeignKeysArray('testModel', { withPages: true }),
+            testModel2: new RestifyForeignKeysArray('testModel', {
+              withPages: true,
+              apiConfig: testApiConfig,
+              transformField: (data) => ({
+                data: data.results,
+                count: data.count,
+              }),
+            }),
+          },
+        },
+      }
+      store.dispatch(api.actions.updateEntityManagerData(testData, testConfig))
+
+      const state = store.getState()
+      expect(Object.keys(state.api.entityManager.testModel.pages).length).toEqual(2)
+
+      const savedModel = api.selectors.entityManager.testModel.getEntities(state).getById(1)
+      expect(savedModel).toEqual({
+        ...testData.results.testModel1[0],
+        $modelType: 'testModel',
+      })
+
+      const savedArray1 = api.selectors.entityManager.testModel.getEntities(state).getArray()
+      expect(savedArray1).toEqual(testData.results.testModel1.map(item => ({
+        ...item,
+        $modelType: 'testModel',
+      })))
+
+      const savedArray2 = api.selectors.entityManager.testModel.getEntities(state).getArray(testApiConfig)
+      expect(savedArray2).toEqual(testData.results.testModel2.results.map(item => ({
+        ...item,
+        $modelType: 'testModel',
+      })))
+    })
+
+    fit('can update arrays with pagination in entity manager with custom model config', () => {
+      const testData = [
+        {
+          results: {
+            count: 3,
+            results: [
+              { id: 1, test: true },
+              { id: 2, test: false },
+            ],
+          },
+        },
+        {
+          results: {
+            count: 3,
+            results: [
+              { id: 3, test: true },
+            ],
+          },
+        },
+      ]
+
+      testData.forEach((currentTestData, dataIndex) => {
+        const testConfig = {
+          defaults: {
+            results: new RestifyForeignKeysArray('testModel', {
+              withPages: true,
+              transformField: (data) => ({
+                data: data.results,
+                count: data.count,
+                page: dataIndex + 1,
+              }),
+            }),
+          },
+        }
+        store.dispatch(api.actions.updateEntityManagerData(currentTestData, testConfig))
+
+        const state = store.getState()
+        expect(Object.keys(state.api.entityManager.testModel.pages).length).toEqual(1)
+
+        const array = api.selectors.entityManager.testModel.getEntities(state).getArray()
+        expect(array).toEqual(testData.slice(0, dataIndex + 1).flatMap(dataItem => {
+          return dataItem.results.results.map(item => ({
+            ...item,
+            $modelType: 'testModel',
+          }))
+        }))
       })
     })
 

@@ -8,7 +8,7 @@ export const DEFAULT_PAGE_SIZE: 10;
 export const DEFAULT_PAGE_NUMBER: 1;
 export const DEFAULT_BACKEND_DATE_FORMAT: "YYYY-MM-DD";
 export function queryFormat(query: any, config?: {}): string;
-export function getPagesConfigHash(filter: any, sort: any, parentEntities: any, specialConfig: any, argPageSize: any, modelConfig: any): any;
+export function getPagesConfigHash(filter?: {}, sort?: any, parentEntities?: {}, specialConfig?: boolean, modelConfig?: {}): any;
 export function getQueryHash(query: any): string;
 export function getSpecialIdWithQuery(id: any, query: any, parentEntities: any): any;
 export function getCacheValidationHashForId(id: any, asyncGetters: any): any;

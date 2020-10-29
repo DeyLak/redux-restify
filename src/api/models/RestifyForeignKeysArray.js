@@ -7,6 +7,12 @@ class RestifyForeignKeysArray extends RestifyLinkedModel {
       ...config,
       idField: config.idField || 'Ids',
     })
+    const {
+      withPages = false, // Also save array as some page config in store
+      apiConfig = {}, // Optional apiConfig if withPages used
+    } = config
+    this.withPages = withPages
+    this.apiConfig = apiConfig
     this.$isRestifyForeignKeysArray = true
   }
 }

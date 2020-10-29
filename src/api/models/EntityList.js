@@ -620,13 +620,11 @@ class EntityList {
     sort,
     parentEntities = {},
     specialConfig = false,
-    // @deprecated use modelConfig to change model settings for request
-    pageSize = this.pageSize,
     modelConfig = {},
   } = {}) {
-    const pageSizeNew = modelConfig.pageSize || pageSize
+    const pageSizeNew = modelConfig.pageSize || this.pageSize
     if (!this.modelConfig.pagination && !modelConfig.pagination) return undefined
-    const currentConfig = getPagesConfigHash(filter, sort, parentEntities, specialConfig, pageSizeNew, modelConfig)
+    const currentConfig = getPagesConfigHash(filter, sort, parentEntities, specialConfig, modelConfig)
     const currentPages = Object.keys(this.pages[currentConfig] || {})
     const currentCount = this.count[currentConfig] || 0
     const lastPage = currentPages.map(x => +x).sort((a, b) => b - a)[0]
@@ -641,11 +639,9 @@ class EntityList {
     sort,
     parentEntities = {},
     specialConfig = false,
-    // @deprecated use modelConfig to change model settings for request
-    pageSize = this.pageSize,
     modelConfig = {},
   } = {}) {
-    const currentConfig = getPagesConfigHash(filter, sort, parentEntities, specialConfig, pageSize, modelConfig)
+    const currentConfig = getPagesConfigHash(filter, sort, parentEntities, specialConfig, modelConfig)
     return this.count[currentConfig] || 0
   }
 
@@ -654,12 +650,10 @@ class EntityList {
     sort,
     parentEntities = {},
     specialConfig = false,
-    // @deprecated use modelConfig to change model settings for request
-    pageSize = this.pageSize,
     modelConfig = {},
     forceLoad = false,
   } = {}) {
-    const currentConfig = getPagesConfigHash(filter, sort, parentEntities, specialConfig, pageSize, modelConfig)
+    const currentConfig = getPagesConfigHash(filter, sort, parentEntities, specialConfig, modelConfig)
     if (!forceLoad && this.arrays[currentConfig]) {
       return this.arrays[currentConfig]
     }
@@ -669,7 +663,6 @@ class EntityList {
     if (!this.arrayLoaded[currentConfig]) {
       this.arrayLoaded[currentConfig] = this.asyncDispatch(entityManager[this.modelType]
         .loadData({
-          pageSize,
           filter,
           sort,
           parentEntities,
@@ -708,11 +701,9 @@ class EntityList {
     sort,
     parentEntities = {},
     specialConfig = false,
-    // @deprecated use modelConfig to change model settings for request
-    pageSize = this.pageSize,
     modelConfig = {},
   } = {}) {
-    const currentConfig = getPagesConfigHash(filter, sort, parentEntities, specialConfig, pageSize, modelConfig)
+    const currentConfig = getPagesConfigHash(filter, sort, parentEntities, specialConfig, modelConfig)
     const urlToFind = getUrlWithParents(
       `${modelConfig.endpoint || this.modelConfig.endpoint}${currentConfig}`,
       this.modelConfig,
@@ -727,12 +718,10 @@ class EntityList {
     sort,
     parentEntities = {},
     specialConfig = false,
-    // @deprecated use modelConfig to change model settings for request
-    pageSize = this.pageSize,
     modelConfig = {},
     forceLoad = false,
   } = {}) {
-    const currentConfig = getPagesConfigHash(filter, sort, parentEntities, specialConfig, pageSize, modelConfig)
+    const currentConfig = getPagesConfigHash(filter, sort, parentEntities, specialConfig, modelConfig)
     if (!forceLoad && this.arrays[currentConfig]) {
       return this.arrays[currentConfig]
     }
@@ -741,7 +730,6 @@ class EntityList {
       return []
     }
     this.arrayLoaded[currentConfig] = this.dispatch(entityManager[this.modelType].loadData({
-      pageSize,
       filter,
       sort,
       parentEntities,

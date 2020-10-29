@@ -8,6 +8,7 @@ import {
   RestifyGenericForeignKey,
   RestifyForeignKeysArray,
 } from './models'
+import { getPagesConfigHash } from './constants'
 
 import { RESTIFY_CONFIG } from '../config'
 
@@ -42,11 +43,24 @@ export const mapDataToRestifyModel = (data, modelTypeOrConfig) => {
   }
 
   const otherModels = {}
+  const otherPages = {}
 
   const normalizeKeys = (configPath = [], defaults = currentModel.defaults) => key => {
     const currentConfigPath = configPath.concat(key)
     let currentFieldDefault = defaults[key]
-    const currentField = getNestedObjectField(resultModel, currentConfigPath)
+
+    let currentField = getNestedObjectField(resultModel, currentConfigPath)
+    let currentCount
+    let currentPage
+    // Transform field before mapping
+    if (currentFieldDefault instanceof RestifyField && currentFieldDefault.transformField) {
+      ({
+        data: currentField,
+        count: currentCount,
+        page: currentPage,
+      } = currentFieldDefault.transformField(currentField))
+    }
+
     if (currentFieldDefault instanceof RestifyLinkedModel) {
       const modelTypes = (
         Array.isArray(currentFieldDefault.modelType) ? currentFieldDefault.modelType : [currentFieldDefault.modelType]
@@ -54,6 +68,7 @@ export const mapDataToRestifyModel = (data, modelTypeOrConfig) => {
       modelTypes.forEach(type => {
         if (!otherModels[type]) {
           otherModels[type] = []
+          otherPages[type] = []
         }
       })
       const modelIdField = currentFieldDefault.getIdField(key)
@@ -67,25 +82,30 @@ export const mapDataToRestifyModel = (data, modelTypeOrConfig) => {
       }
       if (currentField !== null && currentField !== undefined) {
         const fieldsToMap = currentFieldDefault instanceof RestifyForeignKeysArray ? currentField : [currentField]
+
         const mappedIds = []
         const mappedTypes = []
 
         fieldsToMap.forEach(field => {
           let rawModel = field
           let currentModelType = currentFieldDefault.modelType
+
           const currentGetGenericModel = currentModel.getGenericModel || currentApi.getGenericModel
           if (currentFieldDefault instanceof RestifyGenericForeignKey) {
             ({ modelType: currentModelType, model: rawModel } = currentGetGenericModel(field, key, data))
           }
-          // Reciewed raw id instead of model, just save it, later it will be handled by getById
+
           if (!isPureObject(rawModel) && rawModel !== null) {
+            // Reciewed raw id instead of model, just save it, later it will be handled by getById
             mappedIds.push(rawModel)
             mappedTypes.push(currentModelType)
           } else {
             // Mapping connected model
-            const { model, normalized } = mapDataToRestifyModel(rawModel, currentModelType)
+            const { model, normalized, pages } = mapDataToRestifyModel(rawModel, currentModelType)
+
             // Add connected model to normalized models
             otherModels[currentModelType].push(model)
+
             // If connected model has own normalized models, add them to result
             Object.keys(normalized).forEach(modelName => {
               if (!otherModels[modelName]) {
@@ -93,10 +113,36 @@ export const mapDataToRestifyModel = (data, modelTypeOrConfig) => {
               }
               otherModels[modelName] = otherModels[modelName].concat(normalized[modelName])
             })
+
+            // If connected model has own pages add them to result
+            Object.keys(pages).forEach(modelName => {
+              if (!otherPages[modelName]) {
+                otherPages[modelName] = []
+              }
+              otherPages[modelName] = otherPages[modelName].concat(pages[modelName])
+            })
+
+            // Save ids and types for links in store
             mappedIds.push(model.id)
             mappedTypes.push(currentModelType)
           }
         })
+
+        if (currentFieldDefault instanceof RestifyForeignKeysArray && currentFieldDefault.withPages) {
+          otherPages[currentFieldDefault.modelType].push({
+            mappedIds,
+            count: currentCount,
+            page: currentPage,
+            pageHash: getPagesConfigHash(
+              currentFieldDefault.apiConfig.filter,
+              currentFieldDefault.apiConfig.sort,
+              currentFieldDefault.apiConfig.parentEntities,
+              currentFieldDefault.apiConfig.specialConfig,
+              currentFieldDefault.apiConfig.modelConfig,
+            ),
+          })
+        }
+
         // Setting fields of the restify model
         unset(resultModel, currentConfigPath)
         if (currentFieldDefault instanceof RestifyForeignKeysArray) {
@@ -144,5 +190,6 @@ export const mapDataToRestifyModel = (data, modelTypeOrConfig) => {
   return {
     model: resultModel,
     normalized: otherModels,
+    pages: otherPages,
   }
 }

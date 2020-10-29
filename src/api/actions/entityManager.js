@@ -59,7 +59,6 @@ const globalActions = {
   updateData: (modelType) => (
     data,
     page,
-    pageSize,
     count,
     filter,
     sort,
@@ -75,7 +74,6 @@ const globalActions = {
       type: ACTIONS_TYPES[modelType].updateData,
       data,
       page,
-      pageSize,
       count,
       filter,
       sort,
@@ -88,7 +86,6 @@ const globalActions = {
   setLoadErrorForPage: (modelType) => (
     error,
     page,
-    pageSize,
     filter,
     sort,
     parentEntities,
@@ -98,7 +95,6 @@ const globalActions = {
     type: ACTIONS_TYPES[modelType].setLoadErrorForPage,
     error,
     page,
-    pageSize,
     filter,
     sort,
     parentEntities,
@@ -207,8 +203,7 @@ const globalActions = {
       query[currentApi.defaultSortField] = sort
     }
 
-    // TODO remove pageSize prop from top-level config
-    const pageSize = modelConfig.pageSize || config.pageSize ||
+    const pageSize = modelConfig.pageSize ||
                        currentModel && currentModel.pageSize ||
                        currentApi && currentApi.defaultPageSize ||
                        DEFAULT_PAGE_SIZE
@@ -230,7 +225,6 @@ const globalActions = {
       return globalActions.updateData(modelType)(
         transformedData.data,
         transformedData.page || page,
-        pageSize,
         transformedData.count,
         filter,
         sort,
@@ -244,7 +238,6 @@ const globalActions = {
       return globalActions.setLoadErrorForPage(modelType)(
         true,
         page,
-        pageSize,
         filter,
         sort,
         parentEntities,
@@ -275,7 +268,6 @@ const globalActions = {
         sort,
         parentEntities,
         specialConfig,
-        pageSize,
         modelConfig,
       })
     })
@@ -291,22 +283,18 @@ const globalActions = {
       modelConfig = {},
     } = config
     const state = getState()
-    const currentModel = RESTIFY_CONFIG.registeredModels[modelType]
-    const currentApi = RESTIFY_CONFIG.registeredApies[currentModel.apiName]
-    const pageSize = config.pageSize ||
-                       currentModel && currentModel.pageSize ||
-                       currentApi && currentApi.defaultPageSize ||
-                       DEFAULT_PAGE_SIZE
+
     const nextPage = selectors.entityManager[modelType].getEntities(state).getNextPage(config)
     if (!nextPage) {
       console.warn(`Tried to load next page for ${modelType}, but there is no next page found!
         May be your didn't padss the api config to the loadNextPage action?`)
       return Promise.resolve()
     }
+
     return dispatch(globalActions.loadData(modelType)({
       ...config,
       page: nextPage,
-      urlHash: getPagesConfigHash(filter, sort, parentEntities, specialConfig, pageSize, modelConfig),
+      urlHash: getPagesConfigHash(filter, sort, parentEntities, specialConfig, modelConfig),
     }))
   },
 
