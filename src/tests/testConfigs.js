@@ -33,6 +33,8 @@ export const responseHeaders = [
   },
 ]
 
+export const MANY_FOREIGN_KEYS_COUNT = 50
+
 const customGetEntityUrl = ({
   apiHost,
   apiPrefix,
@@ -443,6 +445,30 @@ export const modelsDefinitions = {
     defaults: {
       id: undefined,
       nest3: undefined,
+    },
+  },
+  testModelWithManyForeignKeys: {
+    apiName: 'testApi',
+    endpoint: TEST_MODEL_ENDPOINT,
+    name: 'Test model with many foreign keys',
+    defaults: {
+      id: undefined,
+      dict: (new Array(MANY_FOREIGN_KEYS_COUNT)).fill(0).reduce((memo, item, index) => ({
+        ...memo,
+        [`key${index}`]: new RestifyForeignKeysArray('testModel'),
+      }), {}),
+    },
+  },
+  testNestedModelWithManyForeignKeys: {
+    apiName: 'testApi',
+    endpoint: TEST_MODEL_ENDPOINT,
+    name: 'Test model with many foreign keys',
+    defaults: {
+      id: undefined,
+      dict: (new Array(MANY_FOREIGN_KEYS_COUNT)).fill(0).reduce((memo, item, index) => ({
+        ...memo,
+        [`key${index}`]: new RestifyForeignKeysArray('testModelWithForeignKey'),
+      }), {}),
     },
   },
 }

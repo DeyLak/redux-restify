@@ -17,6 +17,7 @@ import {
   TEST_API_PREFIX,
   TEST_MODEL_ENDPOINT,
   OTHER_TEST_API_PREFIX,
+  MANY_FOREIGN_KEYS_COUNT,
   modelsDefinitions,
   responseHeaders,
 
@@ -735,6 +736,79 @@ describe('api', () => {
           state = store.getState()
           testModelEntities = api.selectors.entityManager.testModel.getEntities(state)
           expect(testModelEntities.hasById(1)).toEqual(true)
+          done()
+        })
+    })
+
+    it('can get a single foreign key model asynchronously with many foreign keys', (done) => {
+      const testData = {
+        id: 1,
+        dict: (new Array(MANY_FOREIGN_KEYS_COUNT)).fill(0).reduce((memo, item, index) => ({
+          ...memo,
+          [`key${index}`]: [{ id: index + 1, test: true }],
+        }), {}),
+      }
+      const restifyModelData = {
+        ...testData,
+        dict: Object.entries(testData.dict).reduce((memo, [key, model]) => ({
+          ...memo,
+          [`${key}Ids`]: model.map(item => item.id),
+          [key]: model.map(item => ({
+            ...item,
+            $modelType: 'testModel',
+          })),
+        }), {}),
+        $modelType: 'testModelWithManyForeignKeys',
+      }
+      mockRequest(testData, { url: `${modelUrl}1/` })
+      const state = store.getState()
+      api.selectors.entityManager.testModelWithManyForeignKeys.getEntities(state).asyncGetById(1)
+        .then(model => {
+          expect(model).toEqual(restifyModelData)
+          done()
+        })
+    })
+
+    it('can get a nested model asynchronously with many foreign keys', (done) => {
+      const testData = {
+        id: 1,
+        dict: (new Array(MANY_FOREIGN_KEYS_COUNT)).fill(0).reduce((memo, item, index) => {
+          const currentId = index + 1
+          return {
+            ...memo,
+            [`key${index}`]: [{
+              id: currentId,
+              test: true,
+              singleForeignKey: {
+                id: currentId,
+                test: true,
+              },
+            }],
+          }
+        }, {}),
+      }
+      const restifyModelData = {
+        ...testData,
+        dict: Object.entries(testData.dict).reduce((memo, [key, model]) => ({
+          ...memo,
+          [`${key}Ids`]: model.map(item => item.id),
+          [key]: model.map(item => ({
+            ...item,
+            singleForeignKeyId: item.singleForeignKey.id,
+            singleForeignKey: {
+              ...item.singleForeignKey,
+              $modelType: 'testModel',
+            },
+            $modelType: 'testModelWithForeignKey',
+          })),
+        }), {}),
+        $modelType: 'testNestedModelWithManyForeignKeys',
+      }
+      mockRequest(testData, { url: `${modelUrl}1/` })
+      const state = store.getState()
+      api.selectors.entityManager.testNestedModelWithManyForeignKeys.getEntities(state).asyncGetById(1)
+        .then(model => {
+          expect(model).toEqual(restifyModelData)
           done()
         })
     })

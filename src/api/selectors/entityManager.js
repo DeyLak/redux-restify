@@ -40,7 +40,6 @@ const getModelSelectorsFromDict = (selectorsDict) => (modelType, excludeModels =
     if (currentField instanceof RestifyLinkedModel) {
       const arrayModelType = Array.isArray(currentField.modelType) ? currentField.modelType : [currentField.modelType]
       // Stop recursion for foreign keys to restricted models
-      // console.log(modelType, newExcludeModels, arrayModelType)
       if (currentField.modelType === modelType) return memo
 
       arrayModelType.forEach(model => {
@@ -48,12 +47,10 @@ const getModelSelectorsFromDict = (selectorsDict) => (modelType, excludeModels =
         if (!currentField.allowNested) {
           newExcludeModels[model] = maxRecursion
         } else {
-          newExcludeModels[model] += 1
+          // Always use initial models to avoid multiplication for some same keys per model
+          newExcludeModels[model] = (excludeModels[model] || 0) + 1
         }
       })
-      // Stop getting nested selectors for current model type
-      // console.log(modelType, newExcludeModels)
-      // if (nestLevel > maxNestLevel && !currentField.allowNested || currentField.modelType === modelType) return memo
       return memo.concat(currentField.modelType)
     } else if (isPureObject(currentField) && !Array.isArray(currentField)) {
       return memo.concat(Object.keys(currentField).reduce(getLinkedModels(currentConfigPath), []))

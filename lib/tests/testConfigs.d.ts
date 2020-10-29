@@ -13,6 +13,7 @@ export const responseHeaders: {
     name: string;
     value: string;
 }[];
+export const MANY_FOREIGN_KEYS_COUNT: 50;
 export const apiDefinitions: {
     [x: number]: {
         getToken: () => string;
@@ -537,11 +538,38 @@ export namespace modelsDefinitions {
         }
         export { defaults_29 as defaults };
     }
+    export namespace testModelWithManyForeignKeys {
+        const apiName_30: string;
+        export { apiName_30 as apiName };
+        export { TEST_MODEL_ENDPOINT as endpoint };
+        const name_30: string;
+        export { name_30 as name };
+        export namespace defaults_30 {
+            const id_27: undefined;
+            export { id_27 as id };
+            export const dict: any;
+        }
+        export { defaults_30 as defaults };
+    }
+    export namespace testNestedModelWithManyForeignKeys {
+        const apiName_31: string;
+        export { apiName_31 as apiName };
+        export { TEST_MODEL_ENDPOINT as endpoint };
+        const name_31: string;
+        export { name_31 as name };
+        export namespace defaults_31 {
+            const id_28: undefined;
+            export { id_28 as id };
+            const dict_1: any;
+            export { dict_1 as dict };
+        }
+        export { defaults_31 as defaults };
+    }
 }
 export namespace formsDefinitions {
     export namespace testForm {
         export const model: string;
-        export namespace defaults_30 {
+        export namespace defaults_32 {
             export const transformedField: undefined;
             const test_21: boolean;
             export { test_21 as test };
@@ -553,7 +581,7 @@ export namespace formsDefinitions {
                 test?: undefined;
             })[];
         }
-        export { defaults_30 as defaults };
+        export { defaults_32 as defaults };
         export namespace transformBeforeSubmit {
             export function transformedField_1(key: any, value: any, formValues: any): any;
             export { transformedField_1 as transformedField };
@@ -562,37 +590,37 @@ export namespace formsDefinitions {
     export namespace testDirtyForm {
         const model_1: string;
         export { model_1 as model };
-        export namespace defaults_31 {
+        export namespace defaults_33 {
             const test_22: undefined;
             export { test_22 as test };
             export const testDirty: undefined;
         }
-        export { defaults_31 as defaults };
+        export { defaults_33 as defaults };
         export const trackDirtyFields: boolean;
         export const submitOnlyDirtyFields: boolean;
     }
     export namespace testRequestFormId {
         const model_2: string;
         export { model_2 as model };
-        export namespace defaults_32 {
+        export namespace defaults_34 {
             const test_23: undefined;
             export { test_23 as test };
         }
-        export { defaults_32 as defaults };
+        export { defaults_34 as defaults };
     }
     export namespace testRequestFormOtherId {
         const model_3: string;
         export { model_3 as model };
-        export namespace defaults_33 {
+        export namespace defaults_35 {
             const test_24: undefined;
             export { test_24 as test };
         }
-        export { defaults_33 as defaults };
+        export { defaults_35 as defaults };
     }
     export namespace foreignKeyTestForm {
         const model_4: string;
         export { model_4 as model };
-        export namespace defaults_34 {
+        export namespace defaults_36 {
             const test_25: undefined;
             export { test_25 as test };
             const singleForeignKey_4: undefined;
@@ -612,13 +640,13 @@ export namespace formsDefinitions {
             }
             export { nestedSimpleObject_1 as nestedSimpleObject };
         }
-        export { defaults_34 as defaults };
+        export { defaults_36 as defaults };
         export const mapServerDataToIds: boolean;
     }
     export namespace arrayTestForm {
         const model_5: string;
         export { model_5 as model };
-        export namespace defaults_35 {
+        export namespace defaults_37 {
             export const arrayField: ({
                 test: boolean;
                 count?: undefined;
@@ -627,38 +655,38 @@ export namespace formsDefinitions {
                 test?: undefined;
             })[];
         }
-        export { defaults_35 as defaults };
+        export { defaults_37 as defaults };
         export function transformBeforeSubmit_1(data: any): any;
         export { transformBeforeSubmit_1 as transformBeforeSubmit };
     }
     export namespace requestCustomFormId {
         const model_6: string;
         export { model_6 as model };
-        export namespace defaults_36 {
+        export namespace defaults_38 {
             const test_26: undefined;
             export { test_26 as test };
         }
-        export { defaults_36 as defaults };
+        export { defaults_38 as defaults };
     }
     export namespace requestCustomFormIdConfigured {
         const model_7: string;
         export { model_7 as model };
-        export namespace defaults_37 {
+        export namespace defaults_39 {
             const test_27: undefined;
             export { test_27 as test };
         }
-        export { defaults_37 as defaults };
+        export { defaults_39 as defaults };
     }
     export namespace genericTestForm {
         const model_8: string;
         export { model_8 as model };
-        export namespace defaults_38 {
-            const id_27: undefined;
-            export { id_27 as id };
+        export namespace defaults_40 {
+            const id_29: undefined;
+            export { id_29 as id };
             const genericField_1: undefined;
             export { genericField_1 as genericField };
         }
-        export { defaults_38 as defaults };
+        export { defaults_40 as defaults };
         const mapServerDataToIds_1: boolean;
         export { mapServerDataToIds_1 as mapServerDataToIds };
     }
