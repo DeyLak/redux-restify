@@ -74,6 +74,8 @@ export namespace api {
     callPut(config: ActionApiCallConfig): any;
     callPatch(config: ActionApiCallConfig): any;
     callDel(config: ActionApiCallConfig): any;
+    resetEntityManager(): void;
+    updateEntityManagerData(data: any, modelConfig: Partial<RestifyModelConfig>): void;
     entityManager: {
       [key: string]: ApiActions;
     };
