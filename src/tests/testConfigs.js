@@ -312,6 +312,28 @@ export const modelsDefinitions = {
       notInForeignKey: undefined,
     },
   },
+  testModelWithForeignKey5: {
+    apiName: 'testApi',
+    endpoint: TEST_MODEL_ENDPOINT,
+    name: 'Test model with foreign key 5',
+    pagination: false,
+    defaults: {
+      id: undefined,
+      test: undefined,
+      singleForeignKey: new RestifyForeignKey('testModel'),
+    },
+  },
+  testModelWithForeignKey6: {
+    apiName: 'testApi',
+    endpoint: TEST_MODEL_ENDPOINT,
+    name: 'Test model with foreign key 6',
+    pagination: false,
+    defaults: {
+      id: undefined,
+      test: undefined,
+      singleForeignKey: new RestifyForeignKey('testModel'),
+    },
+  },
   testNestedModelWithForeignKey: {
     apiName: 'testApi',
     endpoint: TEST_MODEL_ENDPOINT,

@@ -39,10 +39,11 @@ declare class EntityList {
     urls: any;
     count: any;
     idMap: any;
-    arrayLoaded: any;
-    idLoaded: any;
     pageSize: any;
     linkedModelsDict: any;
+    arrayLoaded: any;
+    idLoaded: any;
+    errorsLoaded: any;
     $arrays: {} | undefined;
     $oldArrays: {} | undefined;
     precalculatedSingles: {};
@@ -75,6 +76,7 @@ declare class EntityList {
     get oldArrays(): {};
     get arrays(): {};
     setSource(pages: any, oldPages: any, singles: any, oldSingles: any, errors: any, errorsPages: any, count: any, urls: any, linkedModelsDict: any): void;
+    clearData(): void;
     getNextPage({ filter, sort, parentEntities, specialConfig, modelConfig, }?: {
         filter?: {} | undefined;
         sort: any;

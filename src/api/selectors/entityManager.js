@@ -20,7 +20,7 @@ if (typeof window !== 'undefined') {
 // eslint-disable-next-line no-underscore-dangle
 const entityManager = typeof window === 'undefined' ? {} : window.__RESTIFY_ENTITY_MANAGER__
 // eslint-disable-next-line no-underscore-dangle
-const entityLists = typeof window === 'undefined' ? {} : window.__RESTIFY_ENTITY_LISTS__
+export const entityLists = typeof window === 'undefined' ? {} : window.__RESTIFY_ENTITY_LISTS__
 
 const maxRecursion = 10
 

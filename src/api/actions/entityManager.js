@@ -13,6 +13,7 @@ import {
   ACTIONS_ALERTS,
   ACTION_DELETE,
 } from '../../constants'
+import { entityLists } from '../selectors/entityManager'
 import * as apiGeneralActions from './general'
 import RestifyError from '../models/RestifyError'
 
@@ -115,10 +116,15 @@ const globalActions = {
     clearOldPages,
   }),
 
-  clearData: (modelType) => (clearOldSingleEntities = true) => ({
-    type: ACTIONS_TYPES[modelType].clearData,
-    clearOldSingleEntities,
-  }),
+  clearData: (modelType) => (clearOldSingleEntities = true) => {
+    if (entityLists[modelType]) {
+      entityLists[modelType].clearData()
+    }
+    return {
+      type: ACTIONS_TYPES[modelType].clearData,
+      clearOldSingleEntities,
+    }
+  },
 
   /**
    * Updates an object by id from raw data

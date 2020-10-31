@@ -65,10 +65,12 @@ class EntityList {
       this.urls = modelType.urls
       this.count = modelType.count
       this.idMap = modelType.idMap
-      this.arrayLoaded = modelType.arrayLoaded
-      this.idLoaded = modelType.idLoaded
       this.pageSize = modelType.pageSize
       this.linkedModelsDict = modelType.linkedModelsDict
+
+      this.arrayLoaded = modelType.arrayLoaded
+      this.idLoaded = modelType.idLoaded
+      this.errorsLoaded = modelType.errorsLoaded
     } else {
       this.dispatch = () => {}
       this.asyncDispatch = () => {}
@@ -93,6 +95,7 @@ class EntityList {
       // TODO by @deylak may be rework this
       this.arrayLoaded = {}
       this.idLoaded = {}
+      this.errorsLoaded = {}
     }
     this.$arrays = undefined
     this.$oldArrays = undefined
@@ -122,7 +125,12 @@ class EntityList {
   }
 
   checkShouldLoadById(preventLoad, specialId) {
-    let shouldLoad = !preventLoad && !this.idLoaded[specialId] && this.modelConfig.allowIdRequests
+    let shouldLoad = (
+      !preventLoad &&
+      !this.idLoaded[specialId] &&
+      !this.errorsLoaded[specialId] &&
+      this.modelConfig.allowIdRequests
+    )
     if (!this.modelConfig.pagination) {
       shouldLoad = shouldLoad && !Object.keys(this.arrayLoaded).some(key => !!this.arrayLoaded[key])
     }
@@ -418,8 +426,8 @@ class EntityList {
         $loading: false,
       })
     }
-    if (!forceLoad && this.errors[specialId]) {
-      this.idLoaded[specialId] = this.errors[specialId]
+    if (!forceLoad && (this.errors[specialId] || this.errorsLoaded[specialId])) {
+      this.errorsLoaded[specialId] = this.errors[specialId]
       return this.getDefaulObject(id, {
         $error: true,
         $loading: false,
@@ -613,6 +621,12 @@ class EntityList {
     this.count = count
     this.urls = urls
     this.linkedModelsDict = linkedModelsDict
+  }
+
+  clearData() {
+    this.arrayLoaded = {}
+    this.idLoaded = {}
+    this.errorsLoaded = {}
   }
 
   getNextPage({

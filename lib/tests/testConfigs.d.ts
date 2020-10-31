@@ -353,7 +353,7 @@ export namespace modelsDefinitions {
         }
         export { defaults_17 as defaults };
     }
-    export namespace testNestedModelWithForeignKey {
+    export namespace testModelWithForeignKey5 {
         const apiName_18: string;
         export { apiName_18 as apiName };
         export { TEST_MODEL_ENDPOINT as endpoint };
@@ -368,60 +368,68 @@ export namespace modelsDefinitions {
             export { test_16 as test };
             const singleForeignKey_2: RestifyForeignKey;
             export { singleForeignKey_2 as singleForeignKey };
+        }
+        export { defaults_18 as defaults };
+    }
+    export namespace testModelWithForeignKey6 {
+        const apiName_19: string;
+        export { apiName_19 as apiName };
+        export { TEST_MODEL_ENDPOINT as endpoint };
+        const name_19: string;
+        export { name_19 as name };
+        const pagination_6: boolean;
+        export { pagination_6 as pagination };
+        export namespace defaults_19 {
+            const id_18: undefined;
+            export { id_18 as id };
+            const test_17: undefined;
+            export { test_17 as test };
+            const singleForeignKey_3: RestifyForeignKey;
+            export { singleForeignKey_3 as singleForeignKey };
+        }
+        export { defaults_19 as defaults };
+    }
+    export namespace testNestedModelWithForeignKey {
+        const apiName_20: string;
+        export { apiName_20 as apiName };
+        export { TEST_MODEL_ENDPOINT as endpoint };
+        const name_20: string;
+        export { name_20 as name };
+        const pagination_7: boolean;
+        export { pagination_7 as pagination };
+        export namespace defaults_20 {
+            const id_19: undefined;
+            export { id_19 as id };
+            const test_18: undefined;
+            export { test_18 as test };
+            const singleForeignKey_4: RestifyForeignKey;
+            export { singleForeignKey_4 as singleForeignKey };
             const notInArray_2: RestifyForeignKeysArray;
             export { notInArray_2 as notInArray };
             const notInForeignKey_4: undefined;
             export { notInForeignKey_4 as notInForeignKey };
             export const nestedRestifyField: any;
             export namespace nestedSimpleObject {
-                const singleForeignKey_3: RestifyForeignKey;
-                export { singleForeignKey_3 as singleForeignKey };
+                const singleForeignKey_5: RestifyForeignKey;
+                export { singleForeignKey_5 as singleForeignKey };
             }
-        }
-        export { defaults_18 as defaults };
-    }
-    export namespace testModelWithoutRequests {
-        const apiName_19: string;
-        export { apiName_19 as apiName };
-        export { TEST_MODEL_ENDPOINT as endpoint };
-        export const allowIdRequests: boolean;
-        const name_19: string;
-        export { name_19 as name };
-        export namespace defaults_19 {
-            const test_17: any;
-            export { test_17 as test };
-        }
-        export { defaults_19 as defaults };
-    }
-    export namespace recursiveModelFirst {
-        const apiName_20: string;
-        export { apiName_20 as apiName };
-        export { TEST_MODEL_ENDPOINT as endpoint };
-        const name_20: string;
-        export { name_20 as name };
-        export namespace defaults_20 {
-            const id_18: undefined;
-            export { id_18 as id };
-            const foreignKey_2: RestifyForeignKey;
-            export { foreignKey_2 as foreignKey };
         }
         export { defaults_20 as defaults };
     }
-    export namespace recursiveModelSecond {
+    export namespace testModelWithoutRequests {
         const apiName_21: string;
         export { apiName_21 as apiName };
         export { TEST_MODEL_ENDPOINT as endpoint };
+        export const allowIdRequests: boolean;
         const name_21: string;
         export { name_21 as name };
         export namespace defaults_21 {
-            const id_19: undefined;
-            export { id_19 as id };
-            const foreignKey_3: RestifyForeignKey;
-            export { foreignKey_3 as foreignKey };
+            const test_19: any;
+            export { test_19 as test };
         }
         export { defaults_21 as defaults };
     }
-    export namespace customModel {
+    export namespace recursiveModelFirst {
         const apiName_22: string;
         export { apiName_22 as apiName };
         export { TEST_MODEL_ENDPOINT as endpoint };
@@ -430,16 +438,12 @@ export namespace modelsDefinitions {
         export namespace defaults_22 {
             const id_20: undefined;
             export { id_20 as id };
-            const test_18: undefined;
-            export { test_18 as test };
+            const foreignKey_2: RestifyForeignKey;
+            export { foreignKey_2 as foreignKey };
         }
         export { defaults_22 as defaults };
-        const pagination_6: boolean;
-        export { pagination_6 as pagination };
-        export { customGetEntityUrl as getEntityUrl };
-        export { customTransformArrayResponse as transformArrayResponse };
     }
-    export namespace customModelSingleEntityResponse {
+    export namespace recursiveModelSecond {
         const apiName_23: string;
         export { apiName_23 as apiName };
         export { TEST_MODEL_ENDPOINT as endpoint };
@@ -448,25 +452,17 @@ export namespace modelsDefinitions {
         export namespace defaults_23 {
             const id_21: undefined;
             export { id_21 as id };
-            const test_19: any;
-            export { test_19 as test };
+            const foreignKey_3: RestifyForeignKey;
+            export { foreignKey_3 as foreignKey };
         }
         export { defaults_23 as defaults };
-        const pagination_7: boolean;
-        export { pagination_7 as pagination };
-        export { customGetEntityUrl as getEntityUrl };
-        export function transformEntityResponse(response: any): {
-            data: any;
-        };
     }
-    export namespace customModelConfigured {
+    export namespace customModel {
         const apiName_24: string;
         export { apiName_24 as apiName };
         export { TEST_MODEL_ENDPOINT as endpoint };
         const name_24: string;
         export { name_24 as name };
-        const pagination_8: boolean;
-        export { pagination_8 as pagination };
         export namespace defaults_24 {
             const id_22: undefined;
             export { id_22 as id };
@@ -474,45 +470,59 @@ export namespace modelsDefinitions {
             export { test_20 as test };
         }
         export { defaults_24 as defaults };
+        const pagination_8: boolean;
+        export { pagination_8 as pagination };
+        export { customGetEntityUrl as getEntityUrl };
+        export { customTransformArrayResponse as transformArrayResponse };
     }
-    export namespace genericModel {
+    export namespace customModelSingleEntityResponse {
         const apiName_25: string;
         export { apiName_25 as apiName };
         export { TEST_MODEL_ENDPOINT as endpoint };
         const name_25: string;
         export { name_25 as name };
         export namespace defaults_25 {
-            export const genericField: RestifyGenericForeignKey;
+            const id_23: undefined;
+            export { id_23 as id };
+            const test_21: any;
+            export { test_21 as test };
         }
         export { defaults_25 as defaults };
+        const pagination_9: boolean;
+        export { pagination_9 as pagination };
+        export { customGetEntityUrl as getEntityUrl };
+        export function transformEntityResponse(response: any): {
+            data: any;
+        };
     }
-    export namespace camelCaseTestModel {
+    export namespace customModelConfigured {
         const apiName_26: string;
         export { apiName_26 as apiName };
         export { TEST_MODEL_ENDPOINT as endpoint };
         const name_26: string;
         export { name_26 as name };
+        const pagination_10: boolean;
+        export { pagination_10 as pagination };
         export namespace defaults_26 {
-            const id_23: undefined;
-            export { id_23 as id };
-            export const testCamelCase: undefined;
+            const id_24: undefined;
+            export { id_24 as id };
+            const test_22: undefined;
+            export { test_22 as test };
         }
         export { defaults_26 as defaults };
     }
-    export namespace testModelWithDeepNest1 {
+    export namespace genericModel {
         const apiName_27: string;
         export { apiName_27 as apiName };
         export { TEST_MODEL_ENDPOINT as endpoint };
         const name_27: string;
         export { name_27 as name };
         export namespace defaults_27 {
-            const id_24: undefined;
-            export { id_24 as id };
-            export const nest1: RestifyForeignKey;
+            export const genericField: RestifyGenericForeignKey;
         }
         export { defaults_27 as defaults };
     }
-    export namespace testModelWithDeepNest2 {
+    export namespace camelCaseTestModel {
         const apiName_28: string;
         export { apiName_28 as apiName };
         export { TEST_MODEL_ENDPOINT as endpoint };
@@ -521,11 +531,11 @@ export namespace modelsDefinitions {
         export namespace defaults_28 {
             const id_25: undefined;
             export { id_25 as id };
-            export const nest2: RestifyForeignKey;
+            export const testCamelCase: undefined;
         }
         export { defaults_28 as defaults };
     }
-    export namespace testModelWithDeepNest3 {
+    export namespace testModelWithDeepNest1 {
         const apiName_29: string;
         export { apiName_29 as apiName };
         export { TEST_MODEL_ENDPOINT as endpoint };
@@ -534,11 +544,11 @@ export namespace modelsDefinitions {
         export namespace defaults_29 {
             const id_26: undefined;
             export { id_26 as id };
-            export const nest3: undefined;
+            export const nest1: RestifyForeignKey;
         }
         export { defaults_29 as defaults };
     }
-    export namespace testModelWithManyForeignKeys {
+    export namespace testModelWithDeepNest2 {
         const apiName_30: string;
         export { apiName_30 as apiName };
         export { TEST_MODEL_ENDPOINT as endpoint };
@@ -547,11 +557,11 @@ export namespace modelsDefinitions {
         export namespace defaults_30 {
             const id_27: undefined;
             export { id_27 as id };
-            export const dict: any;
+            export const nest2: RestifyForeignKey;
         }
         export { defaults_30 as defaults };
     }
-    export namespace testNestedModelWithManyForeignKeys {
+    export namespace testModelWithDeepNest3 {
         const apiName_31: string;
         export { apiName_31 as apiName };
         export { TEST_MODEL_ENDPOINT as endpoint };
@@ -560,19 +570,45 @@ export namespace modelsDefinitions {
         export namespace defaults_31 {
             const id_28: undefined;
             export { id_28 as id };
+            export const nest3: undefined;
+        }
+        export { defaults_31 as defaults };
+    }
+    export namespace testModelWithManyForeignKeys {
+        const apiName_32: string;
+        export { apiName_32 as apiName };
+        export { TEST_MODEL_ENDPOINT as endpoint };
+        const name_32: string;
+        export { name_32 as name };
+        export namespace defaults_32 {
+            const id_29: undefined;
+            export { id_29 as id };
+            export const dict: any;
+        }
+        export { defaults_32 as defaults };
+    }
+    export namespace testNestedModelWithManyForeignKeys {
+        const apiName_33: string;
+        export { apiName_33 as apiName };
+        export { TEST_MODEL_ENDPOINT as endpoint };
+        const name_33: string;
+        export { name_33 as name };
+        export namespace defaults_33 {
+            const id_30: undefined;
+            export { id_30 as id };
             const dict_1: any;
             export { dict_1 as dict };
         }
-        export { defaults_31 as defaults };
+        export { defaults_33 as defaults };
     }
 }
 export namespace formsDefinitions {
     export namespace testForm {
         export const model: string;
-        export namespace defaults_32 {
+        export namespace defaults_34 {
             export const transformedField: undefined;
-            const test_21: boolean;
-            export { test_21 as test };
+            const test_23: boolean;
+            export { test_23 as test };
             export const testArray: ({
                 test: boolean;
                 orderable?: undefined;
@@ -581,7 +617,7 @@ export namespace formsDefinitions {
                 test?: undefined;
             })[];
         }
-        export { defaults_32 as defaults };
+        export { defaults_34 as defaults };
         export namespace transformBeforeSubmit {
             export function transformedField_1(key: any, value: any, formValues: any): any;
             export { transformedField_1 as transformedField };
@@ -590,63 +626,63 @@ export namespace formsDefinitions {
     export namespace testDirtyForm {
         const model_1: string;
         export { model_1 as model };
-        export namespace defaults_33 {
-            const test_22: undefined;
-            export { test_22 as test };
+        export namespace defaults_35 {
+            const test_24: undefined;
+            export { test_24 as test };
             export const testDirty: undefined;
         }
-        export { defaults_33 as defaults };
+        export { defaults_35 as defaults };
         export const trackDirtyFields: boolean;
         export const submitOnlyDirtyFields: boolean;
     }
     export namespace testRequestFormId {
         const model_2: string;
         export { model_2 as model };
-        export namespace defaults_34 {
-            const test_23: undefined;
-            export { test_23 as test };
+        export namespace defaults_36 {
+            const test_25: undefined;
+            export { test_25 as test };
         }
-        export { defaults_34 as defaults };
+        export { defaults_36 as defaults };
     }
     export namespace testRequestFormOtherId {
         const model_3: string;
         export { model_3 as model };
-        export namespace defaults_35 {
-            const test_24: undefined;
-            export { test_24 as test };
+        export namespace defaults_37 {
+            const test_26: undefined;
+            export { test_26 as test };
         }
-        export { defaults_35 as defaults };
+        export { defaults_37 as defaults };
     }
     export namespace foreignKeyTestForm {
         const model_4: string;
         export { model_4 as model };
-        export namespace defaults_36 {
-            const test_25: undefined;
-            export { test_25 as test };
-            const singleForeignKey_4: undefined;
-            export { singleForeignKey_4 as singleForeignKey };
+        export namespace defaults_38 {
+            const test_27: undefined;
+            export { test_27 as test };
+            const singleForeignKey_6: undefined;
+            export { singleForeignKey_6 as singleForeignKey };
             const notInArray_3: never[];
             export { notInArray_3 as notInArray };
             const notInForeignKey_5: undefined;
             export { notInForeignKey_5 as notInForeignKey };
             export namespace nestedRestifyField_1 {
-                const singleForeignKey_5: undefined;
-                export { singleForeignKey_5 as singleForeignKey };
+                const singleForeignKey_7: undefined;
+                export { singleForeignKey_7 as singleForeignKey };
             }
             export { nestedRestifyField_1 as nestedRestifyField };
             export namespace nestedSimpleObject_1 {
-                const singleForeignKey_6: undefined;
-                export { singleForeignKey_6 as singleForeignKey };
+                const singleForeignKey_8: undefined;
+                export { singleForeignKey_8 as singleForeignKey };
             }
             export { nestedSimpleObject_1 as nestedSimpleObject };
         }
-        export { defaults_36 as defaults };
+        export { defaults_38 as defaults };
         export const mapServerDataToIds: boolean;
     }
     export namespace arrayTestForm {
         const model_5: string;
         export { model_5 as model };
-        export namespace defaults_37 {
+        export namespace defaults_39 {
             export const arrayField: ({
                 test: boolean;
                 count?: undefined;
@@ -655,38 +691,38 @@ export namespace formsDefinitions {
                 test?: undefined;
             })[];
         }
-        export { defaults_37 as defaults };
+        export { defaults_39 as defaults };
         export function transformBeforeSubmit_1(data: any): any;
         export { transformBeforeSubmit_1 as transformBeforeSubmit };
     }
     export namespace requestCustomFormId {
         const model_6: string;
         export { model_6 as model };
-        export namespace defaults_38 {
-            const test_26: undefined;
-            export { test_26 as test };
+        export namespace defaults_40 {
+            const test_28: undefined;
+            export { test_28 as test };
         }
-        export { defaults_38 as defaults };
+        export { defaults_40 as defaults };
     }
     export namespace requestCustomFormIdConfigured {
         const model_7: string;
         export { model_7 as model };
-        export namespace defaults_39 {
-            const test_27: undefined;
-            export { test_27 as test };
+        export namespace defaults_41 {
+            const test_29: undefined;
+            export { test_29 as test };
         }
-        export { defaults_39 as defaults };
+        export { defaults_41 as defaults };
     }
     export namespace genericTestForm {
         const model_8: string;
         export { model_8 as model };
-        export namespace defaults_40 {
-            const id_29: undefined;
-            export { id_29 as id };
+        export namespace defaults_42 {
+            const id_31: undefined;
+            export { id_31 as id };
             const genericField_1: undefined;
             export { genericField_1 as genericField };
         }
-        export { defaults_40 as defaults };
+        export { defaults_42 as defaults };
         const mapServerDataToIds_1: boolean;
         export { mapServerDataToIds_1 as mapServerDataToIds };
     }

@@ -668,28 +668,94 @@ describe('api', () => {
       }, 0)
     })
 
-    // TODO make this work
-    // it('Stores an error response for request and doesn\'t make other request' , (done) => {
-    //   jasmine.Ajax.stubRequest(defaultUrl).andReturn({
-    //     status: 404,
-    //     responseText: 'Not found',
-    //   })
-    //   console.log('erorr test')
-    //   let currentArray = []
-    //   const interval = setInterval(() => {
-    //     const state = store.getState()
-    //     currentArray = api.selectors.entityManager.testModel.getEntities(state).getArray()
-    //     const request = jasmine.Ajax.requests.mostRecent()
-    //     expect(request.status).toEqual(404)
-    //     if (currentArray.length > 0) {
-    //       clearInterval(interval)
-    //       expect(currentArray).toEqual(testServerArrayRestifyModels)
-    //       done()
-    //     } else {
-    //       expect(currentArray).toEqual([])
-    //     }
-    //   }, 0)
-    // })
+    const clearDataConfigs = [
+      {
+        withClearData: true,
+        modelType: 'testModelWithForeignKey5',
+      },
+      {
+        withClearData: false,
+        modelType: 'testModelWithForeignKey6',
+      },
+    ]
+    clearDataConfigs.forEach(({
+      withClearData,
+      modelType,
+    }) => {
+      const name = withClearData
+        ? 'Stores an error response and clear it after clearData() called'
+        : 'Stores an error response for request and doesn\'t make other requests'
+      it(name, (done) => {
+        const CYCLES_TO_RUN = 10
+        let apiCallsCounter = 0
+        let cyclesRunCounter = 0
+        const stubRequest = () => jasmine.Ajax.stubRequest(`${modelUrl}1/`).andCallFunction((stub) => {
+          apiCallsCounter += 1
+          stub.andReturn({
+            status: 403,
+            responseText: '',
+            responseHeaders,
+          })
+        })
+        const interval = setInterval(() => {
+          stubRequest()
+          const state = store.getState()
+          const entities = api.selectors.entityManager[modelType].getEntities(state)
+
+          const model = entities.getById(1)
+          // Corner case, when we get model in 2 places and use async getters,
+          // Check for bug with race condition in event loop between micro and macro tasks
+          if (!withClearData && (entities.idLoaded[1] instanceof Promise)) {
+            entities.idLoaded[1].then(() => {
+              expect(model.singleForeignKey).toEqual({
+                id: undefined,
+                $modelType: 'testModel',
+                $error: false,
+                $loading: false,
+              })
+            })
+          }
+          if (model.$loading) {
+            expect(model).toEqual({
+              id: 1,
+              $modelType: modelType,
+              $loading: true,
+            })
+          } else {
+            expect(model).toEqual({
+              id: 1,
+              $modelType: modelType,
+              $error: true,
+              $loading: false,
+            })
+            expect(model.singleForeignKey).toEqual({
+              id: undefined,
+              $modelType: 'testModel',
+              $error: false,
+              $loading: false,
+            })
+          }
+          if (withClearData) {
+            // Inner properties should also be cleared
+            store.dispatch(api.actions.entityManager[modelType].clearData())
+            expect(entities.arrayLoaded).toEqual({})
+            expect(entities.errorsLoaded).toEqual({})
+            expect(entities.idLoaded).toEqual({})
+          }
+
+          cyclesRunCounter += 1
+          if (cyclesRunCounter > CYCLES_TO_RUN) {
+            clearInterval(interval)
+            if (withClearData) {
+              expect(apiCallsCounter).not.toEqual(1)
+            } else {
+              expect(apiCallsCounter).toEqual(1)
+            }
+            done()
+          }
+        }, 0)
+      })
+    })
 
     it('can get a model array asynchronously', (done) => {
       mockRequest()
