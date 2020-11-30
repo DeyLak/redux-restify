@@ -6,6 +6,7 @@ import {
   getPagesConfigHash,
   CRUD_ACTIONS,
   getUrlWithParents,
+  entityLists,
 } from '../constants'
 import { RESTIFY_CONFIG } from '../../config'
 import { onInitRestify } from '../../init'
@@ -13,7 +14,6 @@ import {
   ACTIONS_ALERTS,
   ACTION_DELETE,
 } from '../../constants'
-import { entityLists } from '../selectors/entityManager'
 import * as apiGeneralActions from './general'
 import RestifyError from '../models/RestifyError'
 
@@ -154,7 +154,7 @@ const globalActions = {
    * @param {Boolean} [allowClearPages] - should we reset pages, after updating entity(usually for some sorting configs)
    * @return {Object} Redux action to dispatch
    */
-  updateFromRawData: (modelType) => (id, data, query, parentEntities, allowClearPages = true, api, loadedById) => {
+  updateFromRawData: (modelType) => (id, data, query, parentEntities, allowClearPages = false, api, loadedById) => {
     const currentModel = RESTIFY_CONFIG.registeredModels[modelType]
     const currentApi = RESTIFY_CONFIG.registeredApies[currentModel.apiName]
     const transformEntityResponse = currentModel && currentModel.transformEntityResponse ||
@@ -320,7 +320,7 @@ const globalActions = {
       apiName: config.apiName || currentModel.apiName,
       url: urlToLoad,
       onSuccess: (data, status, api) => () =>
-        dispatch(globalActions.updateFromRawData(modelType)(id, data, query, parentEntities, undefined, api, true)),
+        dispatch(globalActions.updateFromRawData(modelType)(id, data, query, parentEntities, false, api, true)),
       onError: globalActions.setLoadErrorForId(modelType)(id, true, query, parentEntities),
       query,
       urlHash,

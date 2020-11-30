@@ -25,6 +25,7 @@ export interface GetArrayConfig {
   };
   specialConfig?: boolean;
   modelConfig?: Partial<RestifyModelConfig>;
+  preventLoad?: boolean;
 }
 
 export interface RestifyModelDefaults {
@@ -52,6 +53,12 @@ export interface RestifyGenericModelConfig extends RestifyLinkedModelConfig {
   typeField?: string;
 }
 
+export interface RestifyForeignKeysArrayConfig extends RestifyLinkedModelConfig {
+  withPages?: boolean;
+  apiConfig?: GetArrayConfig;
+  withRequestsLock?: boolean;
+}
+
 export class RestifyField {
   constructor(connfig: RestifyFieldConfig);
   $isRestifyField: boolean;
@@ -75,7 +82,7 @@ export class RestifyForeignKey extends RestifyLinkedModel {
 }
 
 export class RestifyForeignKeysArray extends RestifyLinkedModel {
-  constructor(modelType: string, config?: RestifyLinkedModelConfig)
+  constructor(modelType: string, config?: RestifyForeignKeysArrayConfig)
   withPages: boolean;
   apiConfig?: GetArrayConfig;
   $isRestifyForeignKeysArray: boolean;

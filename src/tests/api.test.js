@@ -738,7 +738,8 @@ describe('api', () => {
           if (withClearData) {
             // Inner properties should also be cleared
             store.dispatch(api.actions.entityManager[modelType].clearData())
-            expect(entities.arrayLoaded).toEqual({})
+            expect(entities.noPaginationArraysLoadingMap).toEqual({})
+            expect(entities.arraysLoadingMap).toEqual({})
             expect(entities.errorsLoaded).toEqual({})
             expect(entities.idLoaded).toEqual({})
           }
@@ -1662,8 +1663,8 @@ describe('api', () => {
       let currentModel = {}
       const interval = setInterval(() => {
         const state = store.getState()
-        currentModel = api.selectors.entityManager.testModelOtherId.getEntities(state)
-        .getById(specialModelResponse.special_id)
+        currentModel = api.selectors.entityManager.testModelOtherId2.getEntities(state)
+          .getById(specialModelResponse.special_id)
         if (
           currentModel.id === specialModelResponse.special_id &&
           currentModel.test === specialModelResponse.test

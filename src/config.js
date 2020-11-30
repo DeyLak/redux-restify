@@ -11,9 +11,10 @@ const restifyConfig = {
   registeredModels: {},
   registeredForms: {},
   options: RESTIFY_DEFAULT_OPTIONS,
+  isRequestsLockSet: false,
 }
 
-// TODO by @deylak add api for dinamic entity registration, so we could use restify models in npm packages
+// TODO by @deylak add api for dynamic entity registration, so we could use restify models in npm packages
 if (typeof window !== 'undefined') {
   // eslint-disable-next-line no-underscore-dangle
   window.__RESTIFY_CONFIG__ = window.__RESTIFY_CONFIG__ || restifyConfig

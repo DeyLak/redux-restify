@@ -6,6 +6,7 @@ declare namespace _default {
     }
     export { getRestifyApiReducer };
     export { selectors };
+    export const useRequestsLock: any;
 }
 export default _default;
 import * as actions from "./actions";

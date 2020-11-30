@@ -4,6 +4,7 @@ import { RESTIFY_CONFIG } from '../config'
 
 import { camelToLowerSnake } from '~/helpers/namingNotation'
 
+
 export const NAME = 'api'
 
 export const DEFAULT_USE_SNAKE_CASE = true
@@ -17,6 +18,19 @@ export const UPLOADING_URL = 'uploading'
 export const DEFAULT_PAGE_SIZE = 10
 export const DEFAULT_PAGE_NUMBER = 1
 export const DEFAULT_BACKEND_DATE_FORMAT = 'YYYY-MM-DD'
+
+if (typeof window !== 'undefined') {
+// eslint-disable-next-line no-underscore-dangle
+  window.__RESTIFY_ENTITY_MANAGER__ = window.__RESTIFY_ENTITY_MANAGER__ || {}
+// eslint-disable-next-line no-underscore-dangle
+  window.__RESTIFY_ENTITY_LISTS__ = window.__RESTIFY_ENTITY_LISTS__ || {}
+}
+
+// eslint-disable-next-line no-underscore-dangle
+export const entityManager = typeof window === 'undefined' ? {} : window.__RESTIFY_ENTITY_MANAGER__
+
+// eslint-disable-next-line no-underscore-dangle
+export const entityLists = typeof window === 'undefined' ? {} : window.__RESTIFY_ENTITY_LISTS__
 
 const convertToValidQueryParam = (key, value, { dateFormat = DEFAULT_BACKEND_DATE_FORMAT }) => {
   let result = ''
@@ -113,4 +127,8 @@ export const CRUD_ACTIONS = {
   [CRUD_ACTION_UPDATE]: CRUD_ACTION_UPDATE,
   [CRUD_ACTION_DELETE]: CRUD_ACTION_DELETE,
   [CRUD_ACTION_READ]: CRUD_ACTION_READ,
+}
+
+export const useRequestsLock = (isLocked) => {
+  RESTIFY_CONFIG.isRequestsLockSet = isLocked
 }

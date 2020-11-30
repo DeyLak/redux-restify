@@ -7,6 +7,8 @@ export const UPLOADING_URL: "uploading";
 export const DEFAULT_PAGE_SIZE: 10;
 export const DEFAULT_PAGE_NUMBER: 1;
 export const DEFAULT_BACKEND_DATE_FORMAT: "YYYY-MM-DD";
+export const entityManager: any;
+export const entityLists: any;
 export function queryFormat(query: any, config?: {}): string;
 export function getPagesConfigHash(filter?: {}, sort?: any, parentEntities?: {}, specialConfig?: boolean, modelConfig?: {}): any;
 export function getQueryHash(query: any): string;
@@ -23,3 +25,4 @@ export const CRUD_ACTIONS: {
     [CRUD_ACTION_DELETE]: string;
     [CRUD_ACTION_READ]: string;
 };
+export function useRequestsLock(isLocked: any): void;

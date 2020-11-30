@@ -1,6 +1,6 @@
 {
   "name": "redux-restify",
-  "version": "0.15.5",
+  "version": "0.16.0",
   "description": "Redux extension for RESTfull api communications and data management",
   "dependencies": {
     "deep-equal": "^1.0.1",

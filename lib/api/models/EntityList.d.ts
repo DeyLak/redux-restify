@@ -41,14 +41,17 @@ declare class EntityList {
     idMap: any;
     pageSize: any;
     linkedModelsDict: any;
-    arrayLoaded: any;
+    arraysLoadingMap: any;
     idLoaded: any;
     errorsLoaded: any;
+    noPaginationArraysLoadingMap: any;
+    lockedArrayConfigs: any;
     $arrays: {} | undefined;
     $oldArrays: {} | undefined;
     precalculatedSingles: {};
     setDispatch(dispatch: any): void;
-    checkShouldLoadById(preventLoad: any, specialId: any): any;
+    checkShouldLoadById(preventLoad: any, specialId: any): boolean;
+    checkShouldLoadArray(preventLoad: any, configHash: any): boolean;
     getRestifyModel(normalized: any, { isNestedModel, asyncGetters, parentEntities, preventLoad, preventAutoGetters, }?: {
         isNestedModel?: boolean | undefined;
         asyncGetters: any;
@@ -91,13 +94,22 @@ declare class EntityList {
         specialConfig?: boolean | undefined;
         modelConfig?: {} | undefined;
     }): any;
-    getArray({ filter, sort, parentEntities, specialConfig, modelConfig, forceLoad, }?: {
+    setPaginationArraysLoading(configHash: any, modelConfig: any): void;
+    setLockForArrayRequests(isLocked: any, { filter, sort, parentEntities, specialConfig, modelConfig, }?: {
+        filter?: {} | undefined;
+        sort: any;
+        parentEntities?: {} | undefined;
+        specialConfig?: boolean | undefined;
+        modelConfig?: {} | undefined;
+    }): void;
+    getArray({ filter, sort, parentEntities, specialConfig, modelConfig, forceLoad, preventLoad, }?: {
         filter?: {} | undefined;
         sort: any;
         parentEntities?: {} | undefined;
         specialConfig?: boolean | undefined;
         modelConfig?: {} | undefined;
         forceLoad?: boolean | undefined;
+        preventLoad?: boolean | undefined;
     }): any;
     /**
      * Check, if the given entity list is being loaded from server

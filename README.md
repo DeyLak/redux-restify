@@ -195,3 +195,7 @@ Check out the [docs](./docs) for more info.
 
 ### 29.10.2020 (0.15.0)
 1. Added `withPages` and `apiConfig` options to `RestifyForeignKeysArray` action, allowing to store model fields with links to custom filtering configs
+
+### 28.11.2020 (0.16.0)
+1. Added `preventLoad` option to `getArrayConfig`
+2. Added `useRequestsLock` api and `withRequestsLock` option to `RestifyForeignKeysArray`

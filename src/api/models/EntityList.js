@@ -68,9 +68,11 @@ class EntityList {
       this.pageSize = modelType.pageSize
       this.linkedModelsDict = modelType.linkedModelsDict
 
-      this.arrayLoaded = modelType.arrayLoaded
+      this.arraysLoadingMap = modelType.arraysLoadingMap
       this.idLoaded = modelType.idLoaded
       this.errorsLoaded = modelType.errorsLoaded
+      this.noPaginationArraysLoadingMap = modelType.noPaginationArraysLoadingMap
+      this.lockedArrayConfigs = modelType.lockedArrayConfigs
     } else {
       this.dispatch = () => {}
       this.asyncDispatch = () => {}
@@ -93,9 +95,15 @@ class EntityList {
 
       // Prevent many api calls, couldn't make it work properly only with store, due to many async actions
       // TODO by @deylak may be rework this
-      this.arrayLoaded = {}
+      this.arraysLoadingMap = {}
       this.idLoaded = {}
       this.errorsLoaded = {}
+      // Track all array requests without pagintaion to prevent getById requests
+      // No pagination requests are usually used to prefetch some data (or all of it),
+      // so there is no need to load iobjects by id
+      this.noPaginationArraysLoadingMap = {}
+      // Configs used in requests locking
+      this.lockedArrayConfigs = {}
     }
     this.$arrays = undefined
     this.$oldArrays = undefined
@@ -125,16 +133,24 @@ class EntityList {
   }
 
   checkShouldLoadById(preventLoad, specialId) {
-    let shouldLoad = (
+    return (
+      !RESTIFY_CONFIG.isRequestsLockSet &&
       !preventLoad &&
       !this.idLoaded[specialId] &&
       !this.errorsLoaded[specialId] &&
-      this.modelConfig.allowIdRequests
+      this.modelConfig.allowIdRequests &&
+      // No no pagination requests in progress
+      !Object.values(this.noPaginationArraysLoadingMap).some(val => val)
     )
-    if (!this.modelConfig.pagination) {
-      shouldLoad = shouldLoad && !Object.keys(this.arrayLoaded).some(key => !!this.arrayLoaded[key])
-    }
-    return shouldLoad
+  }
+
+  checkShouldLoadArray(preventLoad, configHash) {
+    return (
+      !preventLoad &&
+      !this.arraysLoadingMap[configHash] &&
+      // No requests lock or config is not used in locking
+      (!RESTIFY_CONFIG.isRequestsLockSet || !this.lockedArrayConfigs[configHash])
+    )
   }
 
   getRestifyModel(
@@ -624,7 +640,8 @@ class EntityList {
   }
 
   clearData() {
-    this.arrayLoaded = {}
+    this.noPaginationArraysLoadingMap = {}
+    this.arraysLoadingMap = {}
     this.idLoaded = {}
     this.errorsLoaded = {}
   }
@@ -659,6 +676,28 @@ class EntityList {
     return this.count[currentConfig] || 0
   }
 
+  // Helper function for saving no paginated requests
+  setPaginationArraysLoading(configHash, modelConfig) {
+    let currentPagination = modelConfig.pagination
+    if (currentPagination === undefined) {
+      currentPagination = this.modelConfig.pagination
+    }
+
+    this.noPaginationArraysLoadingMap[configHash] = currentPagination
+  }
+
+  setLockForArrayRequests(isLocked, {
+    filter = {},
+    sort,
+    parentEntities = {},
+    specialConfig = false,
+    modelConfig = {},
+  } = {}) {
+    const currentConfigHash = getPagesConfigHash(filter, sort, parentEntities, specialConfig, modelConfig)
+
+    this.lockedArrayConfigs[currentConfigHash] = isLocked
+  }
+
   getArray({
     filter = {},
     sort,
@@ -666,31 +705,38 @@ class EntityList {
     specialConfig = false,
     modelConfig = {},
     forceLoad = false,
+    preventLoad = false,
   } = {}) {
-    const currentConfig = getPagesConfigHash(filter, sort, parentEntities, specialConfig, modelConfig)
-    if (!forceLoad && this.arrays[currentConfig]) {
-      return this.arrays[currentConfig]
+    const currentConfigHash = getPagesConfigHash(filter, sort, parentEntities, specialConfig, modelConfig)
+    if (!forceLoad && this.arrays[currentConfigHash]) {
+      return this.arrays[currentConfigHash]
     }
-    if (this.errorsPages[currentConfig]) {
+    if (this.errorsPages[currentConfigHash]) {
       return []
     }
-    if (!this.arrayLoaded[currentConfig]) {
-      this.arrayLoaded[currentConfig] = this.asyncDispatch(entityManager[this.modelType]
+    if (this.checkShouldLoadArray(preventLoad, currentConfigHash)) {
+      this.setPaginationArraysLoading(currentConfigHash, modelConfig)
+
+      this.arraysLoadingMap[currentConfigHash] = this.asyncDispatch(entityManager[this.modelType]
         .loadData({
           filter,
           sort,
           parentEntities,
           specialConfig,
           modelConfig,
-          urlHash: currentConfig && currentConfig.toString(),
+          urlHash: currentConfigHash && currentConfigHash.toString(),
         }))
           .then((result) => {
-            this.arrayLoaded[currentConfig] = false
-            this.arrays[currentConfig] = result
+            this.arraysLoadingMap[currentConfigHash] = false
+            this.noPaginationArraysLoadingMap[currentConfigHash] = false
+
+            this.arrays[currentConfigHash] = result
             return result
           })
           .catch((e) => {
-            this.arrayLoaded[currentConfig] = false
+            this.arraysLoadingMap[currentConfigHash] = false
+            this.noPaginationArraysLoadingMap[currentConfigHash] = false
+
             if (e instanceof RestifyError) {
               throw e
             } else {
@@ -698,7 +744,7 @@ class EntityList {
             }
           })
     }
-    return this.oldArrays[currentConfig] || []
+    return this.oldArrays[currentConfigHash] || []
   }
 
   /**
@@ -735,36 +781,43 @@ class EntityList {
     modelConfig = {},
     forceLoad = false,
   } = {}) {
-    const currentConfig = getPagesConfigHash(filter, sort, parentEntities, specialConfig, modelConfig)
-    if (!forceLoad && this.arrays[currentConfig]) {
-      return this.arrays[currentConfig]
+    const currentConfigHash = getPagesConfigHash(filter, sort, parentEntities, specialConfig, modelConfig)
+    if (!forceLoad && this.arrays[currentConfigHash]) {
+      return this.arrays[currentConfigHash]
     }
-    if (this.arrayLoaded[currentConfig]) return this.arrayLoaded[currentConfig]
-    if (this.errorsPages[currentConfig]) {
+    if (this.arraysLoadingMap[currentConfigHash] instanceof Promise) {
+      return this.arraysLoadingMap[currentConfigHash]
+    }
+    if (this.errorsPages[currentConfigHash]) {
       return []
     }
-    this.arrayLoaded[currentConfig] = this.dispatch(entityManager[this.modelType].loadData({
+    this.setPaginationArraysLoading(currentConfigHash, modelConfig)
+    this.arraysLoadingMap[currentConfigHash] = this.dispatch(entityManager[this.modelType].loadData({
       filter,
       sort,
       parentEntities,
       specialConfig,
       modelConfig,
-      urlHash: currentConfig && currentConfig.toString(),
+      urlHash: currentConfigHash && currentConfigHash.toString(),
     }))
       .then(result => {
-        this.arrayLoaded[currentConfig] = false
-        this.arrays[currentConfig] = result
+        this.arraysLoadingMap[currentConfigHash] = false
+        this.noPaginationArraysLoadingMap[currentConfigHash] = false
+
+        this.arrays[currentConfigHash] = result
         return result
       })
       .catch((e) => {
-        this.arrayLoaded[currentConfig] = false
+        this.arraysLoadingMap[currentConfigHash] = false
+        this.noPaginationArraysLoadingMap[currentConfigHash] = false
+
         if (e instanceof RestifyError) {
           throw e
         } else {
           console.error(e.message)
         }
       })
-    return this.arrayLoaded[currentConfig]
+    return this.arraysLoadingMap[currentConfigHash]
   }
 }
 

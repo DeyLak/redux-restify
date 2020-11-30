@@ -21,4 +21,5 @@ export default {
   },
   getRestifyApiReducer,
   selectors,
+  useRequestsLock: constants.useRequestsLock,
 }

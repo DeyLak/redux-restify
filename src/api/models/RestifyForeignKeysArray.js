@@ -1,5 +1,7 @@
 import RestifyLinkedModel from './RestifyLinkedModel'
 
+import { entityLists } from '../constants'
+
 
 class RestifyForeignKeysArray extends RestifyLinkedModel {
   constructor(modelType, config = {}) {
@@ -8,12 +10,20 @@ class RestifyForeignKeysArray extends RestifyLinkedModel {
       idField: config.idField || 'Ids',
     })
     const {
-      withPages = false, // Also save array as some page config in store
-      apiConfig = {}, // Optional apiConfig if withPages used
+      // Also save array as some page config in store
+      withPages = false,
+      // Optional apiConfig if withPages used
+      apiConfig = {},
+      // Locks getArray requests for given apiConfig, so we can safely use getArray everywhere without preventLoad
+      withRequestsLock,
     } = config
     this.withPages = withPages
     this.apiConfig = apiConfig
     this.$isRestifyForeignKeysArray = true
+
+    if (entityLists && entityLists[modelType] && withRequestsLock !== undefined) {
+      entityLists[modelType].setLockForArrayRequests(withRequestsLock, apiConfig)
+    }
   }
 }
 

@@ -257,6 +257,17 @@ export const modelsDefinitions = {
       test: undefined,
     },
   },
+  testModelOtherId2: {
+    clearDataOnRouteChange: true,
+    apiName: 'testApi',
+    endpoint: TEST_MODEL_ENDPOINT,
+    name: 'Test model other id 2',
+    idField: 'specialId',
+    defaults: {
+      specialId: undefined,
+      test: undefined,
+    },
+  },
   testModelForClearData: {
     apiName: 'testApi',
     endpoint: TEST_MODEL_ENDPOINT,

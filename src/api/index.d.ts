@@ -95,6 +95,7 @@ export namespace api {
     };
   };
   export function getRestifyApiReducer(): any;
+  export function useRequestsLock(isLocked: boolean): void;
   export const selectors: {
     entityManager: {
       [key: string]: ApiSelectors;

@@ -8,19 +8,8 @@ import { getNestedObjectField } from '~/helpers/nestedObjects'
 import RestifyError from '../models/RestifyError'
 
 import { getUrls } from './loadsManager'
+import { entityManager, entityLists } from '../constants'
 
-
-if (typeof window !== 'undefined') {
-// eslint-disable-next-line no-underscore-dangle
-  window.__RESTIFY_ENTITY_MANAGER__ = window.__RESTIFY_ENTITY_MANAGER__ || {}
-// eslint-disable-next-line no-underscore-dangle
-  window.__RESTIFY_ENTITY_LISTS__ = window.__RESTIFY_ENTITY_LISTS__ || {}
-}
-
-// eslint-disable-next-line no-underscore-dangle
-const entityManager = typeof window === 'undefined' ? {} : window.__RESTIFY_ENTITY_MANAGER__
-// eslint-disable-next-line no-underscore-dangle
-export const entityLists = typeof window === 'undefined' ? {} : window.__RESTIFY_ENTITY_LISTS__
 
 const maxRecursion = 10
 
