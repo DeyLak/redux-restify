@@ -21,32 +21,27 @@ const CONTENT_TYPE_HTML = 'text/html'
 const DEFAULT_RETIRES_COUNT = 0
 const DEFAULT_RETIRES_TIMEOUT = 1000
 
-const allow = [200, 201, 203, 204, 400, 404, 401, 403, 409, 422]
-
 const checkStatus = (api, config) => {
-  if (allow.includes(api.status)) {
-    const responseType = api.getResponseHeader(CONTENT_TYPE_HEADER)
-    if (config.isBinary) {
-      return api.response
+  const responseType = api.getResponseHeader(CONTENT_TYPE_HEADER)
+  if (config.isBinary) {
+    return api.response
+  }
+  if (
+    responseType &&
+    (responseType.includes(CONTENT_TYPE_JSON) || responseType.includes(CONTENT_TYPE_PROBLEM_JSON)) &&
+    api.responseText && api.responseText !== ''
+  ) {
+    try {
+      const result = JSON.parse(api.responseText)
+      return config.convertToCamelCase ? objectToCamel(result, config) : result
+    } catch (e) {
+      return {}
     }
-    if (
-      responseType &&
-      (responseType.includes(CONTENT_TYPE_JSON) || responseType.includes(CONTENT_TYPE_PROBLEM_JSON)) &&
-      api.responseText && api.responseText !== ''
-    ) {
-      try {
-        const result = JSON.parse(api.responseText)
-        return config.convertToCamelCase ? objectToCamel(result, config) : result
-      } catch (e) {
-        return {}
-      }
-    }
-    if (responseType && responseType.includes(CONTENT_TYPE_HTML)) {
-      return api.responseText
-    }
+  }
+  if (responseType && responseType.includes(CONTENT_TYPE_HTML)) {
     return api.responseText
   }
-  return undefined
+  return api.responseText
 }
 
 const defaultGetEntityUrl = ({
