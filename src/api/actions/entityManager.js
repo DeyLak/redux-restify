@@ -339,18 +339,23 @@ const globalActions = {
     })
   },
 
-  deleteById: (modelType) => (id, {
-    useOptimistic = true,
-  } = {}) => (dispatch) => {
+  deleteById: (modelType) => (id, config = {}) => (dispatch) => {
+    const {
+      useOptimistic = true,
+      parentEntities,
+    } = config
     const currentModel = RESTIFY_CONFIG.registeredModels[modelType]
-    const urlToLoad = currentModel.endpoint
+    let urlToDelete = currentModel.endpoint
+    if (currentModel.parent) {
+      urlToDelete = getUrlWithParents(urlToDelete, currentModel, parentEntities)
+    }
     if (useOptimistic) {
       dispatch(globalActions.updateOptimisticById(modelType)(id, { $deleted: true }))
     }
 
     return dispatch(apiGeneralActions.callDel({
       apiName: currentModel.apiName,
-      url: urlToLoad,
+      url: urlToDelete,
       getEntityUrl: currentModel.getEntityUrl,
       id,
       crudAction: CRUD_ACTIONS.delete,

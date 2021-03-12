@@ -23,9 +23,9 @@ export interface LoadDataConfig {
   sort?: string;
   parentEntities?: {
     [key: string]: RestifyId;
-  }
+  };
   specialConfig?: boolean;
-  modelConfig?: Partial<RestifyModelConfig>
+  modelConfig?: Partial<RestifyModelConfig>;
   urlHash?: string;
 }
 
@@ -36,6 +36,9 @@ export interface LoadByIdConfig extends GetByIdConfig {
 
 export interface DeleteByIdConfig {
   useOptimistic?: boolean;
+  parentEntities?: {
+    [key: string]: RestifyId;
+  }
 }
 
 export interface ApiActions extends ActionCreatorsMapObject {
