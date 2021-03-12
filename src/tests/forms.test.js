@@ -451,6 +451,37 @@ describe('forms', () => {
     })
   })
 
+  const newChildModel = {
+    $modelType: 'testChild1Model',
+    id: 1,
+    test: true,
+  }
+
+  it('Can send a child model', (done) => {
+    jasmine.Ajax.stubRequest(`${modelUrl}1/${TEST_MODEL_ENDPOINT}`).andReturn({
+      status: 201,
+      responseText: JSON.stringify(newChildModel),
+      responseHeaders: [
+        {
+          name: 'Content-type',
+          value: 'application/json',
+        },
+      ],
+    })
+    store.dispatch(forms.actions.sendQuickForm({
+      model: 'testChild1Model',
+      parentEntities: {
+        testModel: 1,
+      },
+      values: {
+        test: true,
+      },
+    })).then((res) => {
+      expect(res.status).toBe(201)
+      done()
+    })
+  })
+
   const testCreatedModel = { id: 1, test: true, $modelType: 'testModel' }
   it('Clears pages after new entity added', (done) => {
     jasmine.Ajax.stubRequest(modelUrl).andReturn({
