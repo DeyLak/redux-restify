@@ -1653,6 +1653,24 @@ describe('api', () => {
         })
     })
 
+    it('can delete a child model by id', (done) => {
+      jasmine.Ajax.stubRequest(`${modelUrl}2/${TEST_MODEL_ENDPOINT}3/`).andReturn({
+        status: 200,
+        responseText: '',
+        responseHeaders,
+      })
+      const apiConfig = {
+        parentEntities: {
+          testModel: 2,
+        },
+      }
+      store.dispatch(api.actions.entityManager.testChild1Model.deleteById(3, apiConfig))
+        .then(res => {
+          expect(res.status).toBe(200)
+          done()
+        })
+    })
+
     const specialModelResponse = {
       special_id: 999,
       test: true,

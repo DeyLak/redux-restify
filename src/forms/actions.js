@@ -4,6 +4,7 @@ import sortBy from 'lodash/sortBy'
 import lodashDefaults from 'lodash/defaults'
 import { batchActions } from 'redux-batched-actions'
 
+import { getUrlWithParents } from '~/api/constants'
 import {
   ACTIONS_TYPES,
   getActionType,
@@ -623,6 +624,9 @@ const globalActions = {
       const currentId = data.id || currentFormConfig.id || currentValues.id
       if (currentModel) {
         url = currentModel.endpoint
+        if (currentModel.parent) {
+          url = getUrlWithParents(url, currentModel, currentFormConfig.parentEntities)
+        }
         currentFormApiName = currentModel.apiName
         if (currentId && currentFormConfig.useOptimisticUpdate) {
           dispatch(api.actions.entityManager[currentFormConfig.model].updateOptimisticById(currentId, data))
