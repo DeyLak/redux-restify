@@ -13,7 +13,7 @@ import {
   modelUrl,
 } from './testConfigs'
 
-import { queryFormat } from '../api/constants'
+import { getSpecialIdWithQuery, queryFormat } from '../api/constants'
 import ValidationPresetRequired from '../forms/validation/ValidationPresetRequired'
 import { calculateValidationResult } from '../forms/constants'
 
@@ -478,6 +478,44 @@ describe('forms', () => {
       },
     })).then((res) => {
       expect(res.status).toBe(201)
+      done()
+    })
+  })
+
+  const parentEntities = {
+    testModel: 1,
+  }
+
+  const updatedChildModel = {
+    $modelType: 'testChild1Model',
+    id: 5,
+    test: false,
+  }
+
+  it('Can update a child model', (done) => {
+    jasmine.Ajax.stubRequest(`${modelUrl}1/${TEST_MODEL_ENDPOINT}5/`).andReturn({
+      status: 200,
+      responseText: JSON.stringify(updatedChildModel),
+      responseHeaders: [
+        {
+          name: 'Content-type',
+          value: 'application/json',
+        },
+      ],
+    })
+    store.dispatch(forms.actions.sendQuickForm({
+      model: 'testChild1Model',
+      parentEntities,
+      method: 'patch',
+      values: {
+        id: 5,
+        test: false,
+      },
+    })).then(() => {
+      const state = store.getState()
+      const specialId = getSpecialIdWithQuery(5, {}, parentEntities)
+      const updatedModel = state.api.entityManager.testChild1Model.singleEntities[specialId].actual
+      expect(updatedModel.test).toBeFalsy()
       done()
     })
   })
