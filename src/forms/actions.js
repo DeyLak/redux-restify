@@ -4,7 +4,7 @@ import sortBy from 'lodash/sortBy'
 import lodashDefaults from 'lodash/defaults'
 import { batchActions } from 'redux-batched-actions'
 
-import { getUrlWithParents } from '~/api/constants'
+import { getSpecialIdWithQuery, getUrlWithParents } from '~/api/constants'
 import {
   ACTIONS_TYPES,
   getActionType,
@@ -651,8 +651,11 @@ const globalActions = {
 
         const transformed = transformEntityResponse(res, resApi, currentFormConfig.model).data
         if (transformed && currentModel && currentFormConfig.updateEntity) {
+          const specialId = currentFormConfig.parentEntities
+            ? getSpecialIdWithQuery(transformed[idField], {}, currentFormConfig.parentEntities)
+            : transformed[idField]
           dispatch(
-            api.actions.entityManager[currentFormConfig.model].updateById(transformed[idField], transformed),
+            api.actions.entityManager[currentFormConfig.model].updateById(specialId, transformed),
           )
         }
         if (transformed && currentFormConfig.model && transformed[idField]) {
