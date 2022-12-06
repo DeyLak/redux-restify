@@ -59,7 +59,7 @@
     "karma-sourcemap-loader": "^0.3.7",
     "karma-verbose-reporter": "^0.0.6",
     "karma-webpack": "^2.0.4",
-    "slimerjs": "^0.906.1",
+    "slimerjs": "^1.0.0",
     "source-map-support": "^0.4.2",
     "typescript": "^3.7.2",
     "webpack-bundle-analyzer": "^3.5.0",
